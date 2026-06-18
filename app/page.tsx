@@ -1,4 +1,10 @@
 import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
+import { Mandala } from "@/components/Mandala";
+import { SECTION_ICONS, ShieldCheckIcon, ClockIcon, SparkleIcon } from "@/components/icons";
+
+const ACCENTS = ["gold", "red", "violet"] as const;
 
 const SECTIONS = [
   { n: "01", t: "Mulank", d: "Your birth-day number — the core of your personality and instincts." },
@@ -22,14 +28,11 @@ const STEPS = [
 export default function Home() {
   return (
     <>
-      <header className="site-header">
-        <Link href="/" className="wordmark">
-          Life<span>Script</span>
-        </Link>
-      </header>
+      <SiteHeader />
 
       <main className="wrap">
         <section className="hero">
+          <Mandala className="hero-mandala" />
           <div className="eyebrow">Indian · Vedic Numerology</div>
           <h1>
             Your life, written in <em>numbers</em>.
@@ -45,6 +48,21 @@ export default function Home() {
           <div className="price-note">
             Just <strong>₹99</strong> · delivered within 24 hours
           </div>
+
+          <div className="trust-row">
+            <div className="trust-badge">
+              <ShieldCheckIcon />
+              Calculated from real Vedic numerology
+            </div>
+            <div className="trust-badge">
+              <SparkleIcon />
+              Free instant preview, no signup
+            </div>
+            <div className="trust-badge">
+              <ClockIcon />
+              Delivered within 24 hours
+            </div>
+          </div>
         </section>
 
         <section className="block" id="inside">
@@ -54,13 +72,20 @@ export default function Home() {
             <p className="sub">Ten pages, written for you and no one else.</p>
           </div>
           <div className="grid">
-            {SECTIONS.map((s) => (
-              <div className="card" key={s.n}>
-                <div className="num">{s.n}</div>
-                <h3>{s.t}</h3>
-                <p>{s.d}</p>
-              </div>
-            ))}
+            {SECTIONS.map((s, i) => {
+              const Icon = SECTION_ICONS[i];
+              const accent = ACCENTS[i % ACCENTS.length];
+              return (
+                <div className="card" data-accent={accent} key={s.n}>
+                  <div className="card-top">
+                    <Icon className="icon" />
+                    <div className="num">{s.n}</div>
+                  </div>
+                  <h3>{s.t}</h3>
+                  <p>{s.d}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -92,13 +117,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="wrap">
-          LifeScript · Indian numerology, beautifully prepared.
-          <br />
-          Questions? <a href="mailto:support@lifescript.co.in">support@lifescript.co.in</a>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

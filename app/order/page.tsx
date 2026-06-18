@@ -1,18 +1,16 @@
-import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import OrderForm from "./OrderForm";
 
 export const metadata = {
-  title: "Get your report — LifeScript",
+  title: "Get Your Report — LifeScript",
+  description: "Enter your name and date of birth to get your free preview and order your full 10-page LifeScript numerology report.",
 };
 
 export default function OrderPage() {
   return (
     <>
-      <header className="site-header">
-        <Link href="/" className="wordmark">
-          Life<span>Script</span>
-        </Link>
-      </header>
+      <SiteHeader />
 
       <main className="wrap">
         <div className="section-head" style={{ marginTop: 24 }}>
@@ -23,9 +21,7 @@ export default function OrderPage() {
         <OrderForm />
       </main>
 
-      <footer className="site-footer">
-        <div className="wrap">LifeScript · Indian numerology, beautifully prepared.</div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

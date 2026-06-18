@@ -21,16 +21,49 @@ const body = Jost({
   display: "swap",
 });
 
+const BASE_URL = "https://lifescript.co.in";
+const SITE_TITLE = "LifeScript — Your Personalised Indian Numerology Report";
+const SITE_DESCRIPTION =
+  "A beautiful 10-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.";
+
 export const metadata: Metadata = {
-  title: "LifeScript — Your Personalised Indian Numerology Report",
-  description:
-    "A beautiful 10-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.",
+  metadataBase: new URL(BASE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: BASE_URL,
+    siteName: "LifeScript",
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  // TODO: add Google Search Console verification once the property is set up
+  // verification: { google: "" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "LifeScript",
+    url: BASE_URL,
+    description: SITE_DESCRIPTION,
+    email: "support@lifescript.co.in",
+  };
+
   return (
     <html lang="en">
       <body className={`${display.variable} ${label.variable} ${body.variable}`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <div className="starfield" aria-hidden />
         {children}
       </body>
