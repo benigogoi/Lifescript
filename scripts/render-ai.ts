@@ -13,7 +13,7 @@ import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { buildReportHtml, staticContent, type ReportOptions } from "../src/lib/report-template";
+import { buildReportHtml, reportFileName, staticContent, type ReportOptions } from "../src/lib/report-template";
 import { generateReportContent } from "../src/lib/content-engine";
 import { calculateNumerology } from "../src/lib/numerology";
 
@@ -87,8 +87,10 @@ async function main() {
       console.log("PNG  ->", file);
     }
   }
-  await page.pdf({ path: path.join(OUT, "ai-ravi.pdf"), width: "794px", height: "1123px", printBackground: true });
-  console.log("PDF  ->", path.join(OUT, "ai-ravi.pdf"));
+
+  const pdfPath = path.join(OUT, reportFileName(customer.fullName));
+  await page.pdf({ path: pdfPath, width: "794px", height: "1123px", printBackground: true });
+  console.log("PDF  ->", pdfPath);
 
   await browser.close();
 }

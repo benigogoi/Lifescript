@@ -8,7 +8,7 @@ import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { buildReportHtml, type ReportOptions } from "../src/lib/report-template";
+import { buildReportHtml, reportFileName, type ReportOptions } from "../src/lib/report-template";
 
 const ROOT = path.resolve(__dirname, "..");
 const OUT = path.join(ROOT, "report", "out");
@@ -52,13 +52,10 @@ async function main() {
       await el.screenshot({ path: file as `${string}.png` });
       console.log("PNG  ->", file);
     }
-    await page.pdf({
-      path: path.join(OUT, `${c.slug}.pdf`),
-      width: "794px",
-      height: "1123px",
-      printBackground: true,
-    });
-    console.log("PDF  ->", path.join(OUT, `${c.slug}.pdf`));
+
+    const pdfPath = path.join(OUT, reportFileName(c.opts.fullName));
+    await page.pdf({ path: pdfPath, width: "794px", height: "1123px", printBackground: true });
+    console.log("PDF  ->", pdfPath);
     await page.close();
   }
 
