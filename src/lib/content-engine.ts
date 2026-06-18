@@ -107,10 +107,16 @@ export async function generateReportContent(
     throw new Error(`Content generation failed (stop_reason: ${response.stop_reason})`);
   }
 
+  const { input_tokens, output_tokens } = response.usage;
+  const costUsd = (input_tokens * 3 + output_tokens * 15) / 1_000_000;
+  console.log(
+    `Claude usage: ${input_tokens} in / ${output_tokens} out tokens → ~$${costUsd.toFixed(4)} (${MODEL} pricing)`,
+  );
+
   return {
     ...base,
-    mulank: { ...base.mulank, paras: [base.mulank.paras[0], parsed.mulankCombo] },
-    bhagyank: { ...base.bhagyank, paras: [base.bhagyank.paras[0], parsed.bhagyankCombo] },
-    name: { ...base.name, paras: [base.name.paras[0], parsed.nameCombo] },
+    mulank: { ...base.mulank, paras: [...base.mulank.paras, parsed.mulankCombo] },
+    bhagyank: { ...base.bhagyank, paras: [...base.bhagyank.paras, parsed.bhagyankCombo] },
+    name: { ...base.name, paras: [...base.name.paras, parsed.nameCombo] },
   };
 }

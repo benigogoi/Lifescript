@@ -39,15 +39,15 @@ export interface ReportOptions extends BirthInput {
 export interface YearContent {
   theme: string;
   essence: string;
-  paras: [string, string];
+  paras: [string, string, string];
   opportunities: string[];
   takeCare: string[];
 }
 
 export interface ResolvedContent {
-  mulank: { essence: string; paras: [string, string]; strengths: string[]; growth: string[] };
-  bhagyank: { essence: string; paras: [string, string]; favours: string[]; asks: string[] };
-  name: { essence: string; paras: [string, string]; gives: string[]; useWisely: string[] };
+  mulank: { essence: string; paras: string[]; strengths: string[]; growth: string[] };
+  bhagyank: { essence: string; paras: string[]; favours: string[]; asks: string[] };
+  name: { essence: string; paras: string[]; gives: string[]; useWisely: string[] };
   loshu: { strongPlanes: string[]; missingItems: string[]; missingTitle: string };
   year1: YearContent;
   year2: YearContent;
@@ -143,8 +143,9 @@ function list(items: string[]): string {
   return items.map((i) => `<li>${i}</li>`).join("");
 }
 
-function paras(ps: string[]): string {
-  return ps.map((p) => `<p>${p}</p>`).join("");
+/** Renders body paragraphs; the first gets the drop-cap "lead" treatment. */
+function bodyParas(ps: string[]): string {
+  return ps.map((p, i) => (i === 0 ? `<p class="lead">${p}</p>` : `<p>${p}</p>`)).join("");
 }
 
 function foot(name: string, page: string): string {
@@ -211,8 +212,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     num: Digit,
     planetSanskrit: string,
     essence: string,
-    lead: string,
-    secondPara: string,
+    bodyParagraphs: string[],
     panelA: { h: string; items: string[] },
     panelB: { h: string; items: string[] },
     page: string,
@@ -232,7 +232,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       </div>
     </div>
     <div class="gold-rule"></div>
-    <div class="body-copy"><p class="lead">${lead}</p><p>${secondPara}</p></div>
+    <div class="body-copy">${bodyParas(bodyParagraphs)}</div>
     <div class="panels">
       <div class="panel"><h4>${panelA.h}</h4><ul>${list(panelA.items)}</ul></div>
       <div class="panel"><h4>${panelB.h}</h4><ul>${list(panelB.items)}</ul></div>
@@ -244,21 +244,21 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   const mulankPage = numberPage(
     "mulank", "Mulank · The Birth Number", `Born of ${r.mulank.planet === "Sun" ? "the Sun" : esc(mc.planetSanskrit.split(" · ")[0])}`,
     mulank, mc.planetSanskrit, c.mulank.essence,
-    `${fnE}, ${c.mulank.paras[0]}`, c.mulank.paras[1],
+    [`${fnE}, ${c.mulank.paras[0]}`, ...c.mulank.paras.slice(1)],
     { h: "Your Strengths", items: c.mulank.strengths }, { h: "Your Growth Edge", items: c.mulank.growth }, "02",
   );
 
   const bhagyankPage = numberPage(
     "bhagyank", "Bhagyank · The Destiny Number", `The Path of ${r.bhagyank.planet}`,
     bhagyank, bc.planetSanskrit, c.bhagyank.essence,
-    `${fnE}, ${c.bhagyank.paras[0]}`, c.bhagyank.paras[1],
+    [`${fnE}, ${c.bhagyank.paras[0]}`, ...c.bhagyank.paras.slice(1)],
     { h: "Where Destiny Favours You", items: c.bhagyank.favours }, { h: "What Destiny Asks of You", items: c.bhagyank.asks }, "03",
   );
 
   const namePage = numberPage(
     "namenum", "Name Number · The Sound You Carry", `The Name “${fnE}”`,
     nameNum, nc.planetSanskrit, c.name.essence,
-    `Your name “${fnE}” ${c.name.paras[0]}`, c.name.paras[1],
+    [`Your name “${fnE}” ${c.name.paras[0]}`, ...c.name.paras.slice(1)],
     { h: "Your Name Gives You", items: c.name.gives }, { h: "Use It Wisely", items: c.name.useWisely }, "05",
   );
 
@@ -311,7 +311,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       </div>
     </div>
     <div class="gold-rule"></div>
-    <div class="body-copy"><p class="lead">${fnE}, ${year} ${yc.paras[0]}</p><p>${yc.paras[1]}</p></div>
+    <div class="body-copy">${bodyParas([`${fnE}, ${year} ${yc.paras[0]}`, ...yc.paras.slice(1)])}</div>
     <div class="panels">
       <div class="panel"><h4>Opportunities</h4><ul>${list(yc.opportunities)}</ul></div>
       <div class="panel"><h4>Take Care</h4><ul>${list(yc.takeCare)}</ul></div>
@@ -451,22 +451,22 @@ const CSS = `
   .keynum .planet { font-size:11px; letter-spacing:1px; color:var(--gold); }
   .cover-foot { margin-top:auto; font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
   .content-inner { position:relative; z-index:2; height:100%; padding:92px 78px 80px; }
-  .section-kicker { font-size:11px; letter-spacing:5px; color:var(--red); text-transform:uppercase; }
+  .section-kicker { font-size:12px; letter-spacing:5px; color:var(--red); text-transform:uppercase; }
   .section-title { font-family:'Cormorant Garamond', serif; font-weight:600; font-size:46px; color:var(--white); margin-top:6px; line-height:1; }
-  .hero-row { display:flex; align-items:center; gap:34px; margin:40px 0 14px; }
+  .hero-row { display:flex; align-items:center; gap:34px; margin:30px 0 12px; }
   .hero-circle { width:150px; height:150px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond', serif; font-feature-settings:'lnum' 1, 'tnum' 1; font-size:84px; font-weight:600; color:var(--gold-bright); background:radial-gradient(circle at 50% 38%, rgba(201,168,76,0.30), rgba(201,168,76,0.02) 70%); border:1.5px solid rgba(201,168,76,0.55); box-shadow:0 0 40px rgba(201,168,76,0.30), inset 0 0 28px rgba(201,168,76,0.15); }
-  .hero-meta .rule-by { font-size:12px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+  .hero-meta .rule-by { font-size:13px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
   .hero-meta .planet-name { font-family:'Cormorant Garamond', serif; font-size:38px; color:var(--gold); margin:4px 0 10px; }
-  .hero-meta .essence { font-size:14px; color:var(--white); opacity:0.85; max-width:320px; line-height:1.5; }
-  .gold-rule { height:1px; background:linear-gradient(90deg, var(--gold), transparent); margin:26px 0; }
-  .body-copy { font-size:14.5px; line-height:1.85; color:#D5D5E2; }
-  .body-copy p { margin-bottom:14px; }
+  .hero-meta .essence { font-size:15.5px; color:var(--white); opacity:0.85; max-width:320px; line-height:1.45; }
+  .gold-rule { height:1px; background:linear-gradient(90deg, var(--gold), transparent); margin:20px 0; }
+  .body-copy { font-size:16px; line-height:1.65; color:#D5D5E2; }
+  .body-copy p { margin-bottom:11px; }
   .body-copy .lead::first-letter { font-family:'Cormorant Garamond', serif; color:var(--gold-bright); font-size:52px; float:left; line-height:0.8; margin:6px 10px 0 0; }
-  .panels { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:26px; }
-  .panel { background:rgba(255,255,255,0.025); border:1px solid rgba(201,168,76,0.18); border-radius:4px; padding:20px 22px; }
-  .panel h4 { font-family:'Marcellus', serif; font-size:15px; letter-spacing:1px; color:var(--gold); margin-bottom:12px; }
+  .panels { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:18px; }
+  .panel { background:rgba(255,255,255,0.025); border:1px solid rgba(201,168,76,0.18); border-radius:4px; padding:18px 20px; }
+  .panel h4 { font-family:'Marcellus', serif; font-size:16px; letter-spacing:1px; color:var(--gold); margin-bottom:10px; }
   .panel ul { list-style:none; }
-  .panel li { font-size:13px; line-height:1.45; color:#CFCFDE; padding-left:18px; position:relative; margin-bottom:8px; }
+  .panel li { font-size:14px; line-height:1.4; color:#CFCFDE; padding-left:18px; position:relative; margin-bottom:7px; }
   .panel li::before { content:"\\2726"; position:absolute; left:0; color:var(--gold); font-size:10px; top:2px; }
   .page-foot { position:absolute; left:78px; right:78px; bottom:40px; display:flex; justify-content:space-between; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
   .loshu-wrap { display:flex; justify-content:center; margin:30px 0 8px; }
@@ -480,7 +480,7 @@ const CSS = `
   .cell.missing .num { color:rgba(154,154,176,0.35); }
   .cell .planet-tag { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
   .cell.missing .planet-tag { color:rgba(224,90,78,0.6); }
-  .legend { display:flex; justify-content:center; gap:40px; margin-top:22px; font-size:12px; color:var(--muted); }
+  .legend { display:flex; justify-content:center; gap:40px; margin-top:22px; font-size:13px; color:var(--muted); }
   .legend span { display:inline-flex; align-items:center; gap:8px; }
   .swatch { width:12px; height:12px; border-radius:3px; display:inline-block; }
   .lucky-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:30px; }
@@ -493,19 +493,19 @@ const CSS = `
   .mantra-box { text-align:center; background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.28); border-radius:4px; padding:24px; margin:28px 0; }
   .mantra-box .m-label { font-size:10px; letter-spacing:4px; text-transform:uppercase; color:var(--red); }
   .mantra-box .m-text { font-family:'Cormorant Garamond', serif; font-size:26px; color:var(--gold-bright); margin:10px 0 6px; }
-  .mantra-box .m-sub { font-size:12px; color:var(--muted); letter-spacing:1px; }
+  .mantra-box .m-sub { font-size:13px; color:var(--muted); letter-spacing:1px; }
   .remedy { display:flex; gap:18px; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
   .remedy:last-child { border-bottom:none; }
   .remedy .r-no { font-family:'Cormorant Garamond', serif; font-feature-settings:'lnum' 1; font-size:26px; color:var(--gold); min-width:30px; }
-  .remedy .r-title { font-family:'Marcellus', serif; font-size:15px; color:var(--white); letter-spacing:0.5px; }
-  .remedy .r-desc { font-size:12.5px; color:#BFBFD0; line-height:1.5; margin-top:3px; }
+  .remedy .r-title { font-family:'Marcellus', serif; font-size:16px; color:var(--white); letter-spacing:0.5px; }
+  .remedy .r-desc { font-size:14px; color:#BFBFD0; line-height:1.5; margin-top:3px; }
   .ty-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; align-items:center; text-align:center; padding:110px 80px 70px; }
   .ty-namaste { font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--gold); }
-  .ty-msg { font-size:15px; line-height:1.8; color:#D5D5E2; max-width:460px; margin-top:18px; }
+  .ty-msg { font-size:16.5px; line-height:1.7; color:#D5D5E2; max-width:460px; margin-top:18px; }
   .upsell { margin-top:auto; width:100%; background:rgba(201,168,76,0.07); border:1px solid rgba(201,168,76,0.35); border-radius:6px; padding:30px 34px; }
   .upsell .u-kicker { font-size:10px; letter-spacing:4px; text-transform:uppercase; color:var(--red); }
   .upsell .u-title { font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--white); margin:8px 0 12px; }
-  .upsell .u-desc { font-size:13px; color:#C8C8D8; line-height:1.6; max-width:420px; margin:0 auto 20px; }
+  .upsell .u-desc { font-size:14px; color:#C8C8D8; line-height:1.55; max-width:420px; margin:0 auto 20px; }
   .u-feats { display:flex; justify-content:center; gap:26px; margin-bottom:22px; }
   .u-feats span { font-size:11px; letter-spacing:1px; color:var(--gold); }
   .cta { display:inline-block; font-family:'Marcellus', serif; letter-spacing:2px; font-size:14px; color:#0D0D12; background:linear-gradient(180deg, var(--gold-bright), var(--gold)); padding:13px 38px; border-radius:3px; text-transform:uppercase; }
