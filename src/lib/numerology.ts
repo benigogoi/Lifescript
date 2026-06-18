@@ -65,8 +65,6 @@ export interface NumerologyResult {
   mulank: { number: Digit; planet: Planet };
   bhagyank: { number: Digit; planet: Planet };
   nameNumber: { number: Digit; planet: Planet };
-  universalYear2026: { number: Digit; planet: Planet };
-  universalYear2027: { number: Digit; planet: Planet };
   loShu: LoShuGrid;
 }
 
@@ -90,20 +88,32 @@ export function reduceToSingleDigit(n: number): Digit {
 }
 
 // ---------------------------------------------------------------------------
-// Name number (Pythagorean)
+// Name number (Chaldean)
 // ---------------------------------------------------------------------------
 
 /**
- * Pythagorean letter values: A=1 B=2 ... I=9 J=1 ... R=9 S=1 ... Z=8.
- * Non-letters are ignored.
+ * Chaldean letter values — the system actually used by Indian/Vedic
+ * numerology (via Cheiro), not the Western Pythagorean A=1..Z=26 scheme.
+ * Letters are grouped by sound/vibration rather than alphabet order, and
+ * 9 is never assigned to a letter (considered too sacred/complete).
  */
+const CHALDEAN_VALUES: Record<string, number> = {
+  A: 1, I: 1, J: 1, Q: 1, Y: 1,
+  B: 2, K: 2, R: 2,
+  C: 3, G: 3, L: 3, S: 3,
+  D: 4, M: 4, T: 4,
+  E: 5, H: 5, N: 5, X: 5,
+  U: 6, V: 6, W: 6,
+  O: 7, Z: 7,
+  F: 8, P: 8,
+};
+
+/** Chaldean value of a letter. Non-letters return 0. */
 export function letterValue(ch: string): number {
-  const code = ch.toUpperCase().charCodeAt(0);
-  if (code < 65 || code > 90) return 0; // not A–Z
-  return ((code - 65) % 9) + 1;
+  return CHALDEAN_VALUES[ch.toUpperCase()] ?? 0;
 }
 
-/** Sum the Pythagorean values of a word and reduce to a single digit. */
+/** Sum the Chaldean values of a word and reduce to a single digit. */
 export function nameNumberOf(name: string): Digit {
   const sum = name
     .split("")
@@ -171,20 +181,14 @@ export function calculateNumerology(input: BirthInput): NumerologyResult {
       reduceToSingleDigit(year)
   );
 
-  // Name number — Pythagorean values of the FIRST name reduced.
+  // Name number — Chaldean values of the FIRST name reduced.
   const nameNum = nameNumberOf(firstName);
-
-  // Universal years — the calendar year reduced.
-  const uy2026 = reduceToSingleDigit(2026);
-  const uy2027 = reduceToSingleDigit(2027);
 
   return {
     input: { fullName, firstName, day, month, year },
     mulank: withPlanet(mulankNum),
     bhagyank: withPlanet(bhagyankNum),
     nameNumber: withPlanet(nameNum),
-    universalYear2026: withPlanet(uy2026),
-    universalYear2027: withPlanet(uy2027),
     loShu: loShuGrid(day, month, year),
   };
 }

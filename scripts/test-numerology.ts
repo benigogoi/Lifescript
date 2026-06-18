@@ -27,11 +27,11 @@ check("2027 -> 2", reduceToSingleDigit(2027), 2);
 check("9 -> 9 (no collapse to 0)", reduceToSingleDigit(9), 9);
 check("18 -> 9", reduceToSingleDigit(18), 9);
 
-console.log("\n— Name number (Pythagorean) —");
-// RAVI: R=9, A=1, V=4, I=9 = 23 -> 5
-check("RAVI -> 5", nameNumberOf("Ravi"), 5);
-// PRIYA: P=7,R=9,I=9,Y=7,A=1 = 33 -> 6
-check("PRIYA -> 6", nameNumberOf("Priya"), 6);
+console.log("\n— Name number (Chaldean) —");
+// RAVI: R=2, A=1, V=6, I=1 = 10 -> 1
+check("RAVI -> 1", nameNumberOf("Ravi"), 1);
+// PRIYA: P=8, R=2, I=1, Y=1, A=1 = 13 -> 4
+check("PRIYA -> 4", nameNumberOf("Priya"), 4);
 
 console.log("\n— Lo Shu grid (DOB 28-08-1995) —");
 const ls = loShuGrid(28, 8, 1995);
@@ -46,10 +46,8 @@ const r = calculateNumerology({ fullName: "Ravi Kumar", day: 28, month: 8, year:
 check("mulank", r.mulank, { number: 1, planet: "Sun" });
 // Bhagyank: day 28->1, month 8->8, year 1995->24->6 ; 1+8+6=15 -> 6 (Venus)
 check("bhagyank", r.bhagyank, { number: 6, planet: "Venus" });
-// Name 'Ravi' -> 5 (Mercury)
-check("nameNumber", r.nameNumber, { number: 5, planet: "Mercury" });
-check("universalYear2026", r.universalYear2026, { number: 1, planet: "Sun" });
-check("universalYear2027", r.universalYear2027, { number: 2, planet: "Moon" });
+// Name 'Ravi' -> 1 (Sun)
+check("nameNumber", r.nameNumber, { number: 1, planet: "Sun" });
 
 console.log(`\n${pass} passed, ${fail} failed\n`);
 process.exit(fail === 0 ? 0 : 1);
