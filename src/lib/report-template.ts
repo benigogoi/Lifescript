@@ -15,6 +15,7 @@ import {
   type NumerologyResult,
 } from "./numerology";
 import { NUMBER_CORE, YEAR_CORE, LUCKY, REMEDIES } from "./report-data";
+import { STARFIELD_DATA_URI } from "./starfield";
 
 export interface ReportOptions extends BirthInput {
   /** Years shown in the two prediction pages. Defaults to current + next. */
@@ -435,9 +436,9 @@ const CSS = `
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { background:#05050a; }
   .page { position:relative; width:794px; height:1123px; background:radial-gradient(circle at 50% 18%, rgba(201,168,76,0.10), transparent 45%), radial-gradient(circle at 80% 85%, rgba(224,90,78,0.06), transparent 40%), var(--bg); color:var(--white); overflow:hidden; font-family:'Jost', sans-serif; font-feature-settings:'lnum' 1, 'tnum' 1; margin:0 auto 40px; }
-  .stars { position:absolute; inset:0; pointer-events:none; }
-  .stars::before, .stars::after { content:""; position:absolute; inset:0; background-image:radial-gradient(1.2px 1.2px at 20% 30%, rgba(255,255,255,0.8), transparent),radial-gradient(1px 1px at 75% 18%, rgba(255,255,255,0.6), transparent),radial-gradient(1.4px 1.4px at 40% 70%, rgba(255,255,255,0.7), transparent),radial-gradient(1px 1px at 88% 60%, rgba(255,255,255,0.5), transparent),radial-gradient(1.1px 1.1px at 12% 80%, rgba(255,255,255,0.6), transparent),radial-gradient(1px 1px at 60% 45%, rgba(255,255,255,0.45), transparent),radial-gradient(1.3px 1.3px at 30% 12%, rgba(201,168,76,0.7), transparent),radial-gradient(1px 1px at 92% 35%, rgba(201,168,76,0.5), transparent),radial-gradient(1px 1px at 8% 50%, rgba(255,255,255,0.5), transparent),radial-gradient(1.2px 1.2px at 55% 88%, rgba(255,255,255,0.55), transparent); background-repeat:no-repeat; }
-  .stars::after { transform:scale(1.7) rotate(8deg); opacity:0.5; }
+  /* Baked starfield: one image per page instead of ~180 gradient patterns
+     (kept the PDF slow to render). Regenerate via scripts/gen-starfield.ts. */
+  .stars { position:absolute; inset:0; pointer-events:none; background-image:url(${STARFIELD_DATA_URI}); background-size:100% 100%; background-repeat:no-repeat; }
   .mandala { position:absolute; left:50%; top:50%; width:720px; height:720px; transform:translate(-50%,-50%); opacity:0.10; pointer-events:none; }
   .corner { position:absolute; width:110px; height:110px; opacity:0.55; }
   .corner.tl { top:26px; left:26px; }

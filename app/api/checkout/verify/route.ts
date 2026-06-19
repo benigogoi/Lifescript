@@ -1,0 +1,75 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { getOrderByRazorpayId, updateOrder } from "@/lib/orders";
+import { verifyCheckoutSignature } from "@/lib/razorpay";
+import { sendOrderConfirmation } from "@/lib/email";
+import { processPaidOrder } from "@/lib/generate";
+
+export const runtime = "nodejs";
+
+const verifySchema = z.object({
+  razorpay_order_id: z.string().min(1),
+  razorpay_payment_id: z.string().min(1),
+  razorpay_signature: z.string().min(1),
+});
+
+/**
+ * Confirm a Razorpay Checkout success: verify the signature, then flip the order
+ * to 'paid'. This is the fast client-driven path; a webhook (added on deploy)
+ * is the authoritative backstop for users who close the tab after paying.
+ */
+export async function POST(req: Request) {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  const parsed = verifySchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid payment data." }, { status: 400 });
+  }
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = parsed.data;
+
+  const valid = verifyCheckoutSignature({
+    razorpayOrderId: razorpay_order_id,
+    razorpayPaymentId: razorpay_payment_id,
+    signature: razorpay_signature,
+  });
+  if (!valid) {
+    return NextResponse.json({ error: "Payment verification failed." }, { status: 400 });
+  }
+
+  const order = await getOrderByRazorpayId(razorpay_order_id);
+  if (!order) {
+    return NextResponse.json({ error: "Order not found." }, { status: 404 });
+  }
+
+  // Idempotent: a retry, or a webhook that already advanced the order, must not error.
+  if (order.status === "created") {
+    await updateOrder(order.id, { status: "paid", razorpay_payment_id });
+
+    // Instant confirmation email. Independent of report generation — it must not
+    // wait on (or fail because of) the Claude pipeline. Don't let an email hiccup
+    // fail the payment confirmation; a webhook/retry can cover gaps later.
+    try {
+      await sendOrderConfirmation({
+        to: order.email,
+        firstName: order.full_name.split(/\s+/)[0] ?? order.full_name,
+      });
+    } catch (e) {
+      console.error("confirmation email failed", e);
+    }
+
+    // Kick off report generation + delivery in the background — fire-and-forget
+    // so the customer's confirmation returns instantly. On the long-running dev
+    // server the work continues after this response. Currently STUB content
+    // (static knowledge base, no Claude); flip to Claude as the very last step.
+    // TODO(production): move to a decoupled worker + randomized 6–18h delay +
+    // webhook backstop instead of running inline on payment.
+    void processPaidOrder({ ...order, status: "paid", razorpay_payment_id });
+  }
+
+  return NextResponse.json({ ok: true, orderId: order.id });
+}
