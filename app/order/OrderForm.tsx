@@ -44,6 +44,7 @@ export default function OrderForm() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [paying, setPaying] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
 
   function update(key: keyof typeof form, value: string) {
@@ -51,6 +52,7 @@ export default function OrderForm() {
     setPreview(null);
     setError(null);
     setPayError(null);
+    setVerifyingPayment(false);
   }
 
   /** Leave the order flow for the terminal status page. `replace` drops /order
@@ -107,6 +109,7 @@ export default function OrderForm() {
       theme: { color: "#c9a84c" },
       handler: async (response: unknown) => {
         // Payment succeeded at Razorpay; confirm the signature server-side.
+        setVerifyingPayment(true);
         try {
           const vr = await fetch("/api/checkout/verify", {
             method: "POST",
@@ -247,9 +250,14 @@ export default function OrderForm() {
             className="cta"
             style={{ marginTop: 18 }}
             onClick={onPay}
-            disabled={paying}
+            disabled={paying || verifyingPayment}
           >
-            {paying ? "Opening payment…" : `Get Full Report · ₹${PRICE_INR}`}
+            {(paying || verifyingPayment) && <span className="btn-spinner" aria-hidden="true" />}
+            {verifyingPayment
+              ? "Confirming payment..."
+              : paying
+                ? "Opening payment..."
+                : `Get Full Report · ₹${PRICE_INR}`}
           </button>
           {payError && (
             <div className="field err" role="alert" style={{ marginTop: 12 }}>
