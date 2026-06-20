@@ -20,11 +20,11 @@ if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 const REPORTS_BUCKET = "reports";
 
 const TEST_CUSTOMER = {
-  fullName: "Beni Gogoi",
+  fullName: "Beni MadhabG Gogoi",
   email: "beni.gogoi1@gmail.com",
-  day: 15,
-  month: 4,
-  year: 1995,
+  day: 28,
+  month: 1,
+  year: 1992,
 };
 
 function supabase() {
