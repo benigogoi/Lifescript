@@ -7,7 +7,11 @@ export const dynamic = "force-dynamic";
 const STUCK_GENERATING_MS = 5 * 60 * 1000;
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+  return new Date(iso).toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Kolkata",
+  });
 }
 
 export default async function AdminOrdersPage() {

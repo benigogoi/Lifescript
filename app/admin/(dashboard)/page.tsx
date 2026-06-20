@@ -7,7 +7,7 @@ import { addExpenseAction, deleteExpenseAction } from "../actions";
 export const dynamic = "force-dynamic";
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", { dateStyle: "medium" });
+  return new Date(iso).toLocaleDateString("en-IN", { dateStyle: "medium", timeZone: "Asia/Kolkata" });
 }
 
 export default async function AdminDashboard() {

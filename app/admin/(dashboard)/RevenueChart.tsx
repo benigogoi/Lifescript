@@ -16,7 +16,7 @@ export function RevenueChart({ data }: { data: DailyBucket[] }) {
         const barHeight = ((height - padding * 2) * d.revenueInr) / max;
         const x = padding + i * (barWidth + barGap);
         const y = height - padding - barHeight;
-        const label = new Date(d.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+        const label = new Date(d.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" });
         return (
           <g key={d.date}>
             <rect
