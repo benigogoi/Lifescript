@@ -43,8 +43,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
-  // TODO: add Google Search Console verification once the property is set up
-  // verification: { google: "" },
+  verification: { google: "wtX-JF30PbSA9wFyCkQeV208M-Cq2C6h5oY5rKxcFnY" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
