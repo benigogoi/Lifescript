@@ -116,6 +116,7 @@ export async function processPaidOrder(order: Order): Promise<void> {
       status: "scheduled",
       pdf_path: pdfPath,
       scheduled_at: scheduledAt.toISOString(),
+      error: null,
     });
     console.log(`order ${order.id}: report ready, scheduled to send at ${scheduledAt.toISOString()}`);
   } catch (e) {
@@ -153,7 +154,7 @@ export async function deliverScheduledOrder(order: Order): Promise<void> {
       filename,
     });
 
-    await updateOrder(order.id, { status: "sent", sent_at: new Date().toISOString() });
+    await updateOrder(order.id, { status: "sent", sent_at: new Date().toISOString(), error: null });
     console.log(`order ${order.id}: delivered to ${order.email}`);
   } catch (e) {
     console.error(`order ${order.id}: delivery failed`, e);

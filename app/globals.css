@@ -959,6 +959,10 @@ section.block {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 .admin-sidebar .wordmark {
   font-size: 19px;
@@ -1204,6 +1208,9 @@ section.block {
   .admin-sidebar {
     width: 100%;
     padding: 22px 18px;
+    position: static;
+    height: auto;
+    overflow-y: visible;
   }
 
   .admin-nav {
