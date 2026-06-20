@@ -1,5 +1,5 @@
 import { listOrders } from "@/lib/orders";
-import { holdOrder, releaseOrder, sendNowAction } from "../actions";
+import { holdOrder, releaseOrder, sendNowAction, retryOrderAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +60,11 @@ export default async function AdminOrdersPage() {
                   )}
                   {o.status === "sent" && o.sent_at && (
                     <span style={{ color: "var(--muted)", fontSize: 12 }}>Sent {formatDate(o.sent_at)}</span>
+                  )}
+                  {o.status === "failed" && (
+                    <form action={retryOrderAction.bind(null, o.id)} style={{ display: "inline" }}>
+                      <button className="admin-action" type="submit">Retry</button>
+                    </form>
                   )}
                 </td>
               </tr>
