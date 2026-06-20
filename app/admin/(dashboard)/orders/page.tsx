@@ -56,6 +56,16 @@ export default async function AdminOrdersPage() {
                   <td>{formatDate(o.created_at)}</td>
                   <td>{o.scheduled_at ? formatDate(o.scheduled_at) : "—"}</td>
                   <td>
+                    {o.pdf_path && (
+                      <a
+                        href={`/admin/orders/${o.id}/view`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ marginRight: 8 }}
+                      >
+                        View
+                      </a>
+                    )}
                     {o.status === "scheduled" && (
                       <>
                         <form action={sendNowAction.bind(null, o.id)} style={{ display: "inline" }}>
