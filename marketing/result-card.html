@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LifeScript — Shareable Result Card</title>
+    <meta name="hz:slide-selector" content=".social-post" />
+    <meta name="hz:canvas-width" content="1080" />
+    <meta name="hz:canvas-height" content="1080" />
+    <link rel="stylesheet" href="https://use.typekit.net/nkf8akl.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #050507;
+      }
+
+      .social-post {
+        position: relative;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 30%, #14141c 0%, #0d0d12 55%, #05050a 100%);
+        border: 1px solid rgba(201, 168, 76, 0.25);
+      }
+
+      .bg-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 26%, rgba(201, 168, 76, 0.16), rgba(201, 168, 76, 0.02) 45%, transparent 70%);
+      }
+
+      .mandala {
+        position: absolute;
+        top: 330px;
+        left: 50%;
+        width: 760px;
+        height: 760px;
+        transform: translateX(-50%);
+        opacity: 0.55;
+      }
+
+      .content {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 86px 90px 56px;
+      }
+
+      .eyebrow {
+        font-family: "semplicitapro", sans-serif;
+        font-weight: 500;
+        font-size: 20px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #c9a84c;
+      }
+
+      .name-label {
+        margin-top: 26px;
+        font-family: "semplicitapro", sans-serif;
+        font-weight: 500;
+        font-size: 23px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #e8e8f0;
+        opacity: 0.85;
+      }
+
+      .headline {
+        margin-top: 16px;
+        font-family: "cormorant-garamond", serif;
+        font-weight: 500;
+        font-size: 60px;
+        line-height: 1.08;
+        color: #e8e8f0;
+      }
+
+      .headline em {
+        font-style: italic;
+        font-weight: 700;
+        color: #e6c766;
+      }
+
+      .divider {
+        margin: 28px auto 0;
+        width: 74px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+      }
+
+      .chips {
+        margin-top: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 34px;
+      }
+
+      .chip {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 150px;
+      }
+
+      .chip-num {
+        font-family: "cormorant-garamond", serif;
+        font-weight: 700;
+        font-size: 104px;
+        line-height: 1;
+        color: #e6c766;
+      }
+
+      .chip-label {
+        margin-top: 12px;
+        font-family: "semplicitapro", sans-serif;
+        font-weight: 500;
+        font-size: 19px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #e8e8f0;
+      }
+
+      .chip-planet {
+        margin-top: 4px;
+        font-family: "cormorant-garamond", serif;
+        font-style: italic;
+        font-size: 18px;
+        color: #9a9ab0;
+      }
+
+      .chip-sep {
+        width: 1px;
+        height: 92px;
+        background: linear-gradient(180deg, transparent, rgba(201, 168, 76, 0.4), transparent);
+      }
+
+      .teaser {
+        margin-top: 40px;
+        max-width: 660px;
+        font-family: "cormorant-garamond", serif;
+        font-style: italic;
+        font-size: 23px;
+        line-height: 1.55;
+        color: #c7c7d6;
+      }
+
+      .cta {
+        margin-top: 42px;
+        display: inline-flex;
+        padding: 18px 44px;
+        border-radius: 40px;
+        background: linear-gradient(180deg, #e6c766, #c9a84c);
+        color: #0d0d12;
+        font-family: "semplicitapro", sans-serif;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-size: 18px;
+      }
+
+      .footer {
+        margin-top: auto;
+        padding-top: 28px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        border-top: 1px solid rgba(201, 168, 76, 0.18);
+      }
+
+      .wordmark {
+        font-family: "cormorant-garamond", serif;
+        font-weight: 700;
+        font-size: 26px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #e6c766;
+      }
+
+      .foot-sub {
+        font-family: "semplicitapro", sans-serif;
+        font-weight: 500;
+        font-size: 15px;
+        letter-spacing: 1px;
+        color: #9a9ab0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="social-post" data-canvas-width="1080" data-canvas-height="1080">
+      <div class="bg-glow"></div>
+
+      <svg class="mandala" viewBox="0 0 760 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="380" cy="380" r="180" stroke="#c9a84c" stroke-width="1" opacity="0.5" />
+        <circle cx="380" cy="380" r="270" stroke="#c9a84c" stroke-width="1" stroke-dasharray="4 10" opacity="0.4" />
+        <circle cx="380" cy="380" r="360" stroke="#c9a84c" stroke-width="1" opacity="0.25" />
+      </svg>
+
+      <div class="content">
+        <div class="eyebrow">Indian &middot; Vedic Numerology</div>
+        <div class="name-label">Ravi Kumar</div>
+        <h1 class="headline">Here Is Your <em>Core</em></h1>
+        <div class="divider"></div>
+
+        <div class="chips">
+          <div class="chip">
+            <div class="chip-num">1</div>
+            <div class="chip-label">Mulank</div>
+            <div class="chip-planet">Sun</div>
+          </div>
+          <div class="chip-sep"></div>
+          <div class="chip">
+            <div class="chip-num">6</div>
+            <div class="chip-label">Bhagyank</div>
+            <div class="chip-planet">Venus</div>
+          </div>
+          <div class="chip-sep"></div>
+          <div class="chip">
+            <div class="chip-num">1</div>
+            <div class="chip-label">Name</div>
+            <div class="chip-planet">Sun</div>
+          </div>
+        </div>
+
+        <p class="teaser">Your full 10-page report reveals your Lo Shu grid, the year ahead, lucky elements &amp; Vedic remedies.</p>
+
+        <div class="cta">Get Your Free Preview &rarr;</div>
+
+        <div class="footer">
+          <div class="wordmark">LifeScript</div>
+          <div class="foot-sub">lifescript.co.in &middot; &#8377;99 &middot; delivered in 24 hrs</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
