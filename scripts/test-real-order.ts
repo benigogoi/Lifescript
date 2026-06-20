@@ -65,6 +65,17 @@ async function renderPdf(html: string): Promise<Buffer> {
     await page.setContent(html, { waitUntil: "load" });
     await page.evaluateHandle("document.fonts.ready");
     await page.waitForNetworkIdle({ idleTime: 400 }).catch(() => {});
+    await page.evaluate(() => {
+      document.querySelectorAll<HTMLElement>(".body-copy").forEach((el) => {
+        let fontSize = parseFloat(getComputedStyle(el).fontSize);
+        let guard = 0;
+        while (el.scrollHeight > el.clientHeight && fontSize > 13 && guard < 12) {
+          fontSize -= 0.5;
+          el.style.fontSize = fontSize + "px";
+          guard++;
+        }
+      });
+    });
     const pdf = await page.pdf({ width: "794px", height: "1123px", printBackground: true });
     return Buffer.from(pdf);
   } finally {

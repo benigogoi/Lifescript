@@ -462,7 +462,8 @@ const CSS = `
   .keynum .label { font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
   .keynum .planet { font-size:11px; letter-spacing:1px; color:var(--gold); }
   .cover-foot { margin-top:auto; font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
-  .content-inner { position:relative; z-index:2; height:100%; padding:92px 78px 80px; }
+  .content-inner { position:relative; z-index:2; height:100%; padding:92px 78px 80px; display:flex; flex-direction:column; }
+  .content-inner > * { flex:0 0 auto; }
   .section-kicker { font-size:12px; letter-spacing:5px; color:var(--red); text-transform:uppercase; }
   .section-title { font-family:'Cormorant Garamond', serif; font-weight:600; font-size:46px; color:var(--white); margin-top:6px; line-height:1; }
   .hero-row { display:flex; align-items:center; gap:34px; margin:30px 0 12px; }
@@ -471,7 +472,7 @@ const CSS = `
   .hero-meta .planet-name { font-family:'Cormorant Garamond', serif; font-size:38px; color:var(--gold); margin:4px 0 10px; }
   .hero-meta .essence { font-size:16.5px; color:var(--white); opacity:0.85; max-width:320px; line-height:1.4; }
   .gold-rule { height:1px; background:linear-gradient(90deg, var(--gold), transparent); margin:18px 0; }
-  .body-copy { font-size:17.5px; line-height:1.55; color:#D5D5E2; }
+  .body-copy { font-size:17.5px; line-height:1.55; color:#D5D5E2; flex:1 1 auto; min-height:0; overflow:hidden; }
   .body-copy p { margin-bottom:10px; }
   .body-copy .lead::first-letter { font-family:'Cormorant Garamond', serif; color:var(--gold-bright); font-size:54px; float:left; line-height:0.8; margin:6px 10px 0 0; }
   .panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }

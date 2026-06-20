@@ -58,12 +58,31 @@ async function renderPdf(html: string): Promise<Buffer> {
     // Ensure the Google Fonts (loaded via <link>) are fully ready before snapshot.
     await page.evaluateHandle("document.fonts.ready");
     await page.waitForNetworkIdle({ idleTime: 400 }).catch(() => {});
+    await page.evaluate(fitBodyCopySource);
     const pdf = await page.pdf({ width: "794px", height: "1123px", printBackground: true });
     return Buffer.from(pdf);
   } finally {
     await browser.close();
   }
 }
+
+/**
+ * Some Claude-written combination paragraphs run longer than the static
+ * baseline, which can overflow the fixed-height page and clip text (or, pre-
+ * flexbox-fix, push panels into the footer). Shrink only the offending
+ * page's body copy until it fits, rather than truncating content.
+ */
+const fitBodyCopySource = `
+  document.querySelectorAll('.body-copy').forEach((el) => {
+    let fontSize = parseFloat(getComputedStyle(el).fontSize);
+    let guard = 0;
+    while (el.scrollHeight > el.clientHeight && fontSize > 13 && guard < 12) {
+      fontSize -= 0.5;
+      el.style.fontSize = fontSize + 'px';
+      guard++;
+    }
+  });
+`;
 
 function reportOptionsFor(order: Order): ReportOptions {
   const year1 = new Date().getFullYear();
