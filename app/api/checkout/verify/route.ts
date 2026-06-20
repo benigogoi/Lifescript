@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { getOrderByRazorpayId, updateOrder } from "@/lib/orders";
 import { verifyCheckoutSignature } from "@/lib/razorpay";
@@ -6,6 +6,9 @@ import { sendOrderConfirmation } from "@/lib/email";
 import { processPaidOrder } from "@/lib/generate";
 
 export const runtime = "nodejs";
+// processPaidOrder (Claude call + Puppeteer PDF render) runs in the after()
+// callback below, within this same invocation's budget.
+export const maxDuration = 60;
 
 const verifySchema = z.object({
   razorpay_order_id: z.string().min(1),
@@ -68,7 +71,7 @@ export async function POST(req: Request) {
     // /api/cron/deliver sends it after the randomized delay. The webhook route
     // is the authoritative backstop if the customer closes the tab before this
     // call fires.
-    void processPaidOrder({ ...order, status: "paid", razorpay_payment_id });
+    after(() => processPaidOrder({ ...order, status: "paid", razorpay_payment_id }));
   }
 
   return NextResponse.json({ ok: true, orderId: order.id });

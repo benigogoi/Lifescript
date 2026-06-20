@@ -1,10 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import crypto from "node:crypto";
 import { getOrderByRazorpayId, updateOrder } from "@/lib/orders";
 import { sendOrderConfirmation } from "@/lib/email";
 import { processPaidOrder } from "@/lib/generate";
 
 export const runtime = "nodejs";
+// processPaidOrder (Claude call + Puppeteer PDF render) runs in the after()
+// callback below, within this same invocation's budget.
+export const maxDuration = 60;
 
 /**
  * Razorpay webhook — authoritative backstop for `payment.captured`. Covers
@@ -70,7 +73,7 @@ export async function POST(req: Request) {
       console.error("confirmation email failed", e);
     }
 
-    void processPaidOrder({ ...order, status: "paid", razorpay_payment_id: razorpayPaymentId });
+    after(() => processPaidOrder({ ...order, status: "paid", razorpay_payment_id: razorpayPaymentId }));
   }
 
   return NextResponse.json({ ok: true });
