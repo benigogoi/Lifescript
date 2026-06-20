@@ -435,7 +435,7 @@ const CSS = `
   :root { --bg:#0D0D12; --bg-soft:#14141C; --gold:#C9A84C; --gold-bright:#E6C766; --white:#E8E8F0; --muted:#9A9AB0; --red:#E05A4E; }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { background:#05050a; }
-  .page { position:relative; width:794px; height:1123px; background:radial-gradient(circle at 50% 18%, rgba(201,168,76,0.10), transparent 45%), radial-gradient(circle at 80% 85%, rgba(224,90,78,0.06), transparent 40%), var(--bg); color:var(--white); overflow:hidden; font-family:'Jost', sans-serif; font-feature-settings:'lnum' 1, 'tnum' 1; margin:0 auto 40px; }
+  .page { position:relative; width:794px; height:1123px; background:var(--bg); color:var(--white); overflow:hidden; font-family:'Jost', sans-serif; font-feature-settings:'lnum' 1, 'tnum' 1; margin:0 auto 40px; }
   /* Baked starfield: one image per page instead of ~180 gradient patterns
      (kept the PDF slow to render). Regenerate via scripts/gen-starfield.ts. */
   .stars { position:absolute; inset:0; pointer-events:none; background-image:url(${STARFIELD_DATA_URI}); background-size:100% 100%; background-repeat:no-repeat; }
@@ -458,7 +458,7 @@ const CSS = `
   .divider .dot { width:6px; height:6px; transform:rotate(45deg); background:var(--gold); }
   .keynums { display:flex; gap:46px; margin-top:4px; }
   .keynum { display:flex; flex-direction:column; align-items:center; gap:12px; }
-  .circle { width:92px; height:92px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond', serif; font-feature-settings:'lnum' 1, 'tnum' 1; font-size:44px; font-weight:600; color:var(--gold-bright); background:radial-gradient(circle at 50% 40%, rgba(201,168,76,0.22), rgba(201,168,76,0.02) 70%); border:1px solid rgba(201,168,76,0.5); box-shadow:0 0 14px rgba(201,168,76,0.25), inset 0 0 11px rgba(201,168,76,0.12); }
+  .circle { width:92px; height:92px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond', serif; font-feature-settings:'lnum' 1, 'tnum' 1; font-size:44px; font-weight:600; color:var(--gold-bright); background:rgba(201,168,76,0.10); border:1px solid rgba(201,168,76,0.55); }
   .keynum .label { font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
   .keynum .planet { font-size:11px; letter-spacing:1px; color:var(--gold); }
   .cover-foot { margin-top:auto; font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
@@ -466,7 +466,7 @@ const CSS = `
   .section-kicker { font-size:12px; letter-spacing:5px; color:var(--red); text-transform:uppercase; }
   .section-title { font-family:'Cormorant Garamond', serif; font-weight:600; font-size:46px; color:var(--white); margin-top:6px; line-height:1; }
   .hero-row { display:flex; align-items:center; gap:34px; margin:30px 0 12px; }
-  .hero-circle { width:150px; height:150px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond', serif; font-feature-settings:'lnum' 1, 'tnum' 1; font-size:84px; font-weight:600; color:var(--gold-bright); background:radial-gradient(circle at 50% 38%, rgba(201,168,76,0.30), rgba(201,168,76,0.02) 70%); border:1.5px solid rgba(201,168,76,0.55); box-shadow:0 0 24px rgba(201,168,76,0.30), inset 0 0 18px rgba(201,168,76,0.15); }
+  .hero-circle { width:150px; height:150px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond', serif; font-feature-settings:'lnum' 1, 'tnum' 1; font-size:84px; font-weight:600; color:var(--gold-bright); background:rgba(201,168,76,0.13); border:1.5px solid rgba(201,168,76,0.6); }
   .hero-meta .rule-by { font-size:13px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
   .hero-meta .planet-name { font-family:'Cormorant Garamond', serif; font-size:38px; color:var(--gold); margin:4px 0 10px; }
   .hero-meta .essence { font-size:16.5px; color:var(--white); opacity:0.85; max-width:320px; line-height:1.4; }
