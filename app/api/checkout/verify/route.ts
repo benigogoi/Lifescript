@@ -62,12 +62,12 @@ export async function POST(req: Request) {
       console.error("confirmation email failed", e);
     }
 
-    // Kick off report generation + delivery in the background — fire-and-forget
-    // so the customer's confirmation returns instantly. On the long-running dev
-    // server the work continues after this response. Currently STUB content
-    // (static knowledge base, no Claude); flip to Claude as the very last step.
-    // TODO(production): move to a decoupled worker + randomized 6–18h delay +
-    // webhook backstop instead of running inline on payment.
+    // Kick off report generation in the background — fire-and-forget so the
+    // customer's confirmation returns instantly. processPaidOrder generates +
+    // stores the PDF then schedules (doesn't send) delivery; the cron at
+    // /api/cron/deliver sends it after the randomized delay. The webhook route
+    // is the authoritative backstop if the customer closes the tab before this
+    // call fires.
     void processPaidOrder({ ...order, status: "paid", razorpay_payment_id });
   }
 

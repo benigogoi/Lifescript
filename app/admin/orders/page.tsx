@@ -1,19 +1,20 @@
-const SAMPLE_ORDERS = [
-  { name: "Ravi Kumar", email: "ravi@example.com", status: "paid", date: "—" },
-  { name: "Priya Sharma", email: "priya@example.com", status: "pending", date: "—" },
-];
+import { listOrders } from "@/lib/orders";
+import { holdOrder, releaseOrder, sendNowAction } from "../actions";
 
-export default function AdminOrdersPage() {
+export const dynamic = "force-dynamic";
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+}
+
+export default async function AdminOrdersPage() {
+  const orders = await listOrders();
+
   return (
     <>
       <div className="admin-topbar">
         <h1>Orders</h1>
-        <span className="admin-pill">Not connected</span>
-      </div>
-
-      <div className="admin-notice">
-        Sample layout only — order data, resend, and refund actions will work once the database
-        and payment gateway are connected.
+        <span className="admin-pill">{orders.length} total</span>
       </div>
 
       <div className="admin-panel">
@@ -23,26 +24,53 @@ export default function AdminOrdersPage() {
               <th>Name</th>
               <th>Email</th>
               <th>Status</th>
-              <th>Date</th>
+              <th>Created</th>
+              <th>Scheduled for</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {SAMPLE_ORDERS.map((o) => (
-              <tr key={o.email}>
-                <td>{o.name}</td>
+            {orders.map((o) => (
+              <tr key={o.id}>
+                <td>{o.full_name}</td>
                 <td>{o.email}</td>
                 <td>
                   <span className={`admin-status ${o.status}`}>{o.status}</span>
+                  {o.status === "failed" && o.error ? (
+                    <div style={{ fontSize: 11, color: "#c96", marginTop: 4 }}>{o.error}</div>
+                  ) : null}
                 </td>
-                <td>{o.date}</td>
+                <td>{formatDate(o.created_at)}</td>
+                <td>{o.scheduled_at ? formatDate(o.scheduled_at) : "—"}</td>
                 <td>
-                  <button className="admin-action" disabled>View</button>
-                  <button className="admin-action" disabled>Resend</button>
-                  <button className="admin-action" disabled>Refund</button>
+                  {o.status === "scheduled" && (
+                    <>
+                      <form action={sendNowAction.bind(null, o.id)} style={{ display: "inline" }}>
+                        <button className="admin-action" type="submit">Send now</button>
+                      </form>
+                      <form action={holdOrder.bind(null, o.id)} style={{ display: "inline" }}>
+                        <button className="admin-action" type="submit">Hold</button>
+                      </form>
+                    </>
+                  )}
+                  {o.status === "held" && (
+                    <form action={releaseOrder.bind(null, o.id)} style={{ display: "inline" }}>
+                      <button className="admin-action" type="submit">Release &amp; send</button>
+                    </form>
+                  )}
+                  {o.status === "sent" && o.sent_at && (
+                    <span style={{ color: "var(--muted)", fontSize: 12 }}>Sent {formatDate(o.sent_at)}</span>
+                  )}
                 </td>
               </tr>
             ))}
+            {orders.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ textAlign: "center", color: "var(--muted)" }}>
+                  No orders yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

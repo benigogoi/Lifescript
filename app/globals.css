@@ -1082,9 +1082,25 @@ section.block {
   color: #6fcf97;
   background: rgba(111, 207, 151, 0.1);
 }
-.admin-status.pending {
+.admin-status.pending,
+.admin-status.created,
+.admin-status.generating,
+.admin-status.scheduled {
   color: var(--gold-bright);
   background: rgba(201, 168, 76, 0.1);
+}
+.admin-status.sent,
+.admin-status.ready {
+  color: #6fcf97;
+  background: rgba(111, 207, 151, 0.1);
+}
+.admin-status.held {
+  color: #9a9ab0;
+  background: rgba(154, 154, 176, 0.1);
+}
+.admin-status.failed {
+  color: #e07a7a;
+  background: rgba(224, 122, 122, 0.1);
 }
 .admin-action {
   font-family: var(--font-label);

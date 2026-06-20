@@ -10,3 +10,5 @@ report/out/
 /out/
 next-env.d.ts
 *.tsbuildinfo
+
+.vercel

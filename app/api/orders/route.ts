@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     name: { number: r.nameNumber.number, planet: r.nameNumber.planet },
   };
 
-  // TODO(step 3–4): persist the order in Supabase and create a Razorpay order
-  // here, returning the checkout parameters instead of just the preview.
+  // Order persistence + Razorpay order creation happens in /api/checkout once
+  // the customer chooses to proceed past this free preview.
   return NextResponse.json({ ok: true, preview });
 }
