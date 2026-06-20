@@ -480,7 +480,7 @@ const CSS = `
   .panel h4 { font-family:'Marcellus', serif; font-size:17px; letter-spacing:1px; color:var(--gold); margin-bottom:9px; }
   .panel ul { list-style:none; }
   .panel li { font-size:15px; line-height:1.35; color:#CFCFDE; padding-left:18px; position:relative; margin-bottom:6px; }
-  .panel li::before { content:"\\2726"; position:absolute; left:0; color:var(--gold); font-size:10px; top:2px; }
+  .panel li::before { content:""; position:absolute; left:2px; top:6px; width:6px; height:6px; background:var(--gold); transform:rotate(45deg); }
   .page-foot { position:absolute; left:78px; right:78px; bottom:40px; display:flex; justify-content:space-between; font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
   .loshu-wrap { display:flex; justify-content:center; margin:30px 0 8px; }
   .loshu { position:relative; width:348px; height:348px; }
