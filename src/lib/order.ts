@@ -47,5 +47,4 @@ export function toReportOptions(input: OrderInput): ReportOptions {
   };
 }
 
-// TEMP: ₹1 for live-payment testing before launch. Revert to 99 before going live.
-export const PRICE_INR = 1;
+export const PRICE_INR = 99;
