@@ -117,9 +117,6 @@ export async function processPaidOrder(order: Order): Promise<void> {
     }
 
     const pdf = await renderPdf(html);
-    // TODO(production): compress the PDF here (~1.65MB → ~500KB, Ghostscript-class)
-    // before storing/emailing. Decided to compress at deploy rather than degrade
-    // the design; deviceScaleFactor and CSS-background trims don't meaningfully help.
 
     // --- store the PDF in the private 'reports' bucket ---
     const filename = reportFileName(order.full_name);

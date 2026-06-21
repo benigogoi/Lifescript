@@ -392,15 +392,6 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     <div class="wordmark" style="font-size:18px">LifeScript</div>
     <div class="ty-namaste">Namaste, ${fnE}</div>
     <p class="ty-msg">${c.thankyou.message}</p>
-    <div class="divider" style="width:40%"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
-    <div class="upsell">
-      <div class="u-kicker">Your Story Goes Deeper</div>
-      <div class="u-title">The Complete Vedic Report</div>
-      <p class="u-desc">Your numerology revealed your numbers. Your birth chart reveals your stars. Unlock your Rashi, Nakshatra, Lagna, and current Dasha period — the full Vedic picture of your destiny.</p>
-      <div class="u-feats"><span>· Rashi &amp; Nakshatra ·</span><span>· Lagna ·</span><span>· Dasha Periods ·</span></div>
-      <a class="cta" href="https://lifescript.co.in/vedic">Unlock Your Vedic Chart</a>
-      <div class="cta-price">Just ₹199 · delivered to your inbox</div>
-    </div>
   </div>
 </section>`;
 
@@ -512,15 +503,7 @@ const CSS = `
   .remedy .r-no { font-family:'Cormorant Garamond', serif; font-feature-settings:'lnum' 1; font-size:26px; color:var(--gold); min-width:30px; }
   .remedy .r-title { font-family:'Marcellus', serif; font-size:17px; color:var(--white); letter-spacing:0.5px; }
   .remedy .r-desc { font-size:15px; color:#BFBFD0; line-height:1.45; margin-top:3px; }
-  .ty-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; align-items:center; text-align:center; padding:110px 80px 70px; }
+  .ty-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:110px 80px 70px; }
   .ty-namaste { font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--gold); }
   .ty-msg { font-size:18px; line-height:1.6; color:#D5D5E2; max-width:460px; margin-top:18px; }
-  .upsell { margin-top:auto; width:100%; background:rgba(201,168,76,0.07); border:1px solid rgba(201,168,76,0.35); border-radius:6px; padding:30px 34px; }
-  .upsell .u-kicker { font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--red); }
-  .upsell .u-title { font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--white); margin:8px 0 12px; }
-  .upsell .u-desc { font-size:15px; color:#C8C8D8; line-height:1.5; max-width:420px; margin:0 auto 20px; }
-  .u-feats { display:flex; justify-content:center; gap:26px; margin-bottom:22px; }
-  .u-feats span { font-size:12px; letter-spacing:1px; color:var(--gold); }
-  .cta { display:inline-block; font-family:'Marcellus', serif; letter-spacing:2px; font-size:14px; color:#0D0D12; background:linear-gradient(180deg, var(--gold-bright), var(--gold)); padding:13px 38px; border-radius:3px; text-transform:uppercase; }
-  .cta-price { font-size:12px; color:var(--gold); letter-spacing:1px; margin-top:14px; }
 `;
