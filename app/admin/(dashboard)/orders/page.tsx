@@ -3,6 +3,10 @@ import { holdOrder, releaseOrder, sendNowAction, retryOrderAction } from "../../
 import { SubmitButton } from "../../SubmitButton";
 
 export const dynamic = "force-dynamic";
+// "Send now"/"Retry" run the full PDF-download+email (or Claude+Puppeteer) pipeline
+// as a server action POSTed back to this route — give it the same budget as the
+// checkout routes instead of the platform's 10s default, which can kill it mid-send.
+export const maxDuration = 60;
 
 const STUCK_GENERATING_MS = 5 * 60 * 1000;
 // Approximate USD→INR rate for displaying AI cost; not a live exchange rate.

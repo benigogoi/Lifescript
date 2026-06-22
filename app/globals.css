@@ -981,8 +981,10 @@ section.block {
   height: 100vh;
   overflow-y: auto;
 }
-.admin-sidebar .wordmark {
-  font-size: 19px;
+.admin-logo-img {
+  height: 56px;
+  width: auto;
+  display: block;
 }
 .admin-nav {
   display: flex;
