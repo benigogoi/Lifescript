@@ -985,6 +985,10 @@ section.block {
   height: 56px;
   width: auto;
   display: block;
+  /* .admin-sidebar is a column flexbox; without this the image, as a flex
+     item with align-items:stretch, gets its width stretched to the
+     sidebar's full cross-axis width, squashing the square artwork. */
+  align-self: flex-start;
 }
 .admin-nav {
   display: flex;
