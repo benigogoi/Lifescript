@@ -97,12 +97,12 @@ body {
   align-items: center;
 }
 .logo-img {
-  height: 64px;
+  height: 96px;
   width: auto;
   display: block;
 }
 .footer-brand .logo-img {
-  height: 84px;
+  height: 100px;
   margin-bottom: 4px;
 }
 .site-nav {
