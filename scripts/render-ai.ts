@@ -58,7 +58,7 @@ async function main() {
   console.log("Generating content with Claude…");
   let content;
   try {
-    content = await generateReportContent(customer);
+    ({ content } = await generateReportContent(customer));
     console.log("✅ Claude content generated.");
   } catch (e) {
     console.error("⚠️  Content generation failed, using static fallback:", (e as Error).message);

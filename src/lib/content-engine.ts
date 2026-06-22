@@ -68,6 +68,12 @@ export interface GenerateOptions {
   client?: Anthropic;
 }
 
+export interface GeneratedContent {
+  content: ResolvedContent;
+  /** Claude API cost for this generation call, in USD. */
+  costUsd: number;
+}
+
 /**
  * Generate the personalised report content for a customer: the static
  * knowledge base for everything, plus a Claude-written combination insight
@@ -77,7 +83,7 @@ export interface GenerateOptions {
 export async function generateReportContent(
   opts: ReportOptions,
   gen: GenerateOptions = {},
-): Promise<ResolvedContent> {
+): Promise<GeneratedContent> {
   const client = gen.client ?? new Anthropic();
   const year1 = opts.year1 ?? (opts.preparedDate ?? new Date()).getFullYear();
   const year2 = opts.year2 ?? year1 + 1;
@@ -114,9 +120,12 @@ export async function generateReportContent(
   );
 
   return {
-    ...base,
-    mulank: { ...base.mulank, paras: [...base.mulank.paras, parsed.mulankCombo] },
-    bhagyank: { ...base.bhagyank, paras: [...base.bhagyank.paras, parsed.bhagyankCombo] },
-    name: { ...base.name, paras: [...base.name.paras, parsed.nameCombo] },
+    costUsd,
+    content: {
+      ...base,
+      mulank: { ...base.mulank, paras: [...base.mulank.paras, parsed.mulankCombo] },
+      bhagyank: { ...base.bhagyank, paras: [...base.bhagyank.paras, parsed.bhagyankCombo] },
+      name: { ...base.name, paras: [...base.name.paras, parsed.nameCombo] },
+    },
   };
 }

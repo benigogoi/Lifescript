@@ -5,6 +5,13 @@ import { SubmitButton } from "../../SubmitButton";
 export const dynamic = "force-dynamic";
 
 const STUCK_GENERATING_MS = 5 * 60 * 1000;
+// Approximate USD→INR rate for displaying AI cost; not a live exchange rate.
+const USD_TO_INR = 88;
+
+function formatAiCost(costUsd: number | null) {
+  if (costUsd == null) return "—";
+  return `₹${(costUsd * USD_TO_INR).toFixed(2)}`;
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-IN", {
@@ -32,6 +39,7 @@ export default async function AdminOrdersPage() {
               <th>Name</th>
               <th>Email</th>
               <th>Status</th>
+              <th>AI Cost</th>
               <th>Created</th>
               <th>Scheduled for</th>
               <th>Actions</th>
@@ -57,6 +65,7 @@ export default async function AdminOrdersPage() {
                       </div>
                     )}
                   </td>
+                  <td>{formatAiCost(o.claude_cost_usd)}</td>
                   <td>{formatDate(o.created_at)}</td>
                   <td>{o.scheduled_at ? formatDate(o.scheduled_at) : "—"}</td>
                   <td>
@@ -104,7 +113,7 @@ export default async function AdminOrdersPage() {
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ textAlign: "center", color: "var(--muted)" }}>
+                <td colSpan={7} style={{ textAlign: "center", color: "var(--muted)" }}>
                   No orders yet.
                 </td>
               </tr>

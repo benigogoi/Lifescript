@@ -36,6 +36,8 @@ export interface Order {
   scheduled_at: string | null;
   sent_at: string | null;
   error: string | null;
+  /** Claude API cost for this order's content generation, in USD. */
+  claude_cost_usd: number | null;
 }
 
 const TABLE = "orders";

@@ -108,9 +108,11 @@ export async function processPaidOrder(order: Order): Promise<void> {
 
     const opts = reportOptionsFor(order);
     let html: string;
+    let claudeCostUsd: number | null = null;
     try {
-      const content = await generateReportContent(opts);
+      const { content, costUsd } = await generateReportContent(opts);
       html = buildReportHtml(opts, content);
+      claudeCostUsd = costUsd;
     } catch (e) {
       console.error(`order ${order.id}: Claude content generation failed, falling back to static`, e);
       html = buildReportHtml(opts);
@@ -132,6 +134,7 @@ export async function processPaidOrder(order: Order): Promise<void> {
       status: "scheduled",
       pdf_path: pdfPath,
       scheduled_at: scheduledAt.toISOString(),
+      claude_cost_usd: claudeCostUsd,
       error: null,
     });
     console.log(`order ${order.id}: report ready, scheduled to send at ${scheduledAt.toISOString()}`);

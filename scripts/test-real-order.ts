@@ -119,7 +119,7 @@ async function main() {
   };
 
   console.log("Generating content with Claude (real API call)...");
-  const content = await generateReportContent(opts);
+  const { content } = await generateReportContent(opts);
   const html = buildReportHtml(opts, content);
 
   console.log("Rendering PDF...");
