@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
-  verification: { google: "wtX-JF30PbSA9wFyCkQeV208M-Cq2C6h5oY5rKxcFnY" },
+  verification: { google: "hBgjp_GVxUvU11YBIGPjf9-m4I-FFBDYKtcjt-PsAOQ" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
