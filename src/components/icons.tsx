@@ -1,5 +1,5 @@
 /**
- * LifeScript — line-art icon set for the report section cards.
+ * Mystic Digits — line-art icon set for the report section cards.
  * Single shared stroke style (24x24, currentColor, 1.4 stroke) so every icon
  * reads as one family. Kept as inline SVG (not <img>) so they inherit color
  * from CSS and need no external asset requests.

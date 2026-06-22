@@ -1,5 +1,5 @@
 /**
- * LifeScript — Numerology knowledge base.
+ * Mystic Digits — Numerology knowledge base.
  *
  * Deterministic reference data keyed by number 1–9. The narrative `core`
  * fields are concise placeholders the template weaves into prose; they are

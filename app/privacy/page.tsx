@@ -2,8 +2,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "Privacy Policy — LifeScript",
-  description: "How LifeScript collects, uses, and protects your personal information.",
+  title: "Privacy Policy — Mystic Digits",
+  description: "How Mystic Digits collects, uses, and protects your personal information.",
 };
 
 export default function PrivacyPage() {
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
 
         <div className="legal-page">
           <h2>1. Information we collect</h2>
-          <p>When you use LifeScript, we collect:</p>
+          <p>When you use Mystic Digits, we collect:</p>
           <ul>
             <li><strong>Your full name and date of birth</strong> — used to calculate your numerology report.</li>
             <li><strong>Your email address</strong> — used to deliver your report and send order updates.</li>
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
           <h2>3. Sharing your information</h2>
           <p>
             We do not sell or rent your personal information. We share data only with the service
-            providers necessary to operate LifeScript — such as our payment gateway, email
+            providers necessary to operate Mystic Digits — such as our payment gateway, email
             delivery provider, and cloud hosting/database provider — each bound to protect your
             data and use it only to provide their service to us.
           </p>
@@ -67,8 +67,8 @@ export default function PrivacyPage() {
           <h2>7. Contact us</h2>
           <p>
             For any privacy-related questions, email{" "}
-            <a href="mailto:support@lifescript.co.in" style={{ color: "var(--gold)" }}>
-              support@lifescript.co.in
+            <a href="mailto:support@mysticdigits.in" style={{ color: "var(--gold)" }}>
+              support@mysticdigits.in
             </a>
             .
           </p>

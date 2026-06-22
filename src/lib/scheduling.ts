@@ -1,5 +1,5 @@
 /**
- * LifeScript — randomized delivery scheduling.
+ * Mystic Digits — randomized delivery scheduling.
  *
  * Reports are never emailed the instant they're ready — that signals
  * "AI-made" and cheapens the product. Instead each report is queued for a

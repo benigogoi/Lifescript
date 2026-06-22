@@ -1,5 +1,5 @@
 /**
- * LifeScript — admin credential storage + verification.
+ * Mystic Digits — admin credential storage + verification.
  *
  * Server-only (Node). Credentials live in the `admin_credentials` singleton
  * row; until the owner sets a password via /admin/settings, login falls back

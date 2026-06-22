@@ -2,8 +2,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "FAQ — LifeScript",
-  description: "Answers to common questions about LifeScript numerology reports — pricing, delivery, accuracy, payments, and privacy.",
+  title: "FAQ — Mystic Digits",
+  description: "Answers to common questions about Mystic Digits numerology reports — pricing, delivery, accuracy, payments, and privacy.",
 };
 
 const FAQS = [

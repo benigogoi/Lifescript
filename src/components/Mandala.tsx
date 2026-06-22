@@ -1,5 +1,5 @@
 /**
- * LifeScript — decorative mandala/yantra motif, the same visual language as
+ * Mystic Digits — decorative mandala/yantra motif, the same visual language as
  * the report's thank-you page star pattern. Pure inline SVG: no external
  * image request, scales losslessly, and tints via currentColor + CSS.
  */

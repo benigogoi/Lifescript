@@ -2,8 +2,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "Refund Policy — LifeScript",
-  description: "LifeScript's refund and cancellation policy for numerology report orders.",
+  title: "Refund Policy — Mystic Digits",
+  description: "Mystic Digits's refund and cancellation policy for numerology report orders.",
 };
 
 export default function RefundPage() {
@@ -20,7 +20,7 @@ export default function RefundPage() {
         <div className="legal-page">
           <h2>1. Why we have a no-refund policy</h2>
           <p>
-            Each LifeScript report is generated specifically for you the moment you place your
+            Each Mystic Digits report is generated specifically for you the moment you place your
             order — calculated from the exact name and date of birth you provide and delivered as a
             digital file. Because the product is created and delivered instantly and individually,
             we're unable to offer refunds once a report has been generated and sent.
@@ -57,8 +57,8 @@ export default function RefundPage() {
           <h2>5. How to request a resolution</h2>
           <p>
             Email{" "}
-            <a href="mailto:support@lifescript.co.in" style={{ color: "var(--gold)" }}>
-              support@lifescript.co.in
+            <a href="mailto:support@mysticdigits.in" style={{ color: "var(--gold)" }}>
+              support@mysticdigits.in
             </a>{" "}
             with your order email and a description of the issue. We aim to respond within 24–48
             hours.

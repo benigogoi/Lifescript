@@ -1,5 +1,5 @@
 /**
- * LifeScript — report generation + delivery.
+ * Mystic Digits — report generation + delivery.
  *
  * Server-only. Takes a paid order through: generating → ready → scheduled → sent.
  *

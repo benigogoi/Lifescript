@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "LifeScript — Indian Vedic Numerology Reports",
-    short_name: "LifeScript",
+    name: "Mystic Digits — Indian Vedic Numerology Reports",
+    short_name: "Mystic Digits",
     description:
       "Personalised Indian Vedic numerology reports calculated from your name and date of birth.",
     start_url: "/",

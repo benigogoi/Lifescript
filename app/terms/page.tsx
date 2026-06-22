@@ -2,8 +2,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "Terms & Conditions — LifeScript",
-  description: "The terms and conditions governing your use of LifeScript and your numerology report order.",
+  title: "Terms & Conditions — Mystic Digits",
+  description: "The terms and conditions governing your use of Mystic Digits and your numerology report order.",
 };
 
 export default function TermsPage() {
@@ -20,13 +20,13 @@ export default function TermsPage() {
         <div className="legal-page">
           <h2>1. About these terms</h2>
           <p>
-            These terms govern your use of the LifeScript website and your purchase of a LifeScript
+            These terms govern your use of the Mystic Digits website and your purchase of a Mystic Digits
             numerology report. By placing an order, you agree to these terms.
           </p>
 
           <h2>2. The service</h2>
           <p>
-            LifeScript prepares a personalised numerology report based on the full name and date of
+            Mystic Digits prepares a personalised numerology report based on the full name and date of
             birth you provide. We offer a free preview of your core numbers, and a complete 10-page
             report for a one-time fee of ₹99. Reports are generated using classical Vedic and
             Chaldean numerology methods and are intended for entertainment, self-reflection, and
@@ -67,13 +67,13 @@ export default function TermsPage() {
 
           <h2>8. Intellectual property</h2>
           <p>
-            The LifeScript name, branding, website design, and report templates are our property.
+            The Mystic Digits name, branding, website design, and report templates are our property.
             Your individual report is yours to keep and use personally once delivered.
           </p>
 
           <h2>9. Limitation of liability</h2>
           <p>
-            LifeScript and its team are not liable for any decisions made or outcomes resulting from
+            Mystic Digits and its team are not liable for any decisions made or outcomes resulting from
             the use of your report. The service is provided "as is" without warranties of any kind.
           </p>
 
@@ -86,8 +86,8 @@ export default function TermsPage() {
           <h2>11. Contact us</h2>
           <p>
             For any questions about these terms, email{" "}
-            <a href="mailto:support@lifescript.co.in" style={{ color: "var(--gold)" }}>
-              support@lifescript.co.in
+            <a href="mailto:support@mysticdigits.in" style={{ color: "var(--gold)" }}>
+              support@mysticdigits.in
             </a>
             .
           </p>

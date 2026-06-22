@@ -103,7 +103,7 @@ export default function OrderForm() {
       order_id: data.razorpayOrderId,
       amount: data.amount,
       currency: data.currency,
-      name: "LifeScript",
+      name: "Mystic Digits",
       description: "Personalised 10-page Numerology Report",
       prefill: data.prefill,
       theme: { color: "#c9a84c" },

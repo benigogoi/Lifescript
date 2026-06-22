@@ -2,9 +2,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = {
-  title: "About Us — LifeScript",
+  title: "About Us — Mystic Digits",
   description:
-    "LifeScript prepares personalised Indian Vedic numerology reports from your name and date of birth — clear, warm, and rooted in tradition.",
+    "Mystic Digits prepares personalised Indian Vedic numerology reports from your name and date of birth — clear, warm, and rooted in tradition.",
 };
 
 export default function AboutPage() {
@@ -13,10 +13,10 @@ export default function AboutPage() {
       <SiteHeader />
       <main className="wrap">
         <div className="page-hero">
-          <div className="eyebrow">About LifeScript</div>
+          <div className="eyebrow">About Mystic Digits</div>
           <h1>Numbers, read with care.</h1>
           <p>
-            LifeScript exists to make Indian Vedic numerology accessible, accurate, and genuinely
+            Mystic Digits exists to make Indian Vedic numerology accessible, accurate, and genuinely
             personal — without the guesswork or generic horoscope filler.
           </p>
         </div>
@@ -24,7 +24,7 @@ export default function AboutPage() {
         <div className="legal-page">
           <h2>What we do</h2>
           <p>
-            Every LifeScript report is calculated from your own full name and date of birth using
+            Every Mystic Digits report is calculated from your own full name and date of birth using
             classical numerology methods — Mulank (birth number), Bhagyank (destiny number), the
             Chaldean name number, and the Lo Shu grid. We pair that calculation with a written
             reading covering your personality, the year ahead, lucky elements, and Vedic remedies
@@ -53,8 +53,8 @@ export default function AboutPage() {
           <h2>Questions?</h2>
           <p>
             Reach us anytime at{" "}
-            <a href="mailto:support@lifescript.co.in" style={{ color: "var(--gold)" }}>
-              support@lifescript.co.in
+            <a href="mailto:support@mysticdigits.in" style={{ color: "var(--gold)" }}>
+              support@mysticdigits.in
             </a>{" "}
             — or visit our <a href="/faq" style={{ color: "var(--gold)" }}>FAQ</a> page for quick
             answers.

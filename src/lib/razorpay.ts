@@ -1,5 +1,5 @@
 /**
- * LifeScript — Razorpay server client + signature verification.
+ * Mystic Digits — Razorpay server client + signature verification.
  *
  * Server-only. The key secret never reaches the browser; only the public
  * NEXT_PUBLIC_RAZORPAY_KEY_ID is used client-side to open Checkout.

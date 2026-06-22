@@ -1,5 +1,5 @@
 /**
- * LifeScript — orders data access.
+ * Mystic Digits — orders data access.
  *
  * Thin, typed wrapper over the `orders` table. Server-only (uses the admin
  * client). Keeps SQL/column names in one place so routes and jobs stay clean.

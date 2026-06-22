@@ -5,7 +5,7 @@ import { ShieldCheckIcon, ClockIcon } from "@/components/icons";
 import { BackGuard } from "./BackGuard";
 
 export const metadata = {
-  title: "Order Status — LifeScript",
+  title: "Order Status — Mystic Digits",
   robots: { index: false, follow: false },
 };
 
@@ -34,7 +34,7 @@ export default async function ThankYouPage({
               </p>
               <p className="status-note">
                 Need help? Email{" "}
-                <a href="mailto:support@lifescript.co.in">support@lifescript.co.in</a>.
+                <a href="mailto:support@mysticdigits.in">support@mysticdigits.in</a>.
               </p>
             </>
           ) : (

@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       amount: PRICE_INR * 100,
       currency: "INR",
       receipt: order.id,
-      notes: { lifescript_order_id: order.id },
+      notes: { mysticdigits_order_id: order.id },
     });
 
     // 3. Link them so the verify step (and later the webhook) can find the row.

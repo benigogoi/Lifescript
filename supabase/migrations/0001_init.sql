@@ -1,4 +1,4 @@
--- LifeScript — orders schema.
+-- Mystic Digits — orders schema.
 -- Run this in the Supabase project's SQL editor (or via `supabase db push`).
 -- The order lifecycle is: created → paid → generating → ready → scheduled → sent.
 -- 'held' and 'failed' are off-path states for admin review / errors.

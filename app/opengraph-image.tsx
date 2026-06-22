@@ -26,7 +26,7 @@ export default function OpengraphImage() {
             letterSpacing: 2,
           }}
         >
-          LifeScript
+          Mystic Digits
         </div>
         <div
           style={{

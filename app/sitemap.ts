@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://lifescript.co.in";
+const BASE_URL = "https://mysticdigits.in";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = ["", "/order", "/about", "/faq", "/contact", "/privacy", "/terms", "/refund"];

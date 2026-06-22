@@ -1,5 +1,5 @@
 /**
- * LifeScript — order intake schema.
+ * Mystic Digits — order intake schema.
  *
  * The single source of truth for what the order form collects and how it maps
  * to the report engine's `ReportOptions`. Shared by the client form and the

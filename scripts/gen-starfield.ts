@@ -51,7 +51,7 @@ async function main() {
   const file = path.join(ROOT, "src", "lib", "starfield.ts");
   await writeFile(
     file,
-    `/**\n * LifeScript — baked starfield.\n *\n * A single pre-rendered, opaque PNG of the report's star layer (background\n * color baked in — see scripts/gen-starfield.ts for why opaque beats\n * transparent here). Replaces ~180 CSS radial-gradient "stars" per page\n * (which rendered as PDF shading patterns and made the PDF slow to open in\n * viewers). Visually identical; one image, reused on every page. Regenerate\n * with scripts/gen-starfield.ts if the star layer design changes.\n */\nexport const STARFIELD_DATA_URI =\n  "${dataUri}";\n`,
+    `/**\n * Mystic Digits — baked starfield.\n *\n * A single pre-rendered, opaque PNG of the report's star layer (background\n * color baked in — see scripts/gen-starfield.ts for why opaque beats\n * transparent here). Replaces ~180 CSS radial-gradient "stars" per page\n * (which rendered as PDF shading patterns and made the PDF slow to open in\n * viewers). Visually identical; one image, reused on every page. Regenerate\n * with scripts/gen-starfield.ts if the star layer design changes.\n */\nexport const STARFIELD_DATA_URI =\n  "${dataUri}";\n`,
     "utf8",
   );
   console.log(`wrote ${file} — PNG ${(png.length / 1024).toFixed(0)} KB`);

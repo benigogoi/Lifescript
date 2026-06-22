@@ -1,5 +1,5 @@
 /**
- * LifeScript — Indian / Vedic Numerology Engine
+ * Mystic Digits — Indian / Vedic Numerology Engine
  *
  * Implements the calculation rules defined in the project brief.
  * All numbers reduce fully to a single digit 1–9 (no Western master numbers),

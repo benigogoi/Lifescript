@@ -3,8 +3,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { MailIcon, ClockIcon, ShieldCheckIcon } from "@/components/icons";
 
 export const metadata = {
-  title: "Contact Us — LifeScript",
-  description: "Get in touch with LifeScript for questions about your numerology report, an order, or anything else.",
+  title: "Contact Us — Mystic Digits",
+  description: "Get in touch with Mystic Digits for questions about your numerology report, an order, or anything else.",
 };
 
 export default function ContactPage() {
@@ -23,7 +23,7 @@ export default function ContactPage() {
             <MailIcon />
             <div>
               <h3>Email</h3>
-              <a href="mailto:support@lifescript.co.in">support@lifescript.co.in</a>
+              <a href="mailto:support@mysticdigits.in">support@mysticdigits.in</a>
             </div>
           </div>
           <div className="contact-card">

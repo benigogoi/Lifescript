@@ -1,5 +1,5 @@
 /**
- * LifeScript — dashboard aggregation helpers. Pure functions over an Order[]
+ * Mystic Digits — dashboard aggregation helpers. Pure functions over an Order[]
  * (already fetched), so the dashboard page stays a thin presentation layer.
  */
 import type { Order } from "./orders";

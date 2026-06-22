@@ -1,5 +1,5 @@
 /**
- * LifeScript — signed session cookie helpers.
+ * Mystic Digits — signed session cookie helpers.
  *
  * Uses Web Crypto (available in both the Node runtime and Next.js Edge
  * Middleware) so the same verify logic runs in middleware without pulling in

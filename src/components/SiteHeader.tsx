@@ -14,7 +14,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header-inner wrap">
         <Link href="/" className="wordmark">
-          Life<span>Script</span>
+          Mystic<span>Digits</span>
         </Link>
         <button
           type="button"

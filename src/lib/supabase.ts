@@ -1,5 +1,5 @@
 /**
- * LifeScript — Supabase server client.
+ * Mystic Digits — Supabase server client.
  *
  * Server-only. Uses the service-role key, which bypasses RLS, so this must
  * never be imported into client components. All order reads/writes go through

@@ -1,4 +1,4 @@
--- LifeScript — admin credentials + expense tracking.
+-- Mystic Digits — admin credentials + expense tracking.
 -- Run after 0001_init.sql.
 
 -- Singleton row (id always 1) holding the admin login. Seeded lazily by the

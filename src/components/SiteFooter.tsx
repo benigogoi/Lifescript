@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="wrap footer-grid">
         <div className="footer-brand">
           <div className="wordmark">
-            Life<span>Script</span>
+            Mystic<span>Digits</span>
           </div>
           <p>Indian Vedic numerology, calculated from your own name and date of birth.</p>
         </div>
@@ -27,11 +27,11 @@ export function SiteFooter() {
 
         <div className="footer-col">
           <div className="footer-h">Get in touch</div>
-          <a href="mailto:support@lifescript.co.in">support@lifescript.co.in</a>
+          <a href="mailto:support@mysticdigits.in">support@mysticdigits.in</a>
         </div>
       </div>
       <div className="wrap footer-bottom">
-        &copy; {new Date().getFullYear()} LifeScript. All rights reserved.
+        &copy; {new Date().getFullYear()} Mystic Digits. All rights reserved.
       </div>
     </footer>
   );

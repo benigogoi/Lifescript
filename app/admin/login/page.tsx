@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { login } from "./actions";
 
 export const metadata: Metadata = {
-  title: "Admin Login — LifeScript",
+  title: "Admin Login — Mystic Digits",
   robots: { index: false, follow: false },
 };
 

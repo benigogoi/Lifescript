@@ -1,10 +1,10 @@
 /**
- * LifeScript — outbound email via Resend.
+ * Mystic Digits — outbound email via Resend.
  *
  * Server-only. For now we send the instant order-confirmation. The report
  * delivery email (with the PDF) is added later alongside report generation.
  *
- * Sender: until the lifescript.co.in domain is verified in Resend, we use the
+ * Sender: until the mysticdigits.in domain is verified in Resend, we use the
  * shared `onboarding@resend.dev` sender, which can only deliver to your own
  * Resend account email. Set EMAIL_FROM (and verify the domain) for production.
  */
@@ -23,14 +23,14 @@ function client(): Resend {
   return cached;
 }
 
-const FROM = process.env.EMAIL_FROM ?? "LifeScript <onboarding@resend.dev>";
+const FROM = process.env.EMAIL_FROM ?? "Mystic Digits <onboarding@resend.dev>";
 
 export async function sendOrderConfirmation(opts: { to: string; firstName: string }) {
   const { to, firstName } = opts;
   return client().emails.send({
     from: FROM,
     to,
-    subject: "We've received your order — your LifeScript report is being prepared",
+    subject: "We've received your order — your Mystic Digits report is being prepared",
     html: confirmationHtml(firstName),
   });
 }
@@ -46,7 +46,7 @@ export async function sendReportReady(opts: {
   return client().emails.send({
     from: FROM,
     to,
-    subject: `${firstName}, your LifeScript numerology report is ready`,
+    subject: `${firstName}, your Mystic Digits numerology report is ready`,
     html: reportReadyHtml(firstName),
     attachments: [{ filename, content: pdf }],
   });
@@ -64,7 +64,7 @@ function confirmationHtml(firstName: string): string {
             <tr>
               <td style="padding:36px 40px 8px;text-align:center;">
                 <div style="font-family:'Marcellus',Georgia,serif;letter-spacing:6px;font-size:18px;color:#c9a84c;text-transform:uppercase;">
-                  LIFESCRIPT
+                  MYSTIC DIGITS
                 </div>
               </td>
             </tr>
@@ -119,7 +119,7 @@ function reportReadyHtml(firstName: string): string {
             <tr>
               <td style="padding:36px 40px 8px;text-align:center;">
                 <div style="font-family:'Marcellus',Georgia,serif;letter-spacing:6px;font-size:18px;color:#c9a84c;text-transform:uppercase;">
-                  LIFESCRIPT
+                  MYSTIC DIGITS
                 </div>
               </td>
             </tr>
@@ -133,7 +133,7 @@ function reportReadyHtml(firstName: string): string {
             <tr>
               <td style="padding:18px 44px 0;text-align:center;">
                 <p style="margin:0;font-size:16px;line-height:1.7;color:#9a9ab0;font-family:Helvetica,Arial,sans-serif;">
-                  Dear ${safeName}, your personalised 10-page LifeScript numerology report is
+                  Dear ${safeName}, your personalised 10-page Mystic Digits numerology report is
                   ready and <strong style="color:#e6c766;">attached to this email</strong> as a PDF.
                   Read it somewhere quiet — it was written for you and no one else.
                 </p>
@@ -149,7 +149,7 @@ function reportReadyHtml(firstName: string): string {
             <tr>
               <td style="padding:30px 44px 40px;text-align:center;">
                 <p style="margin:0;font-size:13px;line-height:1.7;color:#6f6f86;font-family:Helvetica,Arial,sans-serif;">
-                  With warmth, the LifeScript team. Reply to this email if you have any questions.
+                  With warmth, the Mystic Digits team. Reply to this email if you have any questions.
                 </p>
               </td>
             </tr>

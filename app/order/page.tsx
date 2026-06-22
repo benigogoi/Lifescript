@@ -3,8 +3,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import OrderForm from "./OrderForm";
 
 export const metadata = {
-  title: "Get Your Report — LifeScript",
-  description: "Enter your name and date of birth to get your free preview and order your full 10-page LifeScript numerology report.",
+  title: "Get Your Report — Mystic Digits",
+  description: "Enter your name and date of birth to get your free preview and order your full 10-page Mystic Digits numerology report.",
 };
 
 export default function OrderPage() {

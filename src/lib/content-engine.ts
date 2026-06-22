@@ -1,5 +1,5 @@
 /**
- * LifeScript — Claude content engine.
+ * Mystic Digits — Claude content engine.
  *
  * Hybrid generation: the static knowledge base (report-data.ts) supplies the
  * full narrative backbone for free — essences, lists, year predictions, the
@@ -35,7 +35,7 @@ const comboSchema = z.object({
   ),
 });
 
-const SYSTEM = `You are the master numerologist behind LifeScript, an Indian/Vedic numerology service. The report's core narrative is already written from a static knowledge base — your only job is to add the one thing a static page can't: how THIS person's specific combination of numbers interacts.
+const SYSTEM = `You are the master numerologist behind Mystic Digits, an Indian/Vedic numerology service. The report's core narrative is already written from a static knowledge base — your only job is to add the one thing a static page can't: how THIS person's specific combination of numbers interacts.
 
 VOICE & RULES (critical):
 - Warm, empowering, and rooted in Indian cultural context. Address the reader as "you".
@@ -96,7 +96,7 @@ export async function generateReportContent(
       {
         role: "user",
         content:
-          `Write the personalised combination insight for this LifeScript customer.\n\n` +
+          `Write the personalised combination insight for this Mystic Digits customer.\n\n` +
           `Computed numerology:\n${JSON.stringify(payload, null, 2)}`,
       },
     ],

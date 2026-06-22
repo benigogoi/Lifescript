@@ -1,5 +1,5 @@
 /**
- * LifeScript — baked starfield.
+ * Mystic Digits — baked starfield.
  *
  * A single pre-rendered, opaque PNG of the report's star layer (background
  * color baked in — see scripts/gen-starfield.ts for why opaque beats

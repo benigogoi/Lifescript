@@ -1,5 +1,5 @@
 /**
- * LifeScript — manual expense tracking for the admin dashboard's net-profit
+ * Mystic Digits — manual expense tracking for the admin dashboard's net-profit
  * figure. No external integration pulls these automatically; the owner logs
  * them by hand (Claude/Resend/Razorpay fees, hosting, ads, domain, etc.).
  */

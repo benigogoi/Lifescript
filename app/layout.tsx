@@ -21,8 +21,8 @@ const body = Jost({
   display: "swap",
 });
 
-const BASE_URL = "https://lifescript.co.in";
-const SITE_TITLE = "LifeScript — Your Personalised Indian Numerology Report";
+const BASE_URL = "https://mysticdigits.in";
+const SITE_TITLE = "Mystic Digits — Your Personalised Indian Numerology Report";
 const SITE_DESCRIPTION =
   "A beautiful 10-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.";
 
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     url: BASE_URL,
-    siteName: "LifeScript",
+    siteName: "Mystic Digits",
     locale: "en_IN",
     type: "website",
   },
@@ -50,10 +50,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "LifeScript",
+    name: "Mystic Digits",
     url: BASE_URL,
     description: SITE_DESCRIPTION,
-    email: "support@lifescript.co.in",
+    email: "support@mysticdigits.in",
   };
 
   return (

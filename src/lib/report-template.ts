@@ -1,5 +1,5 @@
 /**
- * LifeScript — report template.
+ * Mystic Digits — report template.
  *
  * Turns a customer's birth details into the full 10-page report HTML,
  * ready to render to PDF with headless Chrome. Pulls numbers from the
@@ -94,14 +94,14 @@ export function staticContent(r: NumerologyResult, year1: number, year2: number)
   };
 }
 
-/** The customer-facing download filename, e.g. "lifescript_report_ravi_kumar.pdf". */
+/** The customer-facing download filename, e.g. "mysticdigits_report_ravi_kumar.pdf". */
 export function reportFileName(fullName: string): string {
   const slug = fullName
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
-  return `lifescript_report_${slug}.pdf`;
+  return `mysticdigits_report_${slug}.pdf`;
 }
 
 const MONTHS = [
@@ -160,7 +160,7 @@ function bodyParas(ps: string[]): string {
 }
 
 function foot(name: string, page: string): string {
-  return `<div class="page-foot"><span>LifeScript · ${esc(name)}</span><span>${page}</span></div>`;
+  return `<div class="page-foot"><span>Mystic Digits · ${esc(name)}</span><span>${page}</span></div>`;
 }
 
 // --- the template ----------------------------------------------------------
@@ -200,7 +200,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   </g></svg>
   ${FRAME}${CORNERS}
   <div class="cover-inner">
-    <div class="wordmark">LifeScript</div>
+    <div class="wordmark">Mystic Digits</div>
     <div class="tagline">Your Story · Your Numbers · Your Life</div>
     <h1 class="cover-title">The Numerology<br/>of <span class="accent">${fnE}</span></h1>
     <div class="cover-name">${fullE}</div>
@@ -211,7 +211,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       <div class="keynum"><div class="circle">${bhagyank}</div><span class="label">Bhagyank</span><span class="planet">${r.bhagyank.planet}</span></div>
       <div class="keynum"><div class="circle">${nameNum}</div><span class="label">Name No.</span><span class="planet">${r.nameNumber.planet}</span></div>
     </div>
-    <div class="cover-foot">lifescript.co.in &nbsp;·&nbsp; Prepared ${fmtPrepared(now)}</div>
+    <div class="cover-foot">mysticdigits.in &nbsp;·&nbsp; Prepared ${fmtPrepared(now)}</div>
   </div>
 </section>`;
 
@@ -389,7 +389,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
 <section class="page" id="thankyou">
   ${STARS}${mandala(0.09, 12, [96, 78, 54, 30])}${FRAME}${CORNERS}
   <div class="ty-inner">
-    <div class="wordmark" style="font-size:18px">LifeScript</div>
+    <div class="wordmark" style="font-size:18px">Mystic Digits</div>
     <div class="ty-namaste">Namaste, ${fnE}</div>
     <p class="ty-msg">${c.thankyou.message}</p>
   </div>
@@ -399,7 +399,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>LifeScript Report — ${fullE}</title>
+<title>Mystic Digits Report — ${fullE}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
