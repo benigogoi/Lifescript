@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -13,8 +14,8 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-header-inner wrap">
-        <Link href="/" className="wordmark">
-          Mystic<span>Digits</span>
+        <Link href="/" className="brand-link">
+          <Image src="/logo.png" alt="Mystic Digits" width={140} height={140} className="logo-img" priority />
         </Link>
         <button
           type="button"

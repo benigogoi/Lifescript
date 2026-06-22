@@ -92,6 +92,19 @@ body {
 .wordmark span {
   color: var(--gold-bright);
 }
+.brand-link {
+  display: flex;
+  align-items: center;
+}
+.logo-img {
+  height: 64px;
+  width: auto;
+  display: block;
+}
+.footer-brand .logo-img {
+  height: 84px;
+  margin-bottom: 4px;
+}
 .site-nav {
   display: flex;
   align-items: center;
@@ -568,6 +581,10 @@ section.block {
   .wordmark {
     font-size: 18px;
     letter-spacing: 5px;
+  }
+
+  .logo-img {
+    height: 48px;
   }
 
   .site-nav {

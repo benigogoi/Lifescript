@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteFooter() {
@@ -5,9 +6,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="wrap footer-grid">
         <div className="footer-brand">
-          <div className="wordmark">
-            Mystic<span>Digits</span>
-          </div>
+          <Image src="/logo.png" alt="Mystic Digits" width={140} height={140} className="logo-img footer-logo" />
           <p>Indian Vedic numerology, calculated from your own name and date of birth.</p>
         </div>
 
