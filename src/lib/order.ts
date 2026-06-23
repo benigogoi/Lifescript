@@ -47,4 +47,4 @@ export function toReportOptions(input: OrderInput): ReportOptions {
   };
 }
 
-export const PRICE_INR = 1;
+export const PRICE_INR = 99;
