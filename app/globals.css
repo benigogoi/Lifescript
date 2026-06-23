@@ -981,8 +981,14 @@ section.block {
   height: 100vh;
   overflow-y: auto;
 }
-.admin-sidebar .wordmark {
-  font-size: 19px;
+.admin-logo-img {
+  height: 56px;
+  width: auto;
+  display: block;
+  /* .admin-sidebar is a column flexbox; without this the image, as a flex
+     item with align-items:stretch, gets its width stretched to the
+     sidebar's full cross-axis width, squashing the square artwork. */
+  align-self: flex-start;
 }
 .admin-nav {
   display: flex;
@@ -1031,6 +1037,40 @@ section.block {
   border: 1px solid rgba(224, 90, 78, 0.3);
   border-radius: 20px;
   padding: 6px 14px;
+}
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.admin-filter-tabs {
+  display: flex;
+  gap: 6px;
+}
+.admin-filter-tab {
+  font-family: var(--font-label);
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.admin-filter-tab:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+.admin-filter-tab.active {
+  color: var(--gold-bright);
+  border-color: rgba(201, 168, 76, 0.3);
+  background: rgba(201, 168, 76, 0.1);
+}
+.admin-table input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
 }
 .admin-stats {
   display: grid;

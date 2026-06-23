@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { login } from "./actions";
 
 export const metadata: Metadata = {
@@ -17,9 +18,14 @@ export default async function AdminLoginPage({
   return (
     <div className="admin-login-shell">
       <form className="admin-login-card" action={login}>
-        <div className="wordmark" style={{ marginBottom: 8 }}>
-          Life<span>Script</span>
-        </div>
+        <Image
+          src="/logo.png"
+          alt="Mystic Digits"
+          width={64}
+          height={64}
+          style={{ display: "block", margin: "0 auto 8px" }}
+          priority
+        />
         <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 24 }}>Admin sign in</p>
 
         <input type="hidden" name="next" value={next} />

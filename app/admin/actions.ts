@@ -33,6 +33,16 @@ export async function sendNowAction(id: string) {
   revalidatePath("/admin/orders");
 }
 
+/** Send every checked 'scheduled'/'held' order from the bulk-select toolbar. */
+export async function sendSelectedAction(formData: FormData) {
+  const ids = formData.getAll("orderIds").map(String);
+  for (const id of ids) {
+    const order = await getOrder(id);
+    if (order) await deliverScheduledOrder(order);
+  }
+  revalidatePath("/admin/orders");
+}
+
 /** Re-run generation for an order stuck in 'failed' (or 'generating'). */
 export async function retryOrderAction(id: string) {
   const order = await getOrder(id);

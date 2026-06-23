@@ -27,12 +27,16 @@ const FROM = process.env.EMAIL_FROM ?? "Mystic Digits <onboarding@resend.dev>";
 
 export async function sendOrderConfirmation(opts: { to: string; firstName: string }) {
   const { to, firstName } = opts;
-  return client().emails.send({
+  const { error } = await client().emails.send({
     from: FROM,
     to,
     subject: "We've received your order — your Mystic Digits report is being prepared",
     html: confirmationHtml(firstName),
   });
+  // The Resend SDK resolves with { error } on API-level failures (e.g. an
+  // unverified sender domain) instead of throwing — surface it so callers'
+  // error handling (order status, retries) actually engages.
+  if (error) throw new Error(`Resend: ${error.message}`);
 }
 
 /** Deliver the finished report PDF as an attachment. */
@@ -43,13 +47,14 @@ export async function sendReportReady(opts: {
   filename: string;
 }) {
   const { to, firstName, pdf, filename } = opts;
-  return client().emails.send({
+  const { error } = await client().emails.send({
     from: FROM,
     to,
     subject: `${firstName}, your Mystic Digits numerology report is ready`,
     html: reportReadyHtml(firstName),
     attachments: [{ filename, content: pdf }],
   });
+  if (error) throw new Error(`Resend: ${error.message}`);
 }
 
 function confirmationHtml(firstName: string): string {
