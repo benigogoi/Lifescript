@@ -1,7 +1,9 @@
 import Link from "next/link";
+import Script from "next/script";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheckIcon, ClockIcon } from "@/components/icons";
+import { PRICE_INR } from "@/lib/order";
 import { BackGuard } from "./BackGuard";
 
 export const metadata = {
@@ -20,6 +22,11 @@ export default async function ThankYouPage({
   return (
     <>
       <BackGuard />
+      {!failed && process.env.NEXT_PUBLIC_META_PIXEL_ID && (
+        <Script id="meta-pixel-purchase" strategy="afterInteractive">
+          {`if (window.fbq) { fbq('track', 'Purchase', { value: ${PRICE_INR}, currency: 'INR' }); }`}
+        </Script>
+      )}
       <SiteHeader />
 
       <main className="wrap">
