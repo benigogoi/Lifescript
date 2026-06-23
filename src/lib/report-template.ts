@@ -7,7 +7,7 @@
  */
 import {
   calculateNumerology,
-  personalYearNumber,
+  reduceToSingleDigit,
   PLANET_BY_NUMBER,
   LO_SHU_LAYOUT,
   type BirthInput,
@@ -52,6 +52,10 @@ export interface ResolvedContent {
   loshu: { strongPlanes: string[]; missingItems: string[]; missingTitle: string };
   year1: YearContent;
   year2: YearContent;
+  /** Combo paragraph tying the (Mulank-determined) lucky elements to this person's full chart. Empty in the static fallback. */
+  lucky: { combo: string };
+  /** Combo paragraph tying the (Mulank-determined) remedies to this person's full chart. Empty in the static fallback. */
+  remedy: { combo: string };
   thankyou: { message: string };
 }
 
@@ -60,8 +64,8 @@ export function staticContent(r: NumerologyResult, year1: number, year2: number)
   const mc = NUMBER_CORE[r.mulank.number];
   const bc = NUMBER_CORE[r.bhagyank.number];
   const nc = NUMBER_CORE[r.nameNumber.number];
-  const y1 = YEAR_CORE[personalYearNumber(r.input.day, r.input.month, year1)];
-  const y2 = YEAR_CORE[personalYearNumber(r.input.day, r.input.month, year2)];
+  const y1 = YEAR_CORE[reduceToSingleDigit(year1)];
+  const y2 = YEAR_CORE[reduceToSingleDigit(year2)];
 
   const strongPlanes = r.loShu.repeated.length
     ? r.loShu.repeated.map((d) => `Number ${d} (${PLANET_BY_NUMBER[d]}) appears ${r.loShu.counts[d]} times — strong ${PLANET_BY_NUMBER[d]} energy`)
@@ -88,6 +92,8 @@ export function staticContent(r: NumerologyResult, year1: number, year2: number)
     loshu: { strongPlanes: strongPlanes.slice(0, 4), missingItems, missingTitle },
     year1: mapYear(y1),
     year2: mapYear(y2),
+    lucky: { combo: "" },
+    remedy: { combo: "" },
     thankyou: {
       message: `Thank you for letting us read your numbers. May your path be clear, your ${r.mulank.planet} shine bright, and the year ahead carry you toward everything you are meant to become.`,
     },
@@ -178,8 +184,8 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   const mulank = r.mulank.number;
   const bhagyank = r.bhagyank.number;
   const nameNum = r.nameNumber.number;
-  const uy1 = personalYearNumber(r.input.day, r.input.month, year1);
-  const uy2 = personalYearNumber(r.input.day, r.input.month, year2);
+  const uy1 = reduceToSingleDigit(year1);
+  const uy2 = reduceToSingleDigit(year2);
 
   const mc = NUMBER_CORE[mulank];
   const bc = NUMBER_CORE[bhagyank];
@@ -316,7 +322,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     <div class="hero-row">
       <div class="hero-circle">${uy}</div>
       <div class="hero-meta">
-        <div class="rule-by">Personal Year</div>
+        <div class="rule-by">Universal Year</div>
         <div class="planet-name">Number ${uy} · ${PLANET_BY_NUMBER[uy]}</div>
         <div class="essence">${year} ${yc.essence}</div>
       </div>
@@ -359,6 +365,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       ${luckyItem(luckyIcon.metal, "Lucky Metal", lucky.metal)}
       ${luckyItem(luckyIcon.compass, "Favourable Direction", lucky.direction)}
     </div>
+    ${c.lucky.combo ? `<div class="body-copy"><p>${c.lucky.combo}</p></div>` : ""}
   </div>
   ${foot(r.input.fullName, "08")}
 </section>`;
@@ -380,6 +387,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       <div class="m-sub">${rem.mantraSub}</div>
     </div>
     <div class="remedies">${remedyRows}</div>
+    ${c.remedy.combo ? `<div class="body-copy"><p>${c.remedy.combo}</p></div>` : ""}
   </div>
   ${foot(r.input.fullName, "09")}
 </section>`;

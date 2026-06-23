@@ -2,15 +2,18 @@
  * Mystic Digits — Claude content engine.
  *
  * Hybrid generation: the static knowledge base (report-data.ts) supplies the
- * full narrative backbone for free — essences, lists, year predictions, the
- * thank-you message. The single Claude call only writes the one thing a
- * knowledge base can't: a short paragraph per core number (Mulank, Bhagyank,
- * Name) explaining how THIS person's specific combination interacts, plus
- * one paragraph per Year Ahead page tying that year's personal-year number
- * to this person's own chart. That's ~5 short paragraphs (a few hundred
- * output tokens) instead of regenerating the entire report (~10,600
- * tokens), keeping per-report API cost low while making the most
- * personally-resonant parts of the report unique to each customer.
+ * full narrative backbone for free — essences, lists, year predictions, lucky
+ * elements, remedies, the thank-you message. The single Claude call only
+ * writes the one thing a knowledge base can't: 7 short paragraphs tying each
+ * static section to THIS person's specific combination — Mulank, Bhagyank,
+ * Name Number, the two Year Ahead pages (the displayed digit is the Universal
+ * Year, same for everyone; the AI paragraph reads it against the person's own
+ * chart), and the Lucky Elements/Remedies pages (which stay factually fixed by
+ * Mulank planet; only the "why this matters for you" framing is personalised).
+ * That's a few hundred output
+ * tokens instead of regenerating the entire report (~10,600 tokens), keeping
+ * per-report API cost low while making the most personally-resonant parts of
+ * the report unique to each customer.
  *
  * Model: claude-sonnet-4-6 (per the project brief — good cost/quality balance
  * for the ₹99 product). Requires ANTHROPIC_API_KEY in the environment.
@@ -18,8 +21,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
-import { calculateNumerology, personalYearNumber, PLANET_BY_NUMBER } from "./numerology";
+import { calculateNumerology, reduceToSingleDigit, PLANET_BY_NUMBER } from "./numerology";
 import { staticContent } from "./report-template";
+import { LUCKY, REMEDIES } from "./report-data";
 import type { ReportOptions, ResolvedContent } from "./report-template";
 
 const MODEL = "claude-sonnet-4-6";
@@ -35,10 +39,16 @@ const comboSchema = z.object({
     "2-4 sentences, a complete standalone paragraph on how this person's Name Number specifically combines with their Mulank, Bhagyank and Lo Shu pattern — how others perceive them given that combination.",
   ),
   year1Combo: z.string().describe(
-    "2-3 sentences, a standalone paragraph on how this person's personalYear1 number (given in the payload — NOT their Mulank or Bhagyank) specifically lands on THIS person's natal chart this year: does it support, accelerate, or create friction with their Mulank/Bhagyank/Name combination? Be concrete about the interaction, not a generic restatement of what the personal year number means.",
+    "Keep it TIGHT: exactly 2 sentences, no more than ~50 words total — this page is space-constrained and longer text gets clipped. universalYear1 in the payload is the year's energy shared by EVERYONE (e.g. 2026 reduces to 1) — it is NOT personal to this customer. Read that universal year against THIS person's own chart: how does universalYear1's number sit with their Mulank/Bhagyank/Name? If it equals one of their core numbers (e.g. their Mulank is also 1 in a Universal Year 1), say so explicitly and explain the resonance/amplification; if it differs, describe the interaction (support, stretch, or contrast). Concrete, never a generic restatement of what the year number means.",
   ),
   year2Combo: z.string().describe(
-    "Same idea as year1Combo, but for personalYear2 — and briefly note how the energy shifts or builds from personalYear1 to personalYear2 for this specific person.",
+    "Same idea and same TIGHT limit as year1Combo (exactly 2 sentences, ~50 words max), but for universalYear2 — and briefly note how the energy shifts or builds from universalYear1 to universalYear2 for this specific person.",
+  ),
+  luckyCombo: z.string().describe(
+    "2-3 sentences. The lucky days/colours/numbers/gemstone/metal/direction in the payload are fixed facts determined by this person's Mulank planet — do NOT invent different ones. Your job is to explain, concretely, how/when THIS specific person (given their Bhagyank/Name Number/Lo Shu) gets the most out of one or two of these specific lucky elements — not a generic 'these bring you luck' restatement.",
+  ),
+  remedyCombo: z.string().describe(
+    "EXACTLY ONE sentence, no more than ~28 words — this page already has 5 remedy items plus a mantra box and very little spare room, so it must be short enough to never wrap past 2 lines. The mantra and remedy practices in the payload are fixed, determined by this person's Mulank planet — do NOT invent different ones. Name the ONE practice that matters most for THIS person given their fuller chart (e.g. a tension or growth edge from their Bhagyank/Name/Lo Shu that it directly addresses) — not a generic restatement.",
   ),
 });
 
@@ -49,18 +59,22 @@ VOICE & RULES (critical):
 - Plain, beautiful English (no Hindi yet). No jargon dumps.
 - NEVER harsh, fatalistic, or cursing. Never predict misfortune. Frame every tension as growth.
 - Use the Indian planetary rulers: 1=Sun(Surya), 2=Moon(Chandra), 3=Jupiter(Brihaspati), 4=Rahu, 5=Mercury(Budh), 6=Venus(Shukra), 7=Ketu, 8=Saturn(Shani), 9=Mars(Mangal).
-- Write all five paragraphs as if a different person drafted each one. Each must open differently — do not lean on a stock transition like "What makes this particularly distinctive/striking is..." or "To the outside world..." more than once across the whole set. Vary sentence length and which number you name first.
+- Write all seven paragraphs as if a different person drafted each one. Each must open differently — do not lean on a stock transition like "What makes this particularly distinctive/striking is..." or "To the outside world..." more than once across the whole set. Vary sentence length and which number you name first.
 
 TASK:
 Write one paragraph each for Mulank, Bhagyank, and Name Number. Each paragraph must be about the COMBINATION, not the number alone — name what's distinctive about how these specific numbers sit together for this person (agreement, tension, or balance), and resolve any tension gracefully rather than contradicting yourself. Vary the angle per paragraph as described in the schema so the three don't just repeat each other. If Lo Shu has no missing or repeated digits, build the combination from the three core numbers alone.
 
-Then write one paragraph each for personalYear1 and personalYear2. These are NOT the same as Mulank/Bhagyank — they are this person's personal year number for each of the two years shown in the report, computed from their birth day+month plus that calendar year. The report already has generic, static copy for what each personal-year number means in the abstract; your job is the part the static copy can't do — how that specific personal-year number plays out against THIS person's own Mulank/Bhagyank/Name combination.`;
+Then write one paragraph each for the two Year Ahead pages (year1Combo, year2Combo). Each year has a Universal Year number that is the SAME for everyone (2026 reduces to 1, 2027 reduces to 2 — given as universalYear1/universalYear2 in the payload). The report already has generic, static copy for what that universal number means in the abstract; your job is the part the static copy can't do — read that universal year against THIS person's own Mulank/Bhagyank/Name. When the universal year number matches one of their core numbers (for instance a Mulank 1 living through a Universal Year 1), name that resonance explicitly and explain the amplification; otherwise describe how the two energies interact for them.
+
+Finally, write one paragraph each for luckyCombo and remedyCombo, per the schema's instructions. These pages list fixed correspondences (lucky colours, gemstone, mantra, etc.) determined purely by the person's Mulank planet — never contradict or replace those facts. Your paragraph adds the personalised "why this matters for you specifically" layer on top.`;
 
 /** Build the prompt payload describing this customer's computed numerology. */
 function describe(opts: ReportOptions, year1: number, year2: number) {
   const r = calculateNumerology(opts);
-  const py1 = personalYearNumber(r.input.day, r.input.month, year1);
-  const py2 = personalYearNumber(r.input.day, r.input.month, year2);
+  const uy1 = reduceToSingleDigit(year1);
+  const uy2 = reduceToSingleDigit(year2);
+  const lucky = LUCKY[r.mulank.number];
+  const rem = REMEDIES[r.mulank.number];
   return {
     fullName: r.input.fullName,
     firstName: r.input.firstName,
@@ -73,8 +87,17 @@ function describe(opts: ReportOptions, year1: number, year2: number) {
       missing: r.loShu.missing,
       repeated: r.loShu.repeated,
     },
-    personalYear1: { year: year1, number: py1, planet: PLANET_BY_NUMBER[py1] },
-    personalYear2: { year: year2, number: py2, planet: PLANET_BY_NUMBER[py2] },
+    universalYear1: { year: year1, number: uy1, planet: PLANET_BY_NUMBER[uy1] },
+    universalYear2: { year: year2, number: uy2, planet: PLANET_BY_NUMBER[uy2] },
+    luckyElements: {
+      days: lucky.days,
+      colors: lucky.colors.map((c) => c.name),
+      numbers: lucky.numbers,
+      gemstone: lucky.gemstone,
+      metal: lucky.metal,
+      direction: lucky.direction,
+    },
+    remedies: { mantra: rem.mantra, practices: rem.items.map((it) => it.title) },
   };
 }
 
@@ -108,7 +131,7 @@ export async function generateReportContent(
 
   const response = await client.messages.parse({
     model: MODEL,
-    max_tokens: 2200,
+    max_tokens: 3000,
     thinking: { type: "disabled" },
     output_config: { effort: "medium", format: zodOutputFormat(comboSchema) },
     system: SYSTEM,
@@ -142,6 +165,8 @@ export async function generateReportContent(
       name: { ...base.name, paras: [...base.name.paras, parsed.nameCombo] },
       year1: { ...base.year1, paras: [...base.year1.paras, parsed.year1Combo] },
       year2: { ...base.year2, paras: [...base.year2.paras, parsed.year2Combo] },
+      lucky: { combo: parsed.luckyCombo },
+      remedy: { combo: parsed.remedyCombo },
     },
   };
 }
