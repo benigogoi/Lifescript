@@ -7,7 +7,7 @@
  */
 import {
   calculateNumerology,
-  reduceToSingleDigit,
+  personalYearNumber,
   PLANET_BY_NUMBER,
   LO_SHU_LAYOUT,
   type BirthInput,
@@ -40,7 +40,7 @@ export interface ReportOptions extends BirthInput {
 export interface YearContent {
   theme: string;
   essence: string;
-  paras: [string, string, string];
+  paras: string[];
   opportunities: string[];
   takeCare: string[];
 }
@@ -60,8 +60,8 @@ export function staticContent(r: NumerologyResult, year1: number, year2: number)
   const mc = NUMBER_CORE[r.mulank.number];
   const bc = NUMBER_CORE[r.bhagyank.number];
   const nc = NUMBER_CORE[r.nameNumber.number];
-  const y1 = YEAR_CORE[reduceToSingleDigit(year1)];
-  const y2 = YEAR_CORE[reduceToSingleDigit(year2)];
+  const y1 = YEAR_CORE[personalYearNumber(r.input.day, r.input.month, year1)];
+  const y2 = YEAR_CORE[personalYearNumber(r.input.day, r.input.month, year2)];
 
   const strongPlanes = r.loShu.repeated.length
     ? r.loShu.repeated.map((d) => `Number ${d} (${PLANET_BY_NUMBER[d]}) appears ${r.loShu.counts[d]} times — strong ${PLANET_BY_NUMBER[d]} energy`)
@@ -178,8 +178,8 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   const mulank = r.mulank.number;
   const bhagyank = r.bhagyank.number;
   const nameNum = r.nameNumber.number;
-  const uy1 = reduceToSingleDigit(year1);
-  const uy2 = reduceToSingleDigit(year2);
+  const uy1 = personalYearNumber(r.input.day, r.input.month, year1);
+  const uy2 = personalYearNumber(r.input.day, r.input.month, year2);
 
   const mc = NUMBER_CORE[mulank];
   const bc = NUMBER_CORE[bhagyank];

@@ -87,6 +87,20 @@ export function reduceToSingleDigit(n: number): Digit {
   return (value === 0 ? 9 : value) as Digit;
 }
 
+/**
+ * Personal Year — birth day and month reduced, summed with the target
+ * calendar year (also reduced), then reduced again. Same pattern as
+ * Bhagyank, but substituting the target year for the birth year. This is
+ * what actually varies the "Year Ahead" pages per customer — reducing the
+ * calendar year alone (the old behaviour) gives every customer the same
+ * number for a given year, regardless of birth date.
+ */
+export function personalYearNumber(day: number, month: number, targetYear: number): Digit {
+  return reduceToSingleDigit(
+    reduceToSingleDigit(day) + reduceToSingleDigit(month) + reduceToSingleDigit(targetYear)
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Name number (Chaldean)
 // ---------------------------------------------------------------------------
