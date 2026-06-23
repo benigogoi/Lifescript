@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { orderInputSchema, isRealDate } from "@/lib/order";
 import { calculateNumerology } from "@/lib/numerology";
+import { NUMBER_CORE } from "@/lib/report-data";
 
 // The report engine + (later) PDF rendering run on Node, not the Edge runtime.
 export const runtime = "nodejs";
@@ -32,6 +33,9 @@ export async function POST(req: Request) {
     mulank: { number: r.mulank.number, planet: r.mulank.planet },
     bhagyank: { number: r.bhagyank.number, planet: r.bhagyank.planet },
     name: { number: r.nameNumber.number, planet: r.nameNumber.planet },
+    // A short personality teaser from the Mulank's strengths — gives the buyer
+    // an immediate, flattering glimpse before the paid report.
+    traits: NUMBER_CORE[r.mulank.number].strengths.slice(0, 3),
   };
 
   // Order persistence + Razorpay order creation happens in /api/checkout once

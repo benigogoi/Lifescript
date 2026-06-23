@@ -724,6 +724,36 @@ section.block {
   font-size: 16px;
   color: var(--gold);
 }
+.preview .preview-traits-label {
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 14px;
+}
+.preview .preview-traits {
+  list-style: none;
+  margin: 10px auto 0;
+  padding: 0;
+  display: inline-block;
+  text-align: left;
+}
+.preview .preview-traits li {
+  position: relative;
+  padding-left: 26px;
+  margin: 8px 0;
+  font-size: 14.5px;
+  color: var(--white);
+}
+.preview .preview-traits li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  color: var(--gold-bright);
+  font-weight: 700;
+}
 .notice {
   background: rgba(201, 168, 76, 0.08);
   border: 1px solid var(--line);

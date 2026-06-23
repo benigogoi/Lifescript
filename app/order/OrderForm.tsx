@@ -14,6 +14,14 @@ const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
 declare global {
   interface Window {
     Razorpay?: new (options: Record<string, unknown>) => { open: () => void; on: (e: string, cb: (r: unknown) => void) => void };
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
+/** Fire a Meta Pixel event if the Pixel is loaded (no-op otherwise). */
+function trackPixel(event: string, params?: Record<string, unknown>) {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
+    window.fbq("track", event, params);
   }
 }
 
@@ -22,6 +30,7 @@ interface Preview {
   mulank: { number: number; planet: string };
   bhagyank: { number: number; planet: string };
   name: { number: number; planet: string };
+  traits: string[];
 }
 
 /** Inject the Razorpay Checkout script once, resolving when it's ready. */
@@ -64,6 +73,8 @@ export default function OrderForm() {
   async function onPay() {
     setPayError(null);
     setPaying(true);
+    // The customer chose to buy — signal purchase intent to Meta.
+    trackPixel("InitiateCheckout", { value: PRICE_INR, currency: "INR" });
 
     const ready = await loadRazorpay();
     if (!ready || !window.Razorpay) {
@@ -145,6 +156,8 @@ export default function OrderForm() {
         return;
       }
       setPreview(data.preview as Preview);
+      // They submitted name/DOB/email and got their preview — a captured lead.
+      trackPixel("Lead");
     } catch {
       setError("Could not reach the server. Please try again.");
     } finally {
@@ -162,7 +175,7 @@ export default function OrderForm() {
               id="fullName"
               type="text"
               autoComplete="name"
-              placeholder="e.g. Ravi Kumar"
+              placeholder="Your name here"
               value={form.fullName}
               onChange={(e) => update("fullName", e.target.value)}
             />
@@ -241,6 +254,16 @@ export default function OrderForm() {
               <div className="planet">{preview.name.planet}</div>
             </div>
           </div>
+          {preview.traits?.length > 0 && (
+            <>
+              <div className="preview-traits-label">A glimpse of your Mulank {preview.mulank.number}</div>
+              <ul className="preview-traits">
+                {preview.traits.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </>
+          )}
           <p className="sub" style={{ fontSize: 13 }}>
             Your full 10-page report reads all of these together — strengths, the years ahead, your
             Lo Shu grid, lucky elements and Vedic remedies.
