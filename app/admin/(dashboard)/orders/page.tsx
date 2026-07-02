@@ -19,6 +19,16 @@ function formatAiCost(costUsd: number | null) {
   return `₹${(costUsd * USD_TO_INR).toFixed(2)}`;
 }
 
+/** "instagram / paid_social" style summary from the order's attribution jsonb. */
+function formatSource(attribution: Record<string, unknown> | null) {
+  const touch = (attribution?.last_touch ?? attribution?.first_touch) as
+    | { source?: string; medium?: string | null; campaign?: string | null }
+    | undefined;
+  if (!touch?.source) return "—";
+  const medium = touch.medium ? ` / ${touch.medium}` : "";
+  return `${touch.source}${medium}`;
+}
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-IN", {
     dateStyle: "medium",
@@ -87,6 +97,7 @@ export default async function AdminOrdersPage({
               <th>Name</th>
               <th>Email</th>
               <th>Status</th>
+              <th>Source</th>
               <th>AI Cost</th>
               <th>Created</th>
               <th>Scheduled for</th>
@@ -118,6 +129,9 @@ export default async function AdminOrdersPage({
                         Stuck since {formatDate(o.updated_at)} — retry below.
                       </div>
                     )}
+                  </td>
+                  <td style={{ fontSize: 12 }} title={o.attribution ? JSON.stringify(o.attribution, null, 2) : undefined}>
+                    {formatSource(o.attribution)}
                   </td>
                   <td>{formatAiCost(o.claude_cost_usd)}</td>
                   <td>{formatDate(o.created_at)}</td>
@@ -167,7 +181,7 @@ export default async function AdminOrdersPage({
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={8} style={{ textAlign: "center", color: "var(--muted)" }}>
+                <td colSpan={9} style={{ textAlign: "center", color: "var(--muted)" }}>
                   No orders match this filter.
                 </td>
               </tr>

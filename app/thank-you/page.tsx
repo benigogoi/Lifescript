@@ -1,10 +1,9 @@
 import Link from "next/link";
-import Script from "next/script";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ShieldCheckIcon, ClockIcon } from "@/components/icons";
-import { PRICE_INR } from "@/lib/order";
 import { BackGuard } from "./BackGuard";
+import { PurchaseTracker } from "./PurchaseTracker";
 
 export const metadata = {
   title: "Order Status — Mystic Digits",
@@ -14,19 +13,17 @@ export const metadata = {
 export default async function ThankYouPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; order?: string }>;
 }) {
-  const { status } = await searchParams;
+  const { status, order } = await searchParams;
   const failed = status === "failed";
 
   return (
     <>
       <BackGuard />
-      {!failed && process.env.NEXT_PUBLIC_META_PIXEL_ID && (
-        <Script id="meta-pixel-purchase" strategy="afterInteractive">
-          {`if (window.fbq) { fbq('track', 'Purchase', { value: ${PRICE_INR}, currency: 'INR' }); }`}
-        </Script>
-      )}
+      {/* Purchase conversion (GA4 + Meta) — only with a verified order id,
+          and trackPurchase() dedupes per order so refreshes don't refire. */}
+      {!failed && order && <PurchaseTracker orderId={order} />}
       <SiteHeader />
 
       <main className="wrap">

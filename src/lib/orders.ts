@@ -38,6 +38,9 @@ export interface Order {
   error: string | null;
   /** Claude API cost for this order's content generation, in USD. */
   claude_cost_usd: number | null;
+  /** Traffic origin captured at checkout: { first_touch, last_touch } with
+   * utm_*, gclid, fbclid, referrer, landing_page (see src/lib/attribution.ts). */
+  attribution: Record<string, unknown> | null;
 }
 
 const TABLE = "orders";
@@ -45,22 +48,34 @@ const TABLE = "orders";
 /** Create an order row in the 'created' state (awaiting payment). */
 export async function createOrder(
   input: OrderInput,
-  opts: { tier?: string; amountInr?: number; razorpayOrderId?: string } = {},
+  opts: {
+    tier?: string;
+    amountInr?: number;
+    razorpayOrderId?: string;
+    attribution?: Record<string, unknown> | null;
+  } = {},
 ): Promise<Order> {
-  const { data, error } = await supabaseAdmin()
-    .from(TABLE)
-    .insert({
-      full_name: input.fullName,
-      email: input.email,
-      dob_day: input.day,
-      dob_month: input.month,
-      dob_year: input.year,
-      tier: opts.tier ?? "numerology",
-      amount_inr: opts.amountInr ?? 99,
-      razorpay_order_id: opts.razorpayOrderId ?? null,
-    })
-    .select()
-    .single();
+  const row = {
+    full_name: input.fullName,
+    email: input.email,
+    dob_day: input.day,
+    dob_month: input.month,
+    dob_year: input.year,
+    tier: opts.tier ?? "numerology",
+    amount_inr: opts.amountInr ?? 99,
+    razorpay_order_id: opts.razorpayOrderId ?? null,
+    attribution: opts.attribution ?? null,
+  };
+
+  let { data, error } = await supabaseAdmin().from(TABLE).insert(row).select().single();
+
+  // A checkout must never fail over analytics metadata: if the attribution
+  // column doesn't exist yet (migration 0004 not applied), retry without it.
+  if (error?.code === "PGRST204") {
+    console.error("orders.attribution column missing — run migration 0004; saving order without it");
+    const { attribution: _dropped, ...withoutAttribution } = row;
+    ({ data, error } = await supabaseAdmin().from(TABLE).insert(withoutAttribution).select().single());
+  }
 
   if (error) throw error;
   return data as Order;

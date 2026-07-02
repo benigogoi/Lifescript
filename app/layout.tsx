@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Marcellus, Jost } from "next/font/google";
 import Script from "next/script";
+import { AttributionCapture } from "@/components/AttributionCapture";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = "G-9S182GLZY6";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// Set NEXT_PUBLIC_GA_DEBUG=1 (e.g. on a preview deploy) to surface every hit
+// in GA4 DebugView without installing the GA Debugger extension.
+const GA_DEBUG = process.env.NEXT_PUBLIC_GA_DEBUG === "1";
 
 const display = Cormorant_Garamond({
   subsets: ["latin"],
@@ -76,7 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}');
+            gtag('config', '${GA_MEASUREMENT_ID}'${GA_DEBUG ? ", { debug_mode: true }" : ""});
           `}
         </Script>
         {META_PIXEL_ID && (
@@ -107,6 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </noscript>
           </>
         )}
+        <AttributionCapture />
         <div className="starfield" aria-hidden />
         {children}
       </body>

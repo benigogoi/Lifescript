@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PRICE_INR } from "@/lib/order";
+import { trackPreviewShown, trackBeginCheckout } from "@/lib/analytics";
+import { getAttribution } from "@/lib/attribution";
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
@@ -14,14 +16,6 @@ const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
 declare global {
   interface Window {
     Razorpay?: new (options: Record<string, unknown>) => { open: () => void; on: (e: string, cb: (r: unknown) => void) => void };
-    fbq?: (...args: unknown[]) => void;
-  }
-}
-
-/** Fire a Meta Pixel event if the Pixel is loaded (no-op otherwise). */
-function trackPixel(event: string, params?: Record<string, unknown>) {
-  if (typeof window !== "undefined" && typeof window.fbq === "function") {
-    window.fbq("track", event, params);
   }
 }
 
@@ -65,16 +59,19 @@ export default function OrderForm() {
   }
 
   /** Leave the order flow for the terminal status page. `replace` drops /order
-   * from history so Back can't return into the payment flow. */
-  function finish(status: "success" | "failed") {
-    router.replace(`/thank-you?status=${status}`);
+   * from history so Back can't return into the payment flow. On success the
+   * order id rides along so the thank-you page can fire the purchase
+   * conversion with a real transaction_id. */
+  function finish(status: "success" | "failed", orderId?: string) {
+    const order = status === "success" && orderId ? `&order=${encodeURIComponent(orderId)}` : "";
+    router.replace(`/thank-you?status=${status}${order}`);
   }
 
   async function onPay() {
     setPayError(null);
     setPaying(true);
-    // The customer chose to buy — signal purchase intent to Meta.
-    trackPixel("InitiateCheckout", { value: PRICE_INR, currency: "INR" });
+    // The customer chose to buy — signal purchase intent (GA4 + Meta).
+    trackBeginCheckout();
 
     const ready = await loadRazorpay();
     if (!ready || !window.Razorpay) {
@@ -94,7 +91,9 @@ export default function OrderForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        // Attribution rides along so the order row records where this
+        // customer originally came from (UTM/gclid/fbclid/referrer).
+        body: JSON.stringify({ ...form, attribution: getAttribution() }),
       });
       data = await res.json();
       if (!res.ok) {
@@ -128,7 +127,11 @@ export default function OrderForm() {
             body: JSON.stringify(response),
           });
           const vd = await vr.json();
-          finish(vr.ok && vd.ok ? "success" : "failed");
+          if (vr.ok && vd.ok) {
+            finish("success", vd.orderId as string | undefined);
+          } else {
+            finish("failed");
+          }
         } catch {
           finish("failed");
         }
@@ -156,8 +159,9 @@ export default function OrderForm() {
         return;
       }
       setPreview(data.preview as Preview);
-      // They submitted name/DOB/email and got their preview — a captured lead.
-      trackPixel("Lead");
+      // They submitted name/DOB/email and got their preview — a captured lead
+      // who is now looking at the product (GA4 generate_lead + view_item, Meta Lead).
+      trackPreviewShown();
     } catch {
       setError("Could not reach the server. Please try again.");
     } finally {

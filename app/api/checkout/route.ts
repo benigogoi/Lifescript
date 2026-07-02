@@ -1,10 +1,40 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { orderInputSchema, isRealDate, PRICE_INR } from "@/lib/order";
 import { createOrder, updateOrder } from "@/lib/orders";
 import { razorpay } from "@/lib/razorpay";
 
 // Razorpay SDK + Supabase admin run on Node, not the Edge runtime.
 export const runtime = "nodejs";
+
+// Client-captured attribution (see src/lib/attribution.ts). Untrusted input:
+// every field is optional and length-capped, and a malformed payload degrades
+// to null rather than failing checkout.
+const touchSchema = z
+  .object({
+    source: z.string().max(200),
+    medium: z.string().max(200).nullish(),
+    campaign: z.string().max(200).nullish(),
+    term: z.string().max(200).nullish(),
+    content: z.string().max(200).nullish(),
+    gclid: z.string().max(500).nullish(),
+    fbclid: z.string().max(500).nullish(),
+    referrer: z.string().max(1000).nullish(),
+    landing_page: z.string().max(1000).nullish(),
+    at: z.string().max(50).nullish(),
+  })
+  .strip();
+
+const attributionSchema = z
+  .object({ first_touch: touchSchema, last_touch: touchSchema })
+  .strip();
+
+function parseAttribution(body: unknown): Record<string, unknown> | null {
+  if (typeof body !== "object" || body === null) return null;
+  const raw = (body as { attribution?: unknown }).attribution;
+  const parsed = attributionSchema.safeParse(raw);
+  return parsed.success ? parsed.data : null;
+}
 
 /**
  * Begin checkout: persist a 'created' order, create the matching Razorpay order,
@@ -32,7 +62,10 @@ export async function POST(req: Request) {
 
   try {
     // 1. Our order row first, so we own the id used as the Razorpay receipt.
-    const order = await createOrder(input, { amountInr: PRICE_INR });
+    const order = await createOrder(input, {
+      amountInr: PRICE_INR,
+      attribution: parseAttribution(body),
+    });
 
     // 2. The Razorpay order (amount is in paise).
     const rzpOrder = await razorpay().orders.create({
