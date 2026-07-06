@@ -10,11 +10,23 @@ import {
   reduceToSingleDigit,
   PLANET_BY_NUMBER,
   LO_SHU_LAYOUT,
+  activeLoShuLines,
   type BirthInput,
   type Digit,
   type NumerologyResult,
 } from "./numerology";
-import { NUMBER_CORE, YEAR_CORE, LUCKY, REMEDIES } from "./report-data";
+import {
+  NUMBER_CORE,
+  YEAR_CORE,
+  LUCKY,
+  REMEDIES,
+  yearFavourability,
+  LO_SHU_ARROWS,
+  LO_SHU_NO_ARROW_NOTE,
+  YEAR_TIER_PARA,
+  YEAR_TIER_BULLET,
+  type YearTier,
+} from "./report-data";
 import { STARFIELD_DATA_URI } from "./starfield";
 
 export interface ReportOptions extends BirthInput {
@@ -49,7 +61,8 @@ export interface ResolvedContent {
   mulank: { essence: string; paras: string[]; strengths: string[]; growth: string[] };
   bhagyank: { essence: string; paras: string[]; favours: string[]; asks: string[] };
   name: { essence: string; paras: string[]; gives: string[]; useWisely: string[] };
-  loshu: { strongPlanes: string[]; missingItems: string[]; missingTitle: string };
+  /** `combo` ties the active Lo Shu Arrows (or their absence) to this person's full chart. Empty in the static fallback. */
+  loshu: { strongPlanes: string[]; missingItems: string[]; missingTitle: string; combo: string };
   year1: YearContent;
   year2: YearContent;
   /** Combo paragraph tying the (Mulank-determined) lucky elements to this person's full chart. Empty in the static fallback. */
@@ -77,25 +90,35 @@ export function staticContent(r: NumerologyResult, year1: number, year2: number)
 
   const missingTitle = r.loShu.missing.length ? `Missing: ${r.loShu.missing.join(" · ")}` : "A Complete Grid";
 
-  const mapYear = (y: (typeof YEAR_CORE)[Digit]): YearContent => ({
+  // Tier-flavoured body content: two customers sharing a Universal Year now
+  // only see identical paragraph 3 / bullet 3 if they also share the same
+  // Mulank-vs-year favourability tier, instead of always matching.
+  const tier1 = yearFavourability(r.mulank.number, reduceToSingleDigit(year1));
+  const tier2 = yearFavourability(r.mulank.number, reduceToSingleDigit(year2));
+
+  const mapYear = (y: (typeof YEAR_CORE)[Digit], tier: YearTier): YearContent => ({
     theme: y.theme,
     essence: y.essence,
-    paras: y.paras,
-    opportunities: y.opportunities,
-    takeCare: y.takeCare,
+    paras: [y.paras[0], y.paras[1], YEAR_TIER_PARA[tier]],
+    opportunities: [y.opportunities[0], y.opportunities[1], YEAR_TIER_BULLET[tier].opportunity, y.opportunities[3]],
+    takeCare: [y.takeCare[0], y.takeCare[1], YEAR_TIER_BULLET[tier].takeCare, y.takeCare[3]],
   });
+
+  const closing = r.mulank.planet === r.bhagyank.planet
+    ? `your ${r.mulank.planet} shine bright`
+    : `your ${r.mulank.planet} shine bright, and your ${r.bhagyank.planet} walk steady beside you`;
 
   return {
     mulank: { essence: mc.mulankEssence, paras: mc.mulankParas, strengths: mc.strengths, growth: mc.growth },
     bhagyank: { essence: bc.bhagyankEssence, paras: bc.bhagyankParas, favours: bc.destinyFavours, asks: bc.destinyAsks },
     name: { essence: nc.nameEssence, paras: nc.nameParas, gives: nc.nameGives, useWisely: nc.nameUseWisely },
-    loshu: { strongPlanes: strongPlanes.slice(0, 4), missingItems, missingTitle },
-    year1: mapYear(y1),
-    year2: mapYear(y2),
+    loshu: { strongPlanes: strongPlanes.slice(0, 4), missingItems, missingTitle, combo: "" },
+    year1: mapYear(y1, tier1),
+    year2: mapYear(y2, tier2),
     lucky: { combo: "" },
     remedy: { combo: "" },
     thankyou: {
-      message: `Thank you for letting us read your numbers. May your path be clear, your ${r.mulank.planet} shine bright, and the year ahead carry you toward everything you are meant to become.`,
+      message: `Thank you for letting us read your numbers. May your path be clear, ${closing}, and the year ahead carry you toward everything you are meant to become.`,
     },
   };
 }
@@ -169,6 +192,13 @@ function foot(name: string, page: string): string {
   return `<div class="page-foot"><span>Mystic Digits · ${esc(name)}</span><span>${page}</span></div>`;
 }
 
+const TIER_CLASS: Record<YearTier, string> = {
+  "Highly Favourable": "hf",
+  Favourable: "fav",
+  Steady: "steady",
+  Challenging: "challenging",
+};
+
 // --- the template ----------------------------------------------------------
 
 export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent): string {
@@ -192,6 +222,9 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   const nc = NUMBER_CORE[nameNum];
   const lucky = LUCKY[mulank];
   const rem = REMEDIES[mulank];
+  const bLucky = LUCKY[bhagyank];
+  const bRem = REMEDIES[bhagyank];
+  const hasBhagyankBonus = bhagyank !== mulank;
 
   const c = content ?? staticContent(r, year1, year2);
 
@@ -287,6 +320,11 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     return `<div class="cell ${present ? "present" : "missing"}"><span class="num">${display}</span><span class="planet-tag">${PLANET_BY_NUMBER[digit]}</span></div>`;
   }).join("");
 
+  const activeArrows = activeLoShuLines(r.loShu.counts).map((line) => LO_SHU_ARROWS[line.id]).slice(0, 2);
+  const arrowsHtml = activeArrows.length
+    ? activeArrows.map((a) => `<div class="arrow-item"><span class="arrow-name">${esc(a.name)}</span><p>${a.text}</p></div>`).join("")
+    : `<p class="arrow-empty">${LO_SHU_NO_ARROW_NOTE}</p>`;
+
   const loshuPage = `
 <section class="page" id="loshu">
   ${STARS}${FRAME}
@@ -306,14 +344,17 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     <div class="gold-rule"></div>
     <div class="panels">
       <div class="panel"><h4>Your Strong Planes</h4><ul>${list(c.loshu.strongPlanes.slice(0, 4))}</ul></div>
-      <div class="panel"><h4>${c.loshu.missingTitle}</h4><ul>${list(c.loshu.missingItems)}</ul></div>
+      <div class="panel"><h4>${c.loshu.missingTitle}</h4><ul>${list(c.loshu.missingItems.slice(0, 4))}</ul></div>
     </div>
+    ${c.loshu.combo
+      ? `<div class="body-copy"><p>${c.loshu.combo}</p></div>`
+      : `<div class="arrows-section"><div class="arrows-heading">Lo Shu Arrows · Lines Your Chart Completes</div>${arrowsHtml}</div>`}
   </div>
   ${foot(r.input.fullName, "04")}
 </section>`;
 
   // ---- year prediction page ----
-  const yearPage = (id: string, year: number, uy: Digit, yc: YearContent, page: string) => `
+  const yearPage = (id: string, year: number, uy: Digit, yc: YearContent, page: string, tier: YearTier) => `
 <section class="page" id="${id}">
   ${STARS}${mandala(0.06, 6, [96, 70])}${FRAME}
   <div class="content-inner">
@@ -325,6 +366,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
         <div class="rule-by">Universal Year</div>
         <div class="planet-name">Number ${uy} · ${PLANET_BY_NUMBER[uy]}</div>
         <div class="essence">${year} ${yc.essence}</div>
+        <div class="year-tier tier-${TIER_CLASS[tier]}"><span class="yt-label">Your Personal Outlook</span><strong>${tier}</strong></div>
       </div>
     </div>
     <div class="gold-rule"></div>
@@ -365,6 +407,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       ${luckyItem(luckyIcon.metal, "Lucky Metal", lucky.metal)}
       ${luckyItem(luckyIcon.compass, "Favourable Direction", lucky.direction)}
     </div>
+    ${hasBhagyankBonus ? `<div class="secondary-note"><span class="sn-label">Bhagyank Bonus · ${r.bhagyank.planet}</span><span class="sn-text">${bLucky.days} and ${bLucky.colors[0].name.toLowerCase()} also lean in your favour.</span></div>` : ""}
     ${c.lucky.combo ? `<div class="body-copy"><p>${c.lucky.combo}</p></div>` : ""}
   </div>
   ${foot(r.input.fullName, "08")}
@@ -387,6 +430,7 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       <div class="m-sub">${rem.mantraSub}</div>
     </div>
     <div class="remedies">${remedyRows}</div>
+    ${hasBhagyankBonus ? `<div class="secondary-note"><span class="sn-label">Bhagyank Bonus · ${r.bhagyank.planet}</span><span class="sn-text">${bRem.mantra} — ${bRem.mantraSub.toLowerCase()}.</span></div>` : ""}
     ${c.remedy.combo ? `<div class="body-copy"><p>${c.remedy.combo}</p></div>` : ""}
   </div>
   ${foot(r.input.fullName, "09")}
@@ -419,11 +463,33 @@ ${mulankPage}
 ${bhagyankPage}
 ${loshuPage}
 ${namePage}
-${yearPage("year1", year1, uy1, c.year1, "06")}
-${yearPage("year2", year2, uy2, c.year2, "07")}
+${yearPage("year1", year1, uy1, c.year1, "06", yearFavourability(mulank, uy1))}
+${yearPage("year2", year2, uy2, c.year2, "07", yearFavourability(mulank, uy2))}
 ${luckyPage}
 ${remediesPage}
 ${thankyouPage}
+<script>
+// Auto-shrink safety net: .body-copy blocks are flex items with a fixed share
+// of their page's height and overflow:hidden, so oversized AI paragraphs would
+// otherwise clip silently mid-line. Step the font down (line-height is
+// unitless, so it scales along) until the block fits or hits the floor.
+// Runs at parse and again once web fonts land, since metrics shift then —
+// the PDF renderer waits on document.fonts.ready before printing.
+(function () {
+  function fit() {
+    document.querySelectorAll(".body-copy").forEach(function (el) {
+      el.style.fontSize = "";
+      var size = parseFloat(getComputedStyle(el).fontSize);
+      while (el.scrollHeight > el.clientHeight + 1 && size > 12.5) {
+        size -= 0.5;
+        el.style.fontSize = size + "px";
+      }
+    });
+  }
+  fit();
+  document.fonts.ready.then(fit);
+})();
+</script>
 </body>
 </html>`;
 }
@@ -470,6 +536,13 @@ const CSS = `
   .hero-meta .rule-by { font-size:13px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
   .hero-meta .planet-name { font-family:'Cormorant Garamond', serif; font-size:38px; color:var(--gold); margin:4px 0 10px; }
   .hero-meta .essence { font-size:16.5px; color:var(--white); opacity:0.85; max-width:320px; line-height:1.4; }
+  .year-tier { display:inline-flex; align-items:center; gap:9px; margin-top:12px; padding:6px 14px; border-radius:20px; border:1px solid; }
+  .year-tier .yt-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; opacity:0.75; }
+  .year-tier strong { font-family:'Marcellus', serif; font-size:13px; letter-spacing:0.3px; }
+  .year-tier.tier-hf { color:var(--gold-bright); border-color:rgba(230,199,102,0.5); background:rgba(230,199,102,0.08); }
+  .year-tier.tier-fav { color:var(--gold); border-color:rgba(201,168,76,0.4); background:rgba(201,168,76,0.06); }
+  .year-tier.tier-steady { color:var(--muted); border-color:rgba(154,154,176,0.35); background:rgba(154,154,176,0.05); }
+  .year-tier.tier-challenging { color:var(--red); border-color:rgba(224,90,78,0.4); background:rgba(224,90,78,0.08); }
   .gold-rule { height:1px; background:linear-gradient(90deg, var(--gold), transparent); margin:18px 0; }
   .body-copy { font-size:17.5px; line-height:1.55; color:#D5D5E2; flex:1 1 auto; min-height:0; overflow:hidden; }
   .body-copy p { margin-bottom:10px; }
@@ -495,6 +568,15 @@ const CSS = `
   .legend { display:flex; justify-content:center; gap:40px; margin-top:22px; font-size:13px; color:var(--muted); }
   .legend span { display:inline-flex; align-items:center; gap:8px; }
   .swatch { width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .arrows-section { margin-top:16px; }
+  .arrows-heading { font-family:'Marcellus', serif; font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+  .arrow-item { margin-bottom:6px; }
+  .arrow-item .arrow-name { font-family:'Cormorant Garamond', serif; font-size:16px; color:var(--gold-bright); margin-right:8px; }
+  .arrow-item p { display:inline; font-size:13.5px; line-height:1.4; color:#CFCFDE; }
+  .arrow-empty { font-size:13.5px; line-height:1.4; color:var(--muted); }
+  .secondary-note { margin-top:14px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .secondary-note .sn-label { font-family:'Marcellus', serif; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); flex-shrink:0; }
+  .secondary-note .sn-text { font-size:13.5px; color:#CFCFDE; }
   .lucky-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:30px; }
   .lucky-item { display:flex; align-items:center; gap:16px; background:rgba(255,255,255,0.025); border:1px solid rgba(201,168,76,0.16); border-radius:4px; padding:16px 20px; }
   .lucky-ic { width:42px; height:42px; flex-shrink:0; border-radius:50%; border:1px solid rgba(201,168,76,0.4); display:flex; align-items:center; justify-content:center; color:var(--gold); font-size:18px; }

@@ -8,6 +8,80 @@
  */
 import type { Digit, Planet } from "./numerology";
 
+export interface LoShuArrow {
+  name: string;
+  text: string;
+}
+
+/**
+ * The 8 classical Lo Shu lines (3 rows, 3 columns, 2 diagonals — see
+ * LO_SHU_LINES in numerology.ts), keyed by line id. A line "activates" only
+ * when a person's chart carries all three of its digits, so most charts
+ * complete just a few of these — real per-chart variety with no AI cost.
+ */
+export const LO_SHU_ARROWS: Record<string, LoShuArrow> = {
+  "row-top": {
+    name: "Plane of Strategy",
+    text: "Builder, Warrior and Peacemaker sit together here — you plan before you leap, pairing bold decisions with real care for who they affect.",
+  },
+  "row-mid": {
+    name: "Plane of Curiosity",
+    text: "Expression, communication and depth combine — your mind moves quickly between ideas and still finds time to ask what they really mean.",
+  },
+  "row-bottom": {
+    name: "Plane of Achievement",
+    text: "Discipline, leadership and care line up together — the success you build tends to arrive with people you actually want to share it with.",
+  },
+  "col-left": {
+    name: "Plane of Craft",
+    text: "Structure, creativity and ambition reinforce each other — you turn ideas into something durable rather than letting them stay abstract.",
+  },
+  "col-mid": {
+    name: "Plane of Will",
+    text: "Drive, communication and leadership stack together — a rare combination that gives real, decisive momentum toward whatever you set your mind on.",
+  },
+  "col-right": {
+    name: "Plane of Feeling",
+    text: "Sensitivity, depth and care reinforce each other — you read rooms and people with unusual accuracy, and rarely act without weighing how it lands.",
+  },
+  "diag-tlbr": {
+    name: "Plane of Persistence",
+    text: "Patience, adaptability and warmth run on the same diagonal — you keep going through setbacks others would have walked away from.",
+  },
+  "diag-trbl": {
+    name: "Plane of Fortune",
+    text: "Sensitivity, communication and ambition cross on this diagonal — your material gains tend to arrive through people and timing as much as effort.",
+  },
+};
+
+export const LO_SHU_NO_ARROW_NOTE =
+  "Your chart doesn't complete any of the eight classical Lo Shu lines — your strength is concentrated in a few numbers rather than spread evenly, which sharpens focus even as it narrows range.";
+
+/**
+ * Tier-flavoured replacement for the Year Ahead page's third paragraph, and
+ * for one bullet each in its Opportunities/Take Care lists. Keyed only by
+ * YearTier (not by year digit), so two people sharing a Universal Year now
+ * only see identical body copy if they also share the same favourability
+ * tier — down from matching 100% of the time.
+ */
+export const YEAR_TIER_PARA: Record<YearTier, string> = {
+  "Highly Favourable":
+    "Because this year's energy runs in direct harmony with your own core number, this is a good window to act rather than wait — new habits, new conversations, and new commitments tend to stick more easily than usual.",
+  Favourable:
+    "This year's energy leans in your favour more than against you, so it's worth using the momentum on the plans you've been hesitating over, in both work and relationships, rather than saving them for later.",
+  Steady:
+    "This year's energy is neutral toward you, neither pushing nor resisting — habits and relationships hold steady mostly in proportion to the effort you actually put in, so consistency matters more than timing.",
+  Challenging:
+    "This year's energy sits in real tension with your own core number, so habits and relationships may need more patience than usual to take root — protect your energy and let things build slowly rather than forcing them.",
+};
+
+export const YEAR_TIER_BULLET: Record<YearTier, { opportunity: string; takeCare: string }> = {
+  "Highly Favourable": { opportunity: "A rare amplification — act on it decisively", takeCare: "Don't let the ease tip into overreach" },
+  Favourable: { opportunity: "Momentum is genuinely on your side this year", takeCare: "Don't let comfort turn into complacency" },
+  Steady: { opportunity: "Consistent effort compounds more than timing does", takeCare: "Don't wait for a sign before starting" },
+  Challenging: { opportunity: "Real growth is available, just slower than usual", takeCare: "Protect your energy — this year asks more patience" },
+};
+
 export interface NumberCore {
   planetSanskrit: string;
   /** one-line archetype, e.g. "the leader" */
@@ -451,6 +525,33 @@ export const LUCKY: Record<Digit, Lucky> = {
   8: { days: "Saturday", colors: [{ name: "Black", hex: "#3A3A42" }, { name: "Dark Blue", hex: "#33456B" }, { name: "Deep Grey", hex: "#6E6E78" }], numbers: "8 & 4", gemstone: "Blue Sapphire · Neelam", metal: "Iron & Steel", direction: "West" },
   9: { days: "Tuesday", colors: [{ name: "Red", hex: "#D9534F" }, { name: "Coral", hex: "#E0775C" }, { name: "Crimson", hex: "#B23A48" }], numbers: "9, 3 & 6", gemstone: "Red Coral · Moonga", metal: "Copper", direction: "South" },
 };
+
+export type YearTier = "Highly Favourable" | "Favourable" | "Steady" | "Challenging";
+
+/**
+ * How a given Universal Year sits with a person's Mulank — derived from the
+ * classical Vedic planetary friend/enemy relationships (e.g. Sun-Mars-Jupiter
+ * are mutual friends, Sun-Saturn are classic adversaries), symmetrised into
+ * a single rating per pair. A Universal Year equal to the person's own
+ * Mulank is always treated as a resonance, independent of this table.
+ */
+const YEAR_TIER_MATRIX: Record<Digit, Partial<Record<Digit, YearTier>>> = {
+  1: { 2: "Highly Favourable", 3: "Highly Favourable", 4: "Challenging", 5: "Favourable", 6: "Challenging", 7: "Challenging", 8: "Challenging", 9: "Highly Favourable" },
+  2: { 1: "Highly Favourable", 3: "Favourable", 4: "Challenging", 5: "Steady", 6: "Challenging", 7: "Challenging", 8: "Challenging", 9: "Favourable" },
+  3: { 1: "Highly Favourable", 2: "Favourable", 4: "Steady", 5: "Challenging", 6: "Challenging", 7: "Steady", 8: "Steady", 9: "Highly Favourable" },
+  4: { 1: "Challenging", 2: "Challenging", 3: "Steady", 5: "Favourable", 6: "Favourable", 7: "Favourable", 8: "Favourable", 9: "Challenging" },
+  5: { 1: "Favourable", 2: "Steady", 3: "Challenging", 4: "Favourable", 6: "Highly Favourable", 7: "Favourable", 8: "Highly Favourable", 9: "Challenging" },
+  6: { 1: "Challenging", 2: "Challenging", 3: "Challenging", 4: "Favourable", 5: "Highly Favourable", 7: "Favourable", 8: "Highly Favourable", 9: "Steady" },
+  7: { 1: "Challenging", 2: "Challenging", 3: "Steady", 4: "Favourable", 5: "Favourable", 6: "Favourable", 8: "Favourable", 9: "Steady" },
+  8: { 1: "Challenging", 2: "Challenging", 3: "Steady", 4: "Favourable", 5: "Highly Favourable", 6: "Highly Favourable", 7: "Favourable", 9: "Challenging" },
+  9: { 1: "Highly Favourable", 2: "Favourable", 3: "Highly Favourable", 4: "Challenging", 5: "Challenging", 6: "Steady", 7: "Steady", 8: "Challenging" },
+};
+
+/** Favourability of a Universal Year for a given Mulank — same number is always a resonance. */
+export function yearFavourability(mulank: Digit, universalYear: Digit): YearTier {
+  if (mulank === universalYear) return "Highly Favourable";
+  return YEAR_TIER_MATRIX[mulank][universalYear] ?? "Steady";
+}
 
 export const REMEDIES: Record<Digit, Remedies> = {
   1: {

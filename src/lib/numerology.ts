@@ -154,6 +154,32 @@ export function loShuGrid(day: number, month: number, year: number): LoShuGrid {
 }
 
 // ---------------------------------------------------------------------------
+// Lo Shu arrows (classical planes) — the 8 lines through the 3x3 grid: the
+// 3 rows and 3 columns of LO_SHU_LAYOUT, plus its 2 diagonals.
+// ---------------------------------------------------------------------------
+
+export interface LoShuLine {
+  id: string;
+  digits: [Digit, Digit, Digit];
+}
+
+export const LO_SHU_LINES: LoShuLine[] = [
+  { id: "row-top", digits: [LO_SHU_LAYOUT[0][0], LO_SHU_LAYOUT[0][1], LO_SHU_LAYOUT[0][2]] },
+  { id: "row-mid", digits: [LO_SHU_LAYOUT[1][0], LO_SHU_LAYOUT[1][1], LO_SHU_LAYOUT[1][2]] },
+  { id: "row-bottom", digits: [LO_SHU_LAYOUT[2][0], LO_SHU_LAYOUT[2][1], LO_SHU_LAYOUT[2][2]] },
+  { id: "col-left", digits: [LO_SHU_LAYOUT[0][0], LO_SHU_LAYOUT[1][0], LO_SHU_LAYOUT[2][0]] },
+  { id: "col-mid", digits: [LO_SHU_LAYOUT[0][1], LO_SHU_LAYOUT[1][1], LO_SHU_LAYOUT[2][1]] },
+  { id: "col-right", digits: [LO_SHU_LAYOUT[0][2], LO_SHU_LAYOUT[1][2], LO_SHU_LAYOUT[2][2]] },
+  { id: "diag-tlbr", digits: [LO_SHU_LAYOUT[0][0], LO_SHU_LAYOUT[1][1], LO_SHU_LAYOUT[2][2]] },
+  { id: "diag-trbl", digits: [LO_SHU_LAYOUT[0][2], LO_SHU_LAYOUT[1][1], LO_SHU_LAYOUT[2][0]] },
+];
+
+/** Which of the 8 classical Lo Shu lines have all three digits present (count > 0) in this chart. */
+export function activeLoShuLines(counts: Record<Digit, number>): LoShuLine[] {
+  return LO_SHU_LINES.filter((line) => line.digits.every((d) => counts[d] > 0));
+}
+
+// ---------------------------------------------------------------------------
 // Main entry point
 // ---------------------------------------------------------------------------
 
