@@ -19,6 +19,17 @@ export function SiteFooter() {
         </div>
 
         <div className="footer-col">
+          <div className="footer-h">Mulank Meanings</div>
+          <div className="footer-mulank">
+            {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
+              <Link key={n} href={`/mulank/${n}`} aria-label={`Mulank ${n} meaning`}>
+                {n}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="footer-col">
           <div className="footer-h">Legal</div>
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>

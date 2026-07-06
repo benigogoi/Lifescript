@@ -486,8 +486,28 @@ section.block {
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  grid-template-columns: 1.6fr 1fr 1.1fr 1fr 1fr;
   gap: 32px;
+}
+/* Mulank 1–9 as a compact 3×3 grid of number chips. */
+.footer-mulank {
+  display: grid;
+  grid-template-columns: repeat(3, 34px);
+  gap: 8px;
+}
+.footer-mulank a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.footer-mulank a:hover {
+  border-color: var(--gold);
 }
 .footer-brand .wordmark {
   font-size: 18px;
