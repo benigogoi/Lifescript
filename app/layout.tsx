@@ -25,7 +25,8 @@ const label = Marcellus({
 });
 const body = Jost({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  // 300 was loaded but never referenced in globals.css — one less render-path font file.
+  weight: ["400", "500", "600"],
   variable: "--font-body",
   display: "swap",
 });
@@ -72,34 +73,40 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
-        />
+        {/* Inline stubs run early (afterInteractive, no network cost) so every
+            gtag()/fbq() call queues from the first paint; the heavy external
+            libraries load lazyOnload — off the mobile LCP/TBT critical path —
+            and drain the queues when they arrive. Nothing is lost. */}
         <Script id="ga-init" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
             gtag('js', new Date());
             gtag('config', '${GA_MEASUREMENT_ID}'${GA_DEBUG ? ", { debug_mode: true }" : ""});
           `}
         </Script>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="lazyOnload"
+        />
         {META_PIXEL_ID && (
           <>
+            {/* Meta's standard snippet, minus its own script injection — the fbq
+                queue stub is created here, fbevents.js itself loads lazyOnload
+                below and drains the queue. */}
             <Script id="meta-pixel-init" strategy="afterInteractive">
               {`
-                !function(f,b,e,v,n,t,s)
+                !function(f,n)
                 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
                 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
                 if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                n.queue=[];t=b.createElement(e);t.async=!0;
-                t.src=v;s=b.getElementsByTagName(e)[0];
-                s.parentNode.insertBefore(t,s)}(window, document,'script',
-                'https://connect.facebook.net/en_US/fbevents.js');
+                n.queue=[]}(window);
                 fbq('init', '${META_PIXEL_ID}');
                 fbq('track', 'PageView');
               `}
             </Script>
+            <Script src="https://connect.facebook.net/en_US/fbevents.js" strategy="lazyOnload" />
             <noscript>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
