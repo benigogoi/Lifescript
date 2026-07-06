@@ -1,11 +1,13 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "About Us — Mystic Digits",
   description:
     "Mystic Digits prepares personalised Indian Vedic numerology reports from your name and date of birth — clear, warm, and rooted in tradition.",
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

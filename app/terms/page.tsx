@@ -1,10 +1,12 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Terms & Conditions — Mystic Digits",
   description: "The terms and conditions governing your use of Mystic Digits and your numerology report order.",
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

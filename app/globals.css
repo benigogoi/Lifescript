@@ -233,6 +233,29 @@ body {
   font-style: italic;
   color: var(--gold-bright);
 }
+.hero-subtitle {
+  font-family: var(--font-label);
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.9;
+  margin: 0 0 16px;
+}
+.hero-calc-note {
+  max-width: 520px;
+  margin: 26px auto 16px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+/* `.cta-sm` alone loses to `.cta` (declared later at equal specificity);
+   this compound wins so the ghost hero CTA stays smaller than the primary. */
+.cta.cta-ghost.cta-sm {
+  padding: 10px 22px;
+  font-size: 12px;
+}
 .hero p.lede {
   max-width: 560px;
   margin: 0 auto 32px;

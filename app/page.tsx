@@ -3,6 +3,14 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Mandala } from "@/components/Mandala";
 import { SECTION_ICONS, ShieldCheckIcon, ClockIcon, SparkleIcon } from "@/components/icons";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Mystic Digits — Your Personalised Indian Numerology Report",
+  description:
+    "A beautiful 10-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.",
+  path: "/",
+});
 
 const ACCENTS = ["gold", "red", "violet"] as const;
 
@@ -37,6 +45,7 @@ export default function Home() {
           <h1>
             Your life, written in <em>numbers</em>.
           </h1>
+          <h2 className="hero-subtitle">Personalised Vedic Numerology Report</h2>
           <p className="lede">
             A beautiful 10-page numerology report, prepared uniquely from your name and date of
             birth — your Mulank, Bhagyank, Lo Shu grid, the year ahead, and your personal Vedic
@@ -47,6 +56,17 @@ export default function Home() {
           </Link>
           <div className="price-note">
             Just <strong>₹99</strong> · delivered within 24 hours
+          </div>
+          <p className="hero-calc-note">
+            Curious what your numbers say before you order? Find your Mulank — your birth number —
+            and your Bhagyank, the destiny number, in seconds with our free calculator. When
+            you&apos;re ready, your full numerology report reads them together, deeply and
+            personally.
+          </p>
+          <div>
+            <Link href="/calculator" className="cta cta-ghost cta-sm">
+              Try the Free Mulank Calculator →
+            </Link>
           </div>
 
           <div className="trust-row">

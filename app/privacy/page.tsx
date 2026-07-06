@@ -1,10 +1,12 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Privacy Policy — Mystic Digits",
   description: "How Mystic Digits collects, uses, and protects your personal information.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

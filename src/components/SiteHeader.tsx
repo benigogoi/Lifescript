@@ -30,6 +30,7 @@ export function SiteHeader() {
           <span />
         </button>
         <nav id="primary-nav" className={`site-nav${menuOpen ? " is-open" : ""}`} aria-label="Primary">
+          <Link href="/calculator" onClick={closeMenu}>Free Mulank Calculator</Link>
           <Link href="/about" onClick={closeMenu}>About</Link>
           <Link href="/faq" onClick={closeMenu}>FAQ</Link>
           <Link href="/order" className="cta cta-sm" onClick={closeMenu}>

@@ -1,17 +1,32 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { pageMetadata, BASE_URL } from "@/lib/seo";
 import CalculatorForm from "./CalculatorForm";
 
-export const metadata = {
-  title: "Free Mulank & Bhagyank Calculator | Vedic Numerology",
+export const metadata = pageMetadata({
+  title: "Free Mulank Calculator — Find Your Mulank & Bhagyank Online | Mystic Digits",
   description:
-    "Calculate your Mulank (birth number) and Bhagyank (destiny number) free. Based on Vedic numerology. Get your full 10-page report for ₹99.",
-  alternates: { canonical: "/calculator" },
-};
+    "Instantly calculate your Mulank (birth number) and Bhagyank (destiny number) with our free Vedic numerology calculator — no signup needed. When you're ready, get your full personalised 10-page report.",
+  path: "/calculator",
+});
 
 export default function CalculatorPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Free Mulank & Bhagyank Calculator",
+    url: `${BASE_URL}/calculator`,
+    applicationCategory: "LifestyleApplication",
+    operatingSystem: "Web",
+    description:
+      "Free Vedic numerology calculator that finds your Mulank (birth number) and Bhagyank (destiny number) from your date of birth, with the ruling planet and lucky colour for each.",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+    publisher: { "@type": "Organization", name: "Mystic Digits", url: BASE_URL },
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader />
 
       <main className="wrap">

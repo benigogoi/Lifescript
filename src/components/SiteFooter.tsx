@@ -15,6 +15,7 @@ export function SiteFooter() {
           <Link href="/about">About Us</Link>
           <Link href="/faq">FAQ</Link>
           <Link href="/contact">Contact</Link>
+          <Link href="/calculator">Free Mulank Calculator</Link>
         </div>
 
         <div className="footer-col">

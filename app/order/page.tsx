@@ -1,11 +1,13 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { pageMetadata } from "@/lib/seo";
 import OrderForm from "./OrderForm";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Get Your Report — Mystic Digits",
   description: "Enter your name and date of birth to get your free preview and order your full 10-page Mystic Digits numerology report.",
-};
+  path: "/order",
+});
 
 export default function OrderPage() {
   return (

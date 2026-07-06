@@ -1,12 +1,16 @@
+import type { ReactNode } from "react";
+import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "FAQ — Mystic Digits",
   description: "Answers to common questions about Mystic Digits numerology reports — pricing, delivery, accuracy, payments, and privacy.",
-};
+  path: "/faq",
+});
 
-const FAQS = [
+const FAQS: { q: string; a: string; render?: ReactNode }[] = [
   {
     q: "What do I need to provide to get my report?",
     a: "Just your full name and date of birth. We use these to calculate your Mulank, Bhagyank, Lo Shu grid, and Name Number — nothing else is required.",
@@ -21,7 +25,16 @@ const FAQS = [
   },
   {
     q: "Can I see a preview before I pay?",
-    a: "Yes. Enter your name and date of birth on the order page and we'll instantly show you your core numbers for free, with no signup required. The ₹99 payment is only for the complete 10-page report.",
+    a: "Yes. Enter your name and date of birth on the order page and we'll instantly show you your core numbers for free, with no signup required. You can also find your core numbers any time with our free Mulank calculator. The ₹99 payment is only for the complete 10-page report.",
+    // Rendered in place of `a`; keep the wording in sync so the FAQPage JSON-LD matches the page.
+    render: (
+      <>
+        Yes. Enter your name and date of birth on the order page and we&apos;ll instantly show you
+        your core numbers for free, with no signup required. You can also find your core numbers
+        any time with our <Link href="/calculator">free Mulank calculator</Link>. The ₹99 payment
+        is only for the complete 10-page report.
+      </>
+    ),
   },
   {
     q: "What payment methods are accepted?",
@@ -67,7 +80,7 @@ export default function FaqPage() {
           {FAQS.map((f) => (
             <details className="faq-item" key={f.q}>
               <summary>{f.q}</summary>
-              <p>{f.a}</p>
+              <p>{f.render ?? f.a}</p>
             </details>
           ))}
         </div>

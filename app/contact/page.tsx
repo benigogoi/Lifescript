@@ -1,11 +1,13 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MailIcon, ClockIcon, ShieldCheckIcon } from "@/components/icons";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Contact Us — Mystic Digits",
   description: "Get in touch with Mystic Digits for questions about your numerology report, an order, or anything else.",
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

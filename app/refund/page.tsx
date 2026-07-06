@@ -1,10 +1,12 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Refund Policy — Mystic Digits",
   description: "Mystic Digits's refund and cancellation policy for numerology report orders.",
-};
+  path: "/refund",
+});
 
 export default function RefundPage() {
   return (

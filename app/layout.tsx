@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Marcellus, Jost } from "next/font/google";
 import Script from "next/script";
 import { AttributionCapture } from "@/components/AttributionCapture";
+import { BASE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = "G-9S182GLZY6";
@@ -29,7 +30,6 @@ const body = Jost({
   display: "swap",
 });
 
-const BASE_URL = "https://mysticdigits.in";
 const SITE_TITLE = "Mystic Digits — Your Personalised Indian Numerology Report";
 const SITE_DESCRIPTION =
   "A beautiful 10-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.";

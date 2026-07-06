@@ -8,6 +8,7 @@ import {
   MULANK_NUMBERS,
   type MulankNumber,
 } from "@/lib/mulank-content";
+import { pageMetadata } from "@/lib/seo";
 
 /** Pre-render /mulank/1 … /mulank/9 at build time. */
 export function generateStaticParams() {
@@ -33,11 +34,11 @@ export async function generateMetadata({
   if (!n) return {};
 
   const info = MULANK_CONTENT[n];
-  return {
+  return pageMetadata({
     title: `Mulank ${n} — Meaning, Personality & Vedic Remedies`,
     description: `Mulank ${n} meaning and moolank ${n} personality, ruled by ${info.planet}. Discover the strengths, weaknesses, career paths, lucky colour, and Vedic remedy for birth number ${n}.`,
-    alternates: { canonical: `/mulank/${n}` },
-  };
+    path: `/mulank/${n}`,
+  });
 }
 
 export default async function MulankPage({
