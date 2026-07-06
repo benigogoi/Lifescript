@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Marcellus, Jost } from "next/font/google";
 import Script from "next/script";
 import { AttributionCapture } from "@/components/AttributionCapture";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL, SOCIAL_LINKS } from "@/lib/seo";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = "G-9S182GLZY6";
@@ -62,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     url: BASE_URL,
     description: SITE_DESCRIPTION,
     email: "support@mysticdigits.in",
+    sameAs: [SOCIAL_LINKS.facebook, SOCIAL_LINKS.instagram],
   };
 
   return (

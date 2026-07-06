@@ -3,6 +3,12 @@ import type { Metadata } from "next";
 export const BASE_URL = "https://mysticdigits.in";
 export const SITE_NAME = "Mystic Digits";
 
+// Official social profiles — used in the footer and in Organization `sameAs`.
+export const SOCIAL_LINKS = {
+  facebook: "https://www.facebook.com/profile.php?id=61591197721956",
+  instagram: "https://www.instagram.com/mysticdigits.in/",
+} as const;
+
 /**
  * Build the full per-page metadata set (title, description, canonical,
  * Open Graph, Twitter) for a route. `path` is the route path ("/" for home);

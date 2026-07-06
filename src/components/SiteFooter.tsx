@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SOCIAL_LINKS } from "@/lib/seo";
 
 export function SiteFooter() {
   return (
@@ -27,6 +28,16 @@ export function SiteFooter() {
               </Link>
             ))}
           </div>
+          <div className="footer-h" style={{ marginTop: 14 }}>
+            Bhagyank Meanings
+          </div>
+          <div className="footer-mulank">
+            {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
+              <Link key={n} href={`/bhagyank/${n}`} aria-label={`Bhagyank ${n} meaning`}>
+                {n}
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="footer-col">
@@ -39,6 +50,12 @@ export function SiteFooter() {
         <div className="footer-col">
           <div className="footer-h">Get in touch</div>
           <a href="mailto:support@mysticdigits.in">support@mysticdigits.in</a>
+          <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer">
+            Facebook
+          </a>
+          <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
         </div>
       </div>
       <div className="wrap footer-bottom">

@@ -4,7 +4,7 @@ import { pageMetadata, BASE_URL } from "@/lib/seo";
 import CalculatorForm from "./CalculatorForm";
 
 export const metadata = pageMetadata({
-  title: "Free Mulank Calculator — Find Your Mulank & Bhagyank Online | Mystic Digits",
+  title: "Free Mulank & Bhagyank Calculator — Mystic Digits",
   description:
     "Instantly calculate your Mulank (birth number) and Bhagyank (destiny number) with our free Vedic numerology calculator — no signup needed. When you're ready, get your full personalised 10-page report.",
   path: "/calculator",

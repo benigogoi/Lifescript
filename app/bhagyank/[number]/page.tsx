@@ -4,24 +4,24 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
-  MULANK_CONTENT,
-  MULANK_NUMBERS,
-  type MulankNumber,
-} from "@/lib/mulank-content";
+  BHAGYANK_CONTENT,
+  BHAGYANK_NUMBERS,
+  type BhagyankNumber,
+} from "@/lib/bhagyank-content";
 import { pageMetadata, BASE_URL, SITE_NAME } from "@/lib/seo";
 
-/** Pre-render /mulank/1 … /mulank/9 at build time. */
+/** Pre-render /bhagyank/1 … /bhagyank/9 at build time. */
 export function generateStaticParams() {
-  return MULANK_NUMBERS.map((n) => ({ number: String(n) }));
+  return BHAGYANK_NUMBERS.map((n) => ({ number: String(n) }));
 }
 
 // Reject anything outside 1–9 (no on-demand pages for unknown numbers).
 export const dynamicParams = false;
 
-/** Narrow a raw route param to a valid Mulank number, or null. */
-function toMulank(raw: string): MulankNumber | null {
+/** Narrow a raw route param to a valid Bhagyank number, or null. */
+function toBhagyank(raw: string): BhagyankNumber | null {
   const n = Number(raw);
-  return MULANK_NUMBERS.includes(n as MulankNumber) ? (n as MulankNumber) : null;
+  return BHAGYANK_NUMBERS.includes(n as BhagyankNumber) ? (n as BhagyankNumber) : null;
 }
 
 export async function generateMetadata({
@@ -30,40 +30,40 @@ export async function generateMetadata({
   params: Promise<{ number: string }>;
 }): Promise<Metadata> {
   const { number } = await params;
-  const n = toMulank(number);
+  const n = toBhagyank(number);
   if (!n) return {};
 
-  const info = MULANK_CONTENT[n];
+  const info = BHAGYANK_CONTENT[n];
   return pageMetadata({
-    title: `Mulank ${n} Meaning, Personality & Remedies — Mystic Digits`,
-    description: `Mulank ${n} meaning and moolank ${n} personality, ruled by ${info.planet}. Discover the strengths, weaknesses, career paths, lucky colour, and Vedic remedy for birth number ${n}.`,
-    path: `/mulank/${n}`,
+    title: `Bhagyank ${n} Meaning, Life Path & Remedies — Mystic Digits`,
+    description: `Bhagyank ${n} (destiny number ${n}) meaning, ruled by ${info.planet}. Discover the life path, opportunities, challenges, career direction, compatible numbers and Vedic remedy for Bhagyank ${n}.`,
+    path: `/bhagyank/${n}`,
   });
 }
 
-export default async function MulankPage({
+export default async function BhagyankPage({
   params,
 }: {
   params: Promise<{ number: string }>;
 }) {
   const { number } = await params;
-  const n = toMulank(number);
+  const n = toBhagyank(number);
   if (!n) notFound();
 
-  const info = MULANK_CONTENT[n];
+  const info = BHAGYANK_CONTENT[n];
 
   const jsonLd = [
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      headline: `Mulank ${n}: The ${info.planet} Personality`,
-      description: `Mulank ${n} meaning, personality, strengths, weaknesses, career paths and Vedic remedies.`,
-      about: `Vedic Numerology Mulank ${n}`,
-      datePublished: "2026-06-27",
+      headline: `Bhagyank ${n}: The ${info.planet} Life Path`,
+      description: `Bhagyank ${n} meaning, life path, opportunities, challenges, careers and Vedic remedies.`,
+      about: `Vedic Numerology Bhagyank ${n}`,
+      datePublished: "2026-07-06",
       dateModified: "2026-07-06",
       author: { "@type": "Organization", name: SITE_NAME, url: BASE_URL },
       publisher: { "@type": "Organization", name: SITE_NAME, url: BASE_URL },
-      mainEntityOfPage: `${BASE_URL}/mulank/${n}`,
+      mainEntityOfPage: `${BASE_URL}/bhagyank/${n}`,
     },
     {
       "@context": "https://schema.org",
@@ -73,8 +73,8 @@ export default async function MulankPage({
         {
           "@type": "ListItem",
           position: 2,
-          name: `Mulank ${n}`,
-          item: `${BASE_URL}/mulank/${n}`,
+          name: `Bhagyank ${n}`,
+          item: `${BASE_URL}/bhagyank/${n}`,
         },
       ],
     },
@@ -90,32 +90,35 @@ export default async function MulankPage({
 
       <main className="wrap">
         <div className="page-hero">
-          <div className="eyebrow">Vedic Numerology · Birth Number</div>
+          <div className="eyebrow">Vedic Numerology · Destiny Number</div>
           <h1>
-            Mulank {n}: The {info.planet} Personality
+            Bhagyank {n}: The {info.planet} Life Path
           </h1>
           <p>{info.meaning}.</p>
         </div>
 
         <article className="legal-page">
-          <h2>Personality Traits</h2>
-          <p>{info.personality}</p>
+          <h2>What Bhagyank {n} Means for Your Life Path</h2>
+          <p>{info.destiny}</p>
 
-          <h2>Strengths</h2>
+          <h2>The Life Lesson of Destiny Number {n}</h2>
+          <p>{info.lifeLesson}</p>
+
+          <h2>Opportunities Written Into This Number</h2>
           <ul>
-            {info.strengths.map((s) => (
-              <li key={s}>{s}</li>
+            {info.opportunities.map((o) => (
+              <li key={o}>{o}</li>
             ))}
           </ul>
 
-          <h2>Weaknesses</h2>
+          <h2>Challenges Along the Way</h2>
           <ul>
-            {info.weaknesses.map((w) => (
-              <li key={w}>{w}</li>
+            {info.challenges.map((c) => (
+              <li key={c}>{c}</li>
             ))}
           </ul>
 
-          <h2>Career Paths</h2>
+          <h2>Career &amp; Wealth Direction</h2>
           <ul>
             {info.careers.map((c) => (
               <li key={c}>{c}</li>
@@ -124,31 +127,15 @@ export default async function MulankPage({
 
           <h2>Compatible Numbers</h2>
           <p>
-            Mulank {n} generally harmonises best with{" "}
+            Bhagyank {n} generally harmonises best with{" "}
             <strong>
               {info.compatible.join(", ").replace(/, ([^,]*)$/, " and $1")}
             </strong>
-            . Relationships and partnerships with these numbers tend to feel supportive and
-            balanced.
+            . Partnerships — in marriage or business — with these numbers tend to flow with
+            less friction and more mutual support.
           </p>
 
-          <h2>Lucky Colour, Day &amp; Gemstone</h2>
-          <ul>
-            <li>
-              <strong>Ruling planet:</strong> {info.planet}
-            </li>
-            <li>
-              <strong>Lucky colour:</strong> {info.luckyColor}
-            </li>
-            <li>
-              <strong>Lucky day:</strong> {info.luckyDay}
-            </li>
-            <li>
-              <strong>Gemstone:</strong> {info.gemstone}
-            </li>
-          </ul>
-
-          <h2>Vedic Remedy</h2>
+          <h2>Vedic Remedy for Bhagyank {n}</h2>
           <p>{info.remedy}</p>
 
           <p style={{ marginTop: 8 }}>
@@ -156,11 +143,12 @@ export default async function MulankPage({
             <Link href="/calculator" style={{ color: "var(--gold)" }}>
               Use the free Mulank &amp; Bhagyank calculator
             </Link>{" "}
-            to find yours in seconds. And if your destiny number is also {n}, read what{" "}
-            <Link href={`/bhagyank/${n}`} style={{ color: "var(--gold)" }}>
-              Bhagyank {n}
+            to find yours in seconds. Your birth number tells the other half of the story —
+            read about{" "}
+            <Link href={`/mulank/${n}`} style={{ color: "var(--gold)" }}>
+              Mulank {n}
             </Link>{" "}
-            means for your life path.
+            too.
           </p>
         </article>
 
@@ -179,7 +167,7 @@ export default async function MulankPage({
         </section>
 
         <nav
-          aria-label="Other Mulank numbers"
+          aria-label="Other Bhagyank numbers"
           style={{
             display: "flex",
             flexWrap: "wrap",
@@ -188,22 +176,22 @@ export default async function MulankPage({
             margin: "8px auto 56px",
           }}
         >
-          {MULANK_NUMBERS.map((m) => (
+          {BHAGYANK_NUMBERS.map((b) => (
             <Link
-              key={m}
-              href={`/mulank/${m}`}
-              aria-current={m === n ? "page" : undefined}
+              key={b}
+              href={`/bhagyank/${b}`}
+              aria-current={b === n ? "page" : undefined}
               className="card"
               style={{
                 padding: "10px 16px",
                 fontFamily: "var(--font-display)",
                 fontSize: 18,
-                color: m === n ? "var(--gold-bright)" : "var(--muted)",
+                color: b === n ? "var(--gold-bright)" : "var(--muted)",
                 textDecoration: "none",
-                borderColor: m === n ? "rgba(201, 168, 76, 0.5)" : undefined,
+                borderColor: b === n ? "rgba(201, 168, 76, 0.5)" : undefined,
               }}
             >
-              Mulank {m}
+              Bhagyank {b}
             </Link>
           ))}
         </nav>

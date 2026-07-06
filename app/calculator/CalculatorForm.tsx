@@ -142,6 +142,10 @@ export default function CalculatorForm() {
               <Link href={`/mulank/${result.mulank}`} style={{ color: "var(--gold)" }}>
                 Read more about Mulank {result.mulank} →
               </Link>
+              {"  ·  "}
+              <Link href={`/bhagyank/${result.bhagyank}`} style={{ color: "var(--gold)" }}>
+                Read more about Bhagyank {result.bhagyank} →
+              </Link>
             </p>
           </div>
         </div>
