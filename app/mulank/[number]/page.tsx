@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import {
   MULANK_CONTENT,
   MULANK_NUMBERS,
+  mulankBirthDays,
   type MulankNumber,
 } from "@/lib/mulank-content";
 import { pageMetadata, BASE_URL, SITE_NAME } from "@/lib/seo";
@@ -78,7 +79,18 @@ export default async function MulankPage({
         },
       ],
     },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: info.faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
   ];
+
+  const birthDays = mulankBirthDays(n);
 
   return (
     <>
@@ -101,6 +113,20 @@ export default async function MulankPage({
           <h2>Personality Traits</h2>
           <p>{info.personality}</p>
 
+          <h2>Which Birth Dates Give Mulank {n}?</h2>
+          <p>
+            Anyone born on the{" "}
+            <strong>
+              {birthDays
+                .map((d) => `${d}${d === 1 || d === 21 || d === 31 ? "st" : d === 2 || d === 22 ? "nd" : d === 3 || d === 23 ? "rd" : "th"}`)
+                .join(", ")
+                .replace(/, ([^,]*)$/, " or $1")}
+            </strong>{" "}
+            of any month has Mulank {n} — the digits of the birth day always reduce to {n}.
+            The month and year don&apos;t matter for Mulank; they come into play for your
+            Bhagyank (destiny number).
+          </p>
+
           <h2>Strengths</h2>
           <ul>
             {info.strengths.map((s) => (
@@ -115,12 +141,19 @@ export default async function MulankPage({
             ))}
           </ul>
 
-          <h2>Career Paths</h2>
+          <h2>Love, Marriage &amp; Relationships</h2>
+          <p>{info.love}</p>
+
+          <h2>Career &amp; Money</h2>
           <ul>
             {info.careers.map((c) => (
               <li key={c}>{c}</li>
             ))}
           </ul>
+          <p>{info.careerDetail}</p>
+
+          <h2>Health &amp; Wellbeing</h2>
+          <p>{info.health}</p>
 
           <h2>Compatible Numbers</h2>
           <p>
@@ -148,8 +181,19 @@ export default async function MulankPage({
             </li>
           </ul>
 
+          <h2>Mulank {n} in 2026</h2>
+          <p>{info.year2026}</p>
+
           <h2>Vedic Remedy</h2>
           <p>{info.remedy}</p>
+
+          <h2>Frequently Asked Questions</h2>
+          {info.faqs.map((f) => (
+            <div key={f.q}>
+              <h3>{f.q}</h3>
+              <p>{f.a}</p>
+            </div>
+          ))}
 
           <p style={{ marginTop: 8 }}>
             Not sure of your numbers?{" "}
