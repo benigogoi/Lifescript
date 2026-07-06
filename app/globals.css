@@ -680,6 +680,11 @@ section.block {
 .field select:focus {
   border-color: var(--gold);
 }
+/* Native date input: render the picker icon/calendar for a dark background. */
+.field input[type="date"] {
+  color-scheme: dark;
+  min-height: 45px; /* iOS Safari collapses empty date inputs */
+}
 .dob-row {
   display: grid;
   grid-template-columns: 1fr 1.4fr 1fr;

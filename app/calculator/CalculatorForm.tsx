@@ -17,20 +17,16 @@ interface Result {
   bhagyank: MulankNumber;
 }
 
-/** Parse a DD/MM/YYYY string, tolerating "-" and "." separators. */
+/** Parse the YYYY-MM-DD value a native date input produces. */
 function parseDob(value: string): { day: number; month: number; year: number } | null {
-  const parts = value.trim().split(/[\/\-.]/).map((p) => p.trim());
+  const parts = value.trim().split("-").map(Number);
   if (parts.length !== 3) return null;
 
-  const [day, month, year] = parts.map(Number);
+  const [year, month, day] = parts;
   if (![day, month, year].every(Number.isInteger)) return null;
   if (day < 1 || day > 31) return null;
   if (month < 1 || month > 12) return null;
   if (year < 1900 || year > 2100) return null;
-
-  // Reject impossible calendar dates (e.g. 31/02/1990).
-  const probe = new Date(year, month - 1, day);
-  if (probe.getDate() !== day || probe.getMonth() !== month - 1) return null;
 
   return { day, month, year };
 }
@@ -60,7 +56,7 @@ export default function CalculatorForm() {
 
     const parsed = parseDob(dob);
     if (!parsed) {
-      setError("Please enter a valid date of birth as DD/MM/YYYY.");
+      setError("Please select your date of birth.");
       return;
     }
 
@@ -87,13 +83,13 @@ export default function CalculatorForm() {
         </div>
 
         <div className="field">
-          <label htmlFor="calc-dob">Date of Birth (DD/MM/YYYY)</label>
+          <label htmlFor="calc-dob">Date of Birth</label>
           <input
             id="calc-dob"
-            type="text"
-            inputMode="numeric"
+            type="date"
             autoComplete="bday"
-            placeholder="e.g. 28/05/1995"
+            min="1900-01-01"
+            max={new Date().toISOString().slice(0, 10)}
             value={dob}
             onChange={(e) => setDob(e.target.value)}
           />
