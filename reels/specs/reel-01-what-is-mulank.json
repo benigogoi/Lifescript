@@ -1,0 +1,48 @@
+{
+  "slug": "reel-01-what-is-mulank",
+  "slides": [
+    {
+      "eyebrow": "Vedic Numerology",
+      "title": "Born on the 28th?",
+      "body": "Then you're secretly a 1.",
+      "durationSec": 2.2
+    },
+    {
+      "title": "Add the digits of your birth day.",
+      "body": "28  →  2 + 8 = 10  →  1 + 0 = 1",
+      "durationSec": 2.8
+    },
+    {
+      "title": "That number is your Mulank.",
+      "body": "Your birth number — the core of your personality in Vedic numerology.",
+      "durationSec": 2.6
+    },
+    {
+      "kind": "list",
+      "title": "The nine numbers",
+      "items": [
+        "1 · Sun — the Leader",
+        "2 · Moon — the Intuitive",
+        "3 · Jupiter — the Wise",
+        "4 · Rahu — the Builder",
+        "5 · Mercury — the Free Spirit",
+        "6 · Venus — the Lover",
+        "7 · Ketu — the Mystic",
+        "8 · Saturn — the Achiever",
+        "9 · Mars — the Warrior"
+      ],
+      "durationSec": 4.6
+    },
+    {
+      "title": "Which one are you?",
+      "body": "Type your birth day below — we'll reply with your number. 👇",
+      "durationSec": 2.6
+    },
+    {
+      "kind": "end",
+      "title": "Find your full reading",
+      "body": "mysticdigits.in · free calculator",
+      "durationSec": 2.8
+    }
+  ]
+}
