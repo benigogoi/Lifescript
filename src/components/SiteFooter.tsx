@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SOCIAL_LINKS } from "@/lib/seo";
+import { FacebookIcon, InstagramIcon } from "@/components/icons";
 
 export function SiteFooter() {
   return (
@@ -50,12 +51,24 @@ export function SiteFooter() {
         <div className="footer-col">
           <div className="footer-h">Get in touch</div>
           <a href="mailto:support@mysticdigits.in">support@mysticdigits.in</a>
-          <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer">
-            Facebook
-          </a>
-          <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer">
-            Instagram
-          </a>
+          <div className="footer-social">
+            <a
+              href={SOCIAL_LINKS.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Mystic Digits on Facebook"
+            >
+              <FacebookIcon />
+            </a>
+            <a
+              href={SOCIAL_LINKS.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Mystic Digits on Instagram"
+            >
+              <InstagramIcon />
+            </a>
+          </div>
         </div>
       </div>
       <div className="wrap footer-bottom">
