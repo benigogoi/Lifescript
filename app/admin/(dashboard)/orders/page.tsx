@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listOrders } from "@/lib/orders";
+import { listOrdersPage, type OrderStatus } from "@/lib/orders";
 import { holdOrder, releaseOrder, sendNowAction, retryOrderAction, sendSelectedAction } from "../../actions";
 import { SubmitButton } from "../../SubmitButton";
 import { SelectAllCheckbox } from "../../SelectAllCheckbox";
@@ -37,35 +37,44 @@ function formatDate(iso: string) {
   });
 }
 
-const FILTERS = [
-  { key: "all", label: "All" },
-  { key: "unsent", label: "Unsent" },
-  { key: "sent", label: "Sent" },
-  { key: "failed", label: "Failed" },
-] as const;
+const PAGE_SIZE = 20;
 
-function matchesFilter(status: string, filter: string) {
-  if (filter === "unsent") return status === "scheduled" || status === "held";
-  if (filter === "sent") return status === "sent";
-  if (filter === "failed") return status === "failed";
-  return true;
+const FILTERS: { key: string; label: string; statuses?: readonly OrderStatus[] }[] = [
+  { key: "all", label: "All" },
+  { key: "unsent", label: "Unsent", statuses: ["scheduled", "held"] },
+  { key: "sent", label: "Sent", statuses: ["sent"] },
+  { key: "failed", label: "Failed", statuses: ["failed"] },
+];
+
+function ordersHref(filterKey: string, page: number) {
+  const qs = new URLSearchParams();
+  if (filterKey !== "all") qs.set("filter", filterKey);
+  if (page > 1) qs.set("page", String(page));
+  const s = qs.toString();
+  return s ? `/admin/orders?${s}` : "/admin/orders";
 }
 
 export default async function AdminOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; page?: string }>;
 }) {
-  const [allOrders, params] = await Promise.all([listOrders(), searchParams]);
+  const params = await searchParams;
   const now = Date.now();
-  const filter = params.filter ?? "all";
-  const orders = allOrders.filter((o) => matchesFilter(o.status, filter));
+  const filter = FILTERS.find((f) => f.key === params.filter) ?? FILTERS[0];
+  const requestedPage = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const { orders, total, page } = await listOrdersPage({
+    statuses: filter.statuses,
+    page: requestedPage,
+    pageSize: PAGE_SIZE,
+  });
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <>
       <div className="admin-topbar">
         <h1>Orders</h1>
-        <span className="admin-pill">{orders.length} total</span>
+        <span className="admin-pill">{total} total</span>
       </div>
 
       <div className="admin-toolbar">
@@ -73,8 +82,8 @@ export default async function AdminOrdersPage({
           {FILTERS.map((f) => (
             <Link
               key={f.key}
-              href={f.key === "all" ? "/admin/orders" : `/admin/orders?filter=${f.key}`}
-              className={`admin-filter-tab ${filter === f.key ? "active" : ""}`}
+              href={ordersHref(f.key, 1)}
+              className={`admin-filter-tab ${filter.key === f.key ? "active" : ""}`}
             >
               {f.label}
             </Link>
@@ -189,6 +198,28 @@ export default async function AdminOrdersPage({
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="admin-pagination">
+          {page > 1 ? (
+            <Link href={ordersHref(filter.key, page - 1)} className="admin-filter-tab">
+              ← Prev
+            </Link>
+          ) : (
+            <span className="admin-filter-tab disabled">← Prev</span>
+          )}
+          <span className="admin-pagination-info">
+            Page {page} of {totalPages}
+          </span>
+          {page < totalPages ? (
+            <Link href={ordersHref(filter.key, page + 1)} className="admin-filter-tab">
+              Next →
+            </Link>
+          ) : (
+            <span className="admin-filter-tab disabled">Next →</span>
+          )}
+        </div>
+      )}
     </>
   );
 }
