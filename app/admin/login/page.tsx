@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { login } from "./actions";
+import { LoginButton } from "./LoginButton";
 
 export const metadata: Metadata = {
   title: "Admin Login — Mystic Digits",
@@ -45,9 +46,7 @@ export default async function AdminLoginPage({
           </div>
         )}
 
-        <button type="submit" className="cta" style={{ width: "100%", marginTop: 8 }}>
-          Sign in
-        </button>
+        <LoginButton />
       </form>
     </div>
   );

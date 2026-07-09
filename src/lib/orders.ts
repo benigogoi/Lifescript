@@ -115,6 +115,37 @@ export async function listOrders(status?: OrderStatus): Promise<Order[]> {
   return (data as Order[]) ?? [];
 }
 
+/**
+ * One page of orders (newest first) plus the total row count for the filter.
+ * `page` is 1-based and clamped to the last page, so a stale ?page= URL never 416s.
+ */
+export async function listOrdersPage(opts: {
+  statuses?: readonly OrderStatus[];
+  page: number;
+  pageSize: number;
+}): Promise<{ orders: Order[]; total: number; page: number }> {
+  let countQuery = supabaseAdmin().from(TABLE).select("id", { count: "exact", head: true });
+  if (opts.statuses?.length) countQuery = countQuery.in("status", [...opts.statuses]);
+  const { count, error: countError } = await countQuery;
+  if (countError) throw countError;
+
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / opts.pageSize));
+  const page = Math.min(Math.max(1, opts.page), totalPages);
+  if (total === 0) return { orders: [], total, page };
+
+  const offset = (page - 1) * opts.pageSize;
+  let q = supabaseAdmin()
+    .from(TABLE)
+    .select()
+    .order("created_at", { ascending: false })
+    .range(offset, offset + opts.pageSize - 1);
+  if (opts.statuses?.length) q = q.in("status", [...opts.statuses]);
+  const { data, error } = await q;
+  if (error) throw error;
+  return { orders: (data as Order[]) ?? [], total, page };
+}
+
 /** Orders whose scheduled send time has arrived (for the delivery cron). */
 export async function listDueForDelivery(now = new Date()): Promise<Order[]> {
   const { data, error } = await supabaseAdmin()
