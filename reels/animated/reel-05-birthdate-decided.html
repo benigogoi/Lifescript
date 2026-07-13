@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@400;500;700&display=block" rel="stylesheet">
+<style>
+  :root {
+    --ink: #f4f1ff;
+    --muted: #b6aed6;
+    --amber: #ffc46b;
+    --amber-soft: rgba(255, 196, 107, 0.85);
+    --rose: #ff9eb5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; width: 1080px; height: 1920px; overflow: hidden; }
+
+  #stage {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: linear-gradient(165deg, #221244 0%, #120b2e 42%, #2c0f45 100%);
+  }
+
+  /* ---- animated background ---- */
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); }
+  .b1 { width: 900px; height: 900px; left: -280px; top: -180px;
+        background: radial-gradient(circle, rgba(124, 77, 255, 0.42), transparent 65%);
+        animation: drift1 16s ease-in-out infinite alternate; }
+  .b2 { width: 820px; height: 820px; right: -260px; top: 700px;
+        background: radial-gradient(circle, rgba(255, 122, 158, 0.20), transparent 65%);
+        animation: drift2 19s ease-in-out infinite alternate; }
+  .b3 { width: 760px; height: 760px; left: -160px; bottom: -260px;
+        background: radial-gradient(circle, rgba(255, 190, 92, 0.16), transparent 65%);
+        animation: drift3 17s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(140px, 120px) scale(1.12); } }
+  @keyframes drift2 { to { transform: translate(-150px, -140px) scale(1.08); } }
+  @keyframes drift3 { to { transform: translate(120px, -100px) scale(1.15); } }
+
+  .ring { position: absolute; left: 50%; top: 50%; width: 1500px; height: 1500px;
+          margin: -750px 0 0 -750px; opacity: 0.14;
+          animation: spin 90s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .vignette { position: absolute; inset: 0;
+    background: radial-gradient(1100px 1500px at 50% 46%, transparent 55%, rgba(5, 2, 16, 0.75) 100%); }
+
+  /* ---- scenes ---- */
+  .scene {
+    position: absolute; inset: 0; opacity: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 150px 96px;
+  }
+  .ghost {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -54%);
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+    font-size: 1150px; line-height: 1; color: rgba(255, 196, 107, 0.07);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 34px; letter-spacing: 12px; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 52px;
+  }
+  .title {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 104px; line-height: 1.1; color: var(--ink); max-width: 880px;
+  }
+  .title .hl { color: var(--amber); font-style: italic; }
+  .title .word { display: inline-block; }
+  .sub {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 400;
+    font-size: 44px; line-height: 1.5; color: var(--muted);
+    max-width: 780px; margin-top: 60px;
+  }
+  .sub strong { color: var(--rose); font-weight: 500; }
+
+  /* ---- product pages fan ---- */
+  .fan { position: relative; width: 900px; height: 560px; margin-top: 90px; }
+  .pg {
+    position: absolute; left: 50%; top: 0; width: 300px; height: 430px;
+    margin-left: -150px; transform-origin: 50% 130%;
+    background: linear-gradient(180deg, #fbf7ed 0%, #f0e8d6 100%);
+    border-radius: 14px; box-shadow: 0 30px 70px rgba(4, 0, 20, 0.55);
+    padding: 30px 26px; text-align: left;
+  }
+  .pg .pg-no { font-family: 'Space Grotesk', sans-serif; font-size: 20px;
+               letter-spacing: 4px; color: #b08c3e; }
+  .pg .pg-t { font-family: 'Fraunces', serif; font-weight: 600; font-size: 34px;
+              color: #241a33; margin: 10px 0 20px; }
+  .pg .pg-lines { height: 260px; border-radius: 4px;
+    background: repeating-linear-gradient(180deg,
+      rgba(36, 26, 51, 0.22) 0 4px, transparent 4px 22px); }
+
+  /* ---- price scene ---- */
+  .price {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 300px;
+    line-height: 1; color: var(--amber);
+    text-shadow: 0 0 90px rgba(255, 196, 107, 0.45);
+    animation: glow 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { text-shadow: 0 0 50px rgba(255, 196, 107, 0.30); }
+    to   { text-shadow: 0 0 130px rgba(255, 196, 107, 0.65); }
+  }
+  .logo { width: 210px; height: 210px; object-fit: contain; margin-bottom: 36px; }
+  .cta-domain {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 46px;
+    letter-spacing: 3px; color: var(--amber-soft); margin-top: 70px;
+  }
+</style>
+</head>
+<body data-slug="reel-05-birthdate-decided" data-duration-ms="21800" data-fps="30" data-cover-ms="1500">
+<div id="stage">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <svg class="ring" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#ffc46b" stroke-width="0.16"
+            stroke-dasharray="0.4 1.8"/>
+    <circle cx="50" cy="50" r="38" fill="none" stroke="#ffc46b" stroke-width="0.1"/>
+    <g fill="#ffc46b" font-size="3.4" font-family="serif" text-anchor="middle">
+      <text x="50" y="9">1</text><text x="77" y="19">2</text><text x="92" y="45">3</text>
+      <text x="88" y="72">4</text><text x="68" y="90">5</text><text x="36" y="91">6</text>
+      <text x="13" y="75">7</text><text x="7" y="48">8</text><text x="21" y="20">9</text>
+    </g>
+  </svg>
+  <div class="vignette"></div>
+
+  <!-- S1 · HOOK -->
+  <section class="scene" id="s1">
+    <div class="ghost">5</div>
+    <div class="title" id="hookTitle">Your birth date decided <span class="hl">5&nbsp;things</span> about you</div>
+    <div class="sub" id="hookSub">Most people never find out <strong>#4</strong>.</div>
+  </section>
+
+  <!-- S2..S6 · THE FIVE -->
+  <section class="scene item" id="s2">
+    <div class="ghost">1</div>
+    <div class="eyebrow">1 of 5</div>
+    <div class="title">How you love</div>
+    <div class="sub">…and exactly who you clash with.</div>
+  </section>
+
+  <section class="scene item" id="s3">
+    <div class="ghost">2</div>
+    <div class="eyebrow">2 of 5</div>
+    <div class="title">How money behaves around you</div>
+    <div class="sub">Earned fast and kept — or quietly leaking.</div>
+  </section>
+
+  <section class="scene item" id="s4">
+    <div class="ghost">3</div>
+    <div class="eyebrow">3 of 5</div>
+    <div class="title">Your lucky years — and the risky ones</div>
+    <div class="sub">They're already on your calendar.</div>
+  </section>
+
+  <section class="scene item" id="s5">
+    <div class="ghost">4</div>
+    <div class="eyebrow">4 of 5 — the one nobody checks</div>
+    <div class="title">The numbers <span class="hl">missing</span> from your birth date</div>
+    <div class="sub">Every missing number is a lesson that keeps repeating <strong>until you see it</strong>.</div>
+  </section>
+
+  <section class="scene item" id="s6">
+    <div class="ghost">5</div>
+    <div class="eyebrow">5 of 5</div>
+    <div class="title">The remedy that balances it</div>
+    <div class="sub">Specific to your ruling planet — not generic advice.</div>
+  </section>
+
+  <!-- S7 · PRODUCT -->
+  <section class="scene" id="s7">
+    <div class="title" style="font-size:88px">All 5 — in a <span class="hl">10-page report</span> written about <span class="hl">you</span></div>
+    <div class="fan" id="fan">
+      <div class="pg"><div class="pg-no">01</div><div class="pg-t">Mulank</div><div class="pg-lines"></div></div>
+      <div class="pg"><div class="pg-no">02</div><div class="pg-t">Bhagyank</div><div class="pg-lines"></div></div>
+      <div class="pg"><div class="pg-no">03</div><div class="pg-t">Lo Shu Grid</div><div class="pg-lines"></div></div>
+      <div class="pg"><div class="pg-no">05</div><div class="pg-t">Year Ahead</div><div class="pg-lines"></div></div>
+      <div class="pg"><div class="pg-no">08</div><div class="pg-t">Remedies</div><div class="pg-lines"></div></div>
+    </div>
+    <div class="sub" style="margin-top:70px">From just your name &amp; date of birth.</div>
+  </section>
+
+  <!-- S8 · PRICE + CTA -->
+  <section class="scene" id="s8">
+    <img class="logo" src="../../public/logo.png" alt="">
+    <div class="price" id="price">₹99</div>
+    <div class="sub" style="margin-top:44px">In your inbox within 24 hours.</div>
+    <div class="cta-domain">mysticdigits.in · link in bio</div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const EASE = "cubic-bezier(.16,.84,.32,1)";
+  const $ = (s) => document.querySelector(s);
+
+  function anim(el, kf, opt) {
+    const a = el.animate(kf, Object.assign({ easing: EASE }, opt));
+    a.pause();
+    return a;
+  }
+  // Scene visibility: fade-in holds via fill:both; fade-out only fills forwards
+  // so it has no effect before its own start time.
+  function scene(id, t0, t1) {
+    const el = document.getElementById(id);
+    anim(el, [{ opacity: 0 }, { opacity: 1 }], { delay: t0, duration: 260, fill: "both" });
+    anim(el, [{ opacity: 1 }, { opacity: 0 }], { delay: t1 - 220, duration: 220, fill: "forwards" });
+    return el;
+  }
+  const pop = [
+    { opacity: 0, transform: "translateY(60px) scale(.94)", filter: "blur(10px)" },
+    { opacity: 1, transform: "none", filter: "blur(0px)" },
+  ];
+  const ghostIn = [
+    { opacity: 0, transform: "translate(-50%,-54%) scale(1.7)" },
+    { opacity: 1, transform: "translate(-50%,-54%) scale(1)" },
+  ];
+
+  // Split hook title into staggered words (keep .hl span as one unit).
+  const hook = $("#hookTitle");
+  const parts = [];
+  hook.childNodes.forEach((n) => {
+    if (n.nodeType === 3) {
+      n.textContent.split(/\s+/).filter(Boolean).forEach((w) => parts.push(w));
+    } else {
+      parts.push(n);
+    }
+  });
+  hook.innerHTML = "";
+  parts.forEach((p, i) => {
+    const span = document.createElement("span");
+    span.className = "word";
+    if (typeof p === "string") span.textContent = p;
+    else span.appendChild(p);
+    hook.appendChild(span);
+    if (i < parts.length - 1) hook.appendChild(document.createTextNode(" "));
+  });
+
+  // ---------- timeline ----------
+  // S1 hook 0–3100
+  scene("s1", 0, 3100);
+  document.querySelectorAll("#hookTitle .word").forEach((w, i) =>
+    anim(w, pop, { delay: 120 + i * 95, duration: 520, fill: "both" }));
+  anim($("#s1 .ghost"), ghostIn, { delay: 0, duration: 900, fill: "both" });
+  anim($("#hookSub"), pop, { delay: 1650, duration: 520, fill: "both" });
+
+  // S2–S6 items
+  const items = [
+    ["s2", 3100, 5500],
+    ["s3", 5500, 7900],
+    ["s4", 7900, 10400],
+    ["s5", 10400, 13500],   // the tease — longest beat
+    ["s6", 13500, 15900],
+  ];
+  for (const [id, t0, t1] of items) {
+    scene(id, t0, t1);
+    const el = document.getElementById(id);
+    anim(el.querySelector(".ghost"), ghostIn, { delay: t0, duration: 700, fill: "both" });
+    anim(el.querySelector(".eyebrow"), pop, { delay: t0 + 60, duration: 420, fill: "both" });
+    anim(el.querySelector(".title"), pop, { delay: t0 + 180, duration: 520, fill: "both" });
+    anim(el.querySelector(".sub"), pop, { delay: t0 + 420, duration: 520, fill: "both" });
+  }
+
+  // S7 product 15900–18900
+  scene("s7", 15900, 18900);
+  anim($("#s7 .title"), pop, { delay: 15960, duration: 520, fill: "both" });
+  anim($("#s7 .sub"), pop, { delay: 16700, duration: 520, fill: "both" });
+  const rot = [-16, -8, 0, 8, 16];
+  document.querySelectorAll("#fan .pg").forEach((pg, i) => {
+    anim(pg, [
+      { opacity: 0, transform: `translateY(240px) rotate(${rot[i]}deg) scale(.8)` },
+      { opacity: 1, transform: `translateY(0) rotate(${rot[i]}deg) scale(1)` },
+    ], { delay: 16200 + i * 130, duration: 620, fill: "both" });
+  });
+
+  // S8 price 18900–21800
+  scene("s8", 18900, 21800);
+  anim($("#s8 .logo"), pop, { delay: 18960, duration: 480, fill: "both" });
+  anim($("#price"), [
+    { opacity: 0, transform: "scale(2.6)", filter: "blur(14px)" },
+    { opacity: 1, transform: "scale(1)", filter: "blur(0px)" },
+  ], { delay: 19120, duration: 560, fill: "both" });
+  anim($("#s8 .sub"), pop, { delay: 19620, duration: 480, fill: "both" });
+  anim($("#s8 .cta-domain"), pop, { delay: 19920, duration: 480, fill: "both" });
+
+  // ---------- frame stepping API ----------
+  window.seekMs = (t) => {
+    document.getAnimations({ subtree: true }).forEach((a) => {
+      a.pause();
+      a.currentTime = t;
+    });
+    return t;
+  };
+  window.seekMs(0);
+})();
+</script>
+</body>
+</html>
