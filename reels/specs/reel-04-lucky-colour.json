@@ -1,0 +1,55 @@
+{
+  "slug": "reel-04-lucky-colour",
+  "slides": [
+    {
+      "eyebrow": "Vedic Numerology",
+      "title": "Your birth day knows your lucky colour.",
+      "body": "Find the day you were born 👇",
+      "durationSec": 2.4
+    },
+    {
+      "title": "Born on 1, 10, 19 or 28?",
+      "body": "Gold & Orange — the Sun's shine ☀️",
+      "durationSec": 2.4
+    },
+    {
+      "title": "Born on 2, 11, 20 or 29?",
+      "body": "White & Silver — the Moon's glow 🌙",
+      "durationSec": 2.4
+    },
+    {
+      "kind": "list",
+      "title": "Keep checking…",
+      "items": [
+        "3 · 12 · 21 · 30  →  Yellow",
+        "4 · 13 · 22 · 31  →  Electric Blue"
+      ],
+      "durationSec": 2.8
+    },
+    {
+      "kind": "list",
+      "title": "Almost there…",
+      "items": [
+        "5 · 14 · 23  →  Green",
+        "6 · 15 · 24  →  Pink",
+        "7 · 16 · 25  →  Grey"
+      ],
+      "durationSec": 3.0
+    },
+    {
+      "kind": "list",
+      "title": "And finally…",
+      "items": [
+        "8 · 17 · 26  →  Deep Blue",
+        "9 · 18 · 27  →  Red ❤️"
+      ],
+      "durationSec": 2.8
+    },
+    {
+      "kind": "end",
+      "title": "Wearing yours today?",
+      "body": "mysticdigits.in · free calculator",
+      "durationSec": 2.6
+    }
+  ]
+}
