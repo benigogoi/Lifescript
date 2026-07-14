@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Mandala } from "@/components/Mandala";
@@ -25,6 +26,24 @@ const SECTIONS = [
   { n: "08", t: "Vedic Remedies", d: "Simple, authentic remedies aligned to your ruling planet." },
   { n: "09", t: "Your Mantra", d: "A mantra chosen to strengthen your numbers." },
   { n: "10", t: "A Closing Blessing", d: "A warm, personal note to carry your reading forward." },
+];
+
+const SAMPLE_PAGES = [
+  {
+    src: "/samples/sample-cover.webp",
+    alt: "Sample report cover page — dark and gold Vedic numerology design",
+    caption: "Your cover, with your name in gold",
+  },
+  {
+    src: "/samples/sample-loshu.webp",
+    alt: "Sample Lo Shu grid page showing present and missing numbers with strong planes and arrows",
+    caption: "Your Lo Shu grid, planes & arrows",
+  },
+  {
+    src: "/samples/sample-lucky.webp",
+    alt: "Sample lucky elements page with colours, days, gemstone, metal and direction",
+    caption: "Your lucky colours, days & gemstone",
+  },
 ];
 
 const STEPS = [
@@ -106,6 +125,30 @@ export default function Home() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        <section className="block" id="sample">
+          <div className="section-head">
+            <h2>See it for yourself</h2>
+            <div className="divider" />
+            <p className="sub">
+              Real pages from Ananya&apos;s sample report. Yours is prepared from your numbers
+              alone — no two reports are the same.
+            </p>
+          </div>
+          <div className="samples">
+            {SAMPLE_PAGES.map((s) => (
+              <figure className="sample-page" key={s.src}>
+                <Image src={s.src} alt={s.alt} width={1191} height={1685} loading="lazy" />
+                <figcaption>{s.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <div className="samples-cta">
+            <Link href="/order" className="cta cta-ghost cta-sm">
+              Get yours, written for your numbers →
+            </Link>
           </div>
         </section>
 
