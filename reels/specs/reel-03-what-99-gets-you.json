@@ -1,0 +1,42 @@
+{
+  "slug": "reel-03-what-99-gets-you",
+  "slides": [
+    {
+      "title": "Someone wrote a book about you.",
+      "body": "10 pages. From your birth date alone. Wait till you see page 9.",
+      "durationSec": 4.4
+    },
+    {
+      "title": "Page 2: your Mulank.",
+      "body": "The number driving your personality — hidden in your birth DAY.",
+      "durationSec": 3.8
+    },
+    {
+      "kind": "list",
+      "title": "Pages 3 to 7",
+      "items": [
+        "Your year ahead",
+        "Lucky colours, days & gemstone",
+        "Your personal mantra",
+        "Your Lo Shu grid, decoded"
+      ],
+      "durationSec": 5.2
+    },
+    {
+      "title": "Page 9: your remedies.",
+      "body": "Fixes written for YOUR chart. No two books are the same.",
+      "durationSec": 4.0
+    },
+    {
+      "title": "The whole book? ₹99.",
+      "body": "In your inbox within 24 hours. Your name + date of birth is all we need.",
+      "durationSec": 4.4
+    },
+    {
+      "kind": "end",
+      "title": "Get your reading",
+      "body": "Comment your birth date 👇 free insight · mysticdigits.in",
+      "durationSec": 3.6
+    }
+  ]
+}

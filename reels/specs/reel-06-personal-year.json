@@ -1,0 +1,44 @@
+{
+  "slug": "reel-06-personal-year",
+  "slides": [
+    {
+      "kind": "number",
+      "number": "2026",
+      "eyebrow": "Personal Year",
+      "title": "is a different number for YOU.",
+      "durationSec": 3.2
+    },
+    {
+      "title": "Everyone's living a different year.",
+      "body": "Yours has a number. Here's how to find it.",
+      "durationSec": 2.8
+    },
+    {
+      "title": "Birth day + month + 2026",
+      "body": "Born 28 Jan → 2+8 + 0+1 + 2+0+2+6 = 21 → 3",
+      "durationSec": 3.2
+    },
+    {
+      "kind": "list",
+      "title": "Your year number means…",
+      "items": [
+        "1 → a new chapter begins",
+        "5 → change, travel, freedom",
+        "8 → money & power moves",
+        "9 → endings that free you"
+      ],
+      "durationSec": 4.4
+    },
+    {
+      "title": "Your full year, decoded.",
+      "body": "Month-by-month in your ₹99 report — written for your exact birth date.",
+      "durationSec": 3.0
+    },
+    {
+      "kind": "end",
+      "title": "Get your year ahead",
+      "body": "Comment your birth date 👇 free insight · mysticdigits.in",
+      "durationSec": 2.8
+    }
+  ]
+}
