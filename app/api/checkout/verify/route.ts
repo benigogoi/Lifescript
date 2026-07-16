@@ -60,6 +60,7 @@ export async function POST(req: Request) {
       await sendOrderConfirmation({
         to: order.email,
         firstName: order.full_name.split(/\s+/)[0] ?? order.full_name,
+        lang: order.report_lang ?? "en",
       });
     } catch (e) {
       console.error("confirmation email failed", e);

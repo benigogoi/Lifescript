@@ -771,6 +771,36 @@ section.block {
   grid-template-columns: 1fr 1.4fr 1fr;
   gap: 10px;
 }
+/* Report-language pills (English / অসমীয়া). */
+.lang-pills {
+  display: flex;
+  gap: 10px;
+}
+.lang-pills .pill {
+  flex: 1;
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.lang-pills .pill:hover {
+  border-color: var(--gold);
+}
+.lang-pills .pill.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(201, 168, 76, 0.08);
+}
+.lang-note {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 7px;
+}
 .field .err {
   color: var(--red);
   font-size: 12.5px;

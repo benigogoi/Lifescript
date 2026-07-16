@@ -7,6 +7,7 @@
  */
 import { z } from "zod";
 import type { ReportOptions } from "./report-template";
+import { REPORT_LANGS } from "./report-lang";
 
 const currentYear = new Date().getFullYear();
 
@@ -24,6 +25,9 @@ export const orderInputSchema = z.object({
     .int()
     .min(1920, "Year looks too early")
     .max(currentYear, "Year can't be in the future"),
+  // Which language the paid report (and its emails) should be in. Optional so
+  // older clients / cached pages that don't send it keep working.
+  lang: z.enum(REPORT_LANGS).default("en"),
 });
 
 export type OrderInput = z.infer<typeof orderInputSchema>;
@@ -44,6 +48,7 @@ export function toReportOptions(input: OrderInput): ReportOptions {
     year: input.year,
     year1,
     year2: year1 + 1,
+    lang: input.lang,
   };
 }
 

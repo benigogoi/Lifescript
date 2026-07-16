@@ -4,6 +4,12 @@
  * Turns a customer's birth details into the full 10-page report HTML,
  * ready to render to PDF with headless Chrome. Pulls numbers from the
  * numerology engine and copy/correspondences from the knowledge base.
+ *
+ * Language-aware: `opts.lang` selects the chrome strings, fonts, numerals and
+ * correspondence tables (see report-lang.ts). English is the default and its
+ * output is unchanged. Assamese ('as') swaps in the Bengali-Assamese script
+ * pack; its narrative content must come from the content engine (there is no
+ * Assamese static knowledge base yet — staticContent stays English-only).
  */
 import {
   calculateNumerology,
@@ -27,6 +33,16 @@ import {
   YEAR_TIER_BULLET,
   type YearTier,
 } from "./report-data";
+import {
+  asNumerals,
+  CHROME_AS,
+  LUCKY_AS,
+  MONTHS_AS,
+  PLANET_AS,
+  REMEDIES_AS,
+  YEAR_TIER_AS,
+  type ReportLang,
+} from "./report-lang";
 import { STARFIELD_DATA_URI } from "./starfield";
 
 export interface ReportOptions extends BirthInput {
@@ -35,6 +51,8 @@ export interface ReportOptions extends BirthInput {
   year2?: number;
   /** Date the report is "prepared". Defaults to now. */
   preparedDate?: Date;
+  /** Report language. Defaults to 'en'. */
+  lang?: ReportLang;
 }
 
 /**
@@ -48,6 +66,7 @@ export interface ReportOptions extends BirthInput {
  * prefixes the customer's name. Mulank/Bhagyank/Name leads become
  * `"{Name}, {paras[0]}"` (so paras[0] starts lowercase, e.g. "your Mulank…").
  * Year leads become `"{Name}, {year} {paras[0]}"` (e.g. "is a number 1 year…").
+ * The same contract holds in Assamese ("{নাম}, {paras[0]}").
  */
 export interface YearContent {
   theme: string;
@@ -70,9 +89,12 @@ export interface ResolvedContent {
   /** Combo paragraph tying the (Mulank-determined) remedies to this person's full chart. Empty in the static fallback. */
   remedy: { combo: string };
   thankyou: { message: string };
+  /** Non-Latin display rendering of the customer's name (e.g. Assamese
+   * script), transliterated by the content engine. Absent for English. */
+  display?: { fullName: string; firstName: string };
 }
 
-/** Build the report's narrative from the static knowledge base (no AI). */
+/** Build the report's narrative from the static knowledge base (no AI). English only. */
 export function staticContent(r: NumerologyResult, year1: number, year2: number): ResolvedContent {
   const mc = NUMBER_CORE[r.mulank.number];
   const bc = NUMBER_CORE[r.bhagyank.number];
@@ -123,6 +145,27 @@ export function staticContent(r: NumerologyResult, year1: number, year2: number)
   };
 }
 
+/**
+ * Deterministic Lo Shu panel content in Assamese (mirrors the strong/missing
+ * logic of staticContent). Used by the content engine so the AI never has to
+ * restate chart facts it could get wrong.
+ */
+export function loshuPanelsAs(r: NumerologyResult): { strongPlanes: string[]; missingItems: string[]; missingTitle: string } {
+  const strongPlanes = r.loShu.repeated.length
+    ? r.loShu.repeated.map((d) => CHROME_AS.loshu.strongRepeated(d, PLANET_BY_NUMBER[d], r.loShu.counts[d]))
+    : (Object.keys(r.loShu.counts) as unknown as string[]).map(Number).filter((d) => r.loShu.counts[d as Digit] > 0).slice(0, 3).map((d) => CHROME_AS.loshu.strongPresent(d as Digit, PLANET_BY_NUMBER[d as Digit]));
+
+  const missingItems = r.loShu.missing.length
+    ? r.loShu.missing.map((d) => CHROME_AS.missingNotes[d])
+    : [CHROME_AS.loshu.completeGridNote];
+
+  return {
+    strongPlanes: strongPlanes.slice(0, 4),
+    missingItems: missingItems.slice(0, 4),
+    missingTitle: CHROME_AS.loshu.missingTitle(r.loShu.missing),
+  };
+}
+
 /** The customer-facing download filename, e.g. "mysticdigits_report_ravi_kumar.pdf". */
 export function reportFileName(fullName: string): string {
   const slug = fullName
@@ -146,14 +189,6 @@ function esc(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function fmtDate(d: number, m: number, y: number): string {
-  return `${d} ${MONTHS[m - 1]} ${y}`;
-}
-
-function fmtPrepared(date: Date): string {
-  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-}
-
 // --- reusable SVG fragments -------------------------------------------------
 
 const PETAL_DEF = `<g id="petal"><path d="M100 12 C112 40 112 60 100 78 C88 60 88 40 100 12 Z"/></g>`;
@@ -168,7 +203,7 @@ function petals(steps: number): string {
 
 function mandala(opacity: number, steps: number, rings: number[]): string {
   const circles = rings.map((r) => `<circle cx="100" cy="100" r="${r}"/>`).join("");
-  return `<svg class="mandala" viewBox="0 0 200 200" style="opacity:${opacity}"><g fill="none" stroke="#C9A84C" stroke-width="0.5">${circles}${petals(steps)}</g></svg>`;
+  return `<svg class="mandala" viewBox="0 0 200 200" style="opacity:${opacity}"><g fill="none" stroke="#C9A84C" stroke-width="0.5">${circles}${PETAL_DEF}${petals(steps)}</g></svg>`;
 }
 
 const STARS = `<div class="stars"></div>`;
@@ -188,10 +223,6 @@ function bodyParas(ps: string[]): string {
   return ps.map((p, i) => (i === 0 ? `<p class="lead">${p}</p>` : `<p>${p}</p>`)).join("");
 }
 
-function foot(name: string, page: string): string {
-  return `<div class="page-foot"><span>Mystic Digits · ${esc(name)}</span><span>${page}</span></div>`;
-}
-
 const TIER_CLASS: Record<YearTier, string> = {
   "Highly Favourable": "hf",
   Favourable: "fav",
@@ -202,14 +233,26 @@ const TIER_CLASS: Record<YearTier, string> = {
 // --- the template ----------------------------------------------------------
 
 export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent): string {
+  const lang: ReportLang = opts.lang ?? "en";
+  const A = lang === "as";
   const now = opts.preparedDate ?? new Date();
   const year1 = opts.year1 ?? now.getFullYear();
   const year2 = opts.year2 ?? year1 + 1;
 
   const r = calculateNumerology(opts);
-  const fn = r.input.firstName;
-  const fnE = esc(fn);
-  const fullE = esc(r.input.fullName);
+  const c = content ?? staticContent(r, year1, year2);
+
+  // Numerals + dates in the report language.
+  const num = (n: number | string) => (A ? asNumerals(n) : String(n));
+  const fmtDate = (d: number, m: number, y: number) =>
+    A ? `${asNumerals(d)} ${MONTHS_AS[m - 1]} ${asNumerals(y)}` : `${d} ${MONTHS[m - 1]} ${y}`;
+  const fmtPrepared = (date: Date) => fmtDate(date.getDate(), date.getMonth() + 1, date.getFullYear());
+
+  // Display name: engine-transliterated for Assamese when available.
+  const displayFull = (A && c.display?.fullName) || r.input.fullName;
+  const displayFirst = (A && c.display?.firstName) || r.input.firstName;
+  const fnE = esc(displayFirst);
+  const fullE = esc(displayFull);
 
   const mulank = r.mulank.number;
   const bhagyank = r.bhagyank.number;
@@ -218,17 +261,22 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   const uy2 = reduceToSingleDigit(year2);
 
   const mc = NUMBER_CORE[mulank];
-  const bc = NUMBER_CORE[bhagyank];
-  const nc = NUMBER_CORE[nameNum];
-  const lucky = LUCKY[mulank];
-  const rem = REMEDIES[mulank];
-  const bLucky = LUCKY[bhagyank];
-  const bRem = REMEDIES[bhagyank];
+  const lucky = A ? LUCKY_AS[mulank] : LUCKY[mulank];
+  const rem = A ? REMEDIES_AS[mulank] : REMEDIES[mulank];
+  const bLucky = A ? LUCKY_AS[bhagyank] : LUCKY[bhagyank];
+  const bRem = A ? REMEDIES_AS[bhagyank] : REMEDIES[bhagyank];
   const hasBhagyankBonus = bhagyank !== mulank;
 
-  const c = content ?? staticContent(r, year1, year2);
+  const planetName = (p: (typeof r.mulank)["planet"]) => (A ? PLANET_AS[p] : p);
+  const tierName = (t: YearTier) => (A ? YEAR_TIER_AS[t] : t);
+
+  const foot = (page: string) =>
+    `<div class="page-foot"><span>Mystic Digits · ${esc(displayFull)}</span><span>${num(page)}</span></div>`;
 
   // ---- cover ----
+  const coverTitle = A
+    ? CHROME_AS.coverTitle(`<span class="accent">${fnE}</span>`)
+    : `The Numerology<br/>of <span class="accent">${fnE}</span>`;
   const cover = `
 <section class="page" id="cover">
   ${STARS}
@@ -240,17 +288,17 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   ${FRAME}${CORNERS}
   <div class="cover-inner">
     <div class="wordmark">Mystic Digits</div>
-    <div class="tagline">Your Story · Your Numbers · Your Life</div>
-    <h1 class="cover-title">The Numerology<br/>of <span class="accent">${fnE}</span></h1>
+    <div class="tagline">${A ? CHROME_AS.tagline : "Your Story · Your Numbers · Your Life"}</div>
+    <h1 class="cover-title">${coverTitle}</h1>
     <div class="cover-name">${fullE}</div>
     <div class="cover-dob">${fmtDate(r.input.day, r.input.month, r.input.year)}</div>
     <div class="divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
     <div class="keynums">
-      <div class="keynum"><div class="circle">${mulank}</div><span class="label">Mulank</span><span class="planet">${r.mulank.planet}</span></div>
-      <div class="keynum"><div class="circle">${bhagyank}</div><span class="label">Bhagyank</span><span class="planet">${r.bhagyank.planet}</span></div>
-      <div class="keynum"><div class="circle">${nameNum}</div><span class="label">Name No.</span><span class="planet">${r.nameNumber.planet}</span></div>
+      <div class="keynum"><div class="circle">${num(mulank)}</div><span class="label">${A ? CHROME_AS.mulankLabel : "Mulank"}</span><span class="planet">${planetName(r.mulank.planet)}</span></div>
+      <div class="keynum"><div class="circle">${num(bhagyank)}</div><span class="label">${A ? CHROME_AS.bhagyankLabel : "Bhagyank"}</span><span class="planet">${planetName(r.bhagyank.planet)}</span></div>
+      <div class="keynum"><div class="circle">${num(nameNum)}</div><span class="label">${A ? CHROME_AS.nameNumLabel : "Name No."}</span><span class="planet">${planetName(r.nameNumber.planet)}</span></div>
     </div>
-    <div class="cover-foot">mysticdigits.in &nbsp;·&nbsp; Prepared ${fmtPrepared(now)}</div>
+    <div class="cover-foot">mysticdigits.in &nbsp;·&nbsp; ${A ? `${CHROME_AS.prepared}: ` : "Prepared "}${fmtPrepared(now)}</div>
   </div>
 </section>`;
 
@@ -259,8 +307,8 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     id: string,
     kicker: string,
     title: string,
-    num: Digit,
-    planetSanskrit: string,
+    n: Digit,
+    planetLabel: string,
     essence: string,
     bodyParagraphs: string[],
     panelA: { h: string; items: string[] },
@@ -274,10 +322,10 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     <div class="section-kicker">${kicker}</div>
     <h2 class="section-title">${title}</h2>
     <div class="hero-row">
-      <div class="hero-circle">${num}</div>
+      <div class="hero-circle">${num(n)}</div>
       <div class="hero-meta">
-        <div class="rule-by">Ruled by</div>
-        <div class="planet-name">${planetSanskrit}</div>
+        <div class="rule-by">${A ? CHROME_AS.ruledBy : "Ruled by"}</div>
+        <div class="planet-name">${planetLabel}</div>
         <div class="essence">${essence}</div>
       </div>
     </div>
@@ -288,36 +336,54 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
       <div class="panel"><h4>${panelB.h}</h4><ul>${list(panelB.items)}</ul></div>
     </div>
   </div>
-  ${foot(r.input.fullName, page)}
+  ${foot(page)}
 </section>`;
 
   const mulankPage = numberPage(
-    "mulank", "Mulank · The Birth Number", `Born of ${r.mulank.planet === "Sun" ? "the Sun" : esc(mc.planetSanskrit.split(" · ")[0])}`,
-    mulank, mc.planetSanskrit, c.mulank.essence,
+    "mulank",
+    A ? CHROME_AS.kickers.mulank : "Mulank · The Birth Number",
+    A ? CHROME_AS.titles.mulank(r.mulank.planet) : `Born of ${r.mulank.planet === "Sun" ? "the Sun" : esc(mc.planetSanskrit.split(" · ")[0])}`,
+    mulank,
+    A ? PLANET_AS[r.mulank.planet] : mc.planetSanskrit,
+    c.mulank.essence,
     [`${fnE}, ${c.mulank.paras[0]}`, ...c.mulank.paras.slice(1)],
-    { h: "Your Strengths", items: c.mulank.strengths }, { h: "Your Growth Edge", items: c.mulank.growth }, "02",
+    { h: A ? CHROME_AS.panels.strengths : "Your Strengths", items: c.mulank.strengths },
+    { h: A ? CHROME_AS.panels.growth : "Your Growth Edge", items: c.mulank.growth },
+    "02",
   );
 
   const bhagyankPage = numberPage(
-    "bhagyank", "Bhagyank · The Destiny Number", `The Path of ${r.bhagyank.planet}`,
-    bhagyank, bc.planetSanskrit, c.bhagyank.essence,
+    "bhagyank",
+    A ? CHROME_AS.kickers.bhagyank : "Bhagyank · The Destiny Number",
+    A ? CHROME_AS.titles.bhagyank(r.bhagyank.planet) : `The Path of ${r.bhagyank.planet}`,
+    bhagyank,
+    A ? PLANET_AS[r.bhagyank.planet] : NUMBER_CORE[bhagyank].planetSanskrit,
+    c.bhagyank.essence,
     [`${fnE}, ${c.bhagyank.paras[0]}`, ...c.bhagyank.paras.slice(1)],
-    { h: "Where Destiny Favours You", items: c.bhagyank.favours }, { h: "What Destiny Asks of You", items: c.bhagyank.asks }, "03",
+    { h: A ? CHROME_AS.panels.favours : "Where Destiny Favours You", items: c.bhagyank.favours },
+    { h: A ? CHROME_AS.panels.asks : "What Destiny Asks of You", items: c.bhagyank.asks },
+    "03",
   );
 
   const namePage = numberPage(
-    "namenum", "Name Number · The Sound You Carry", `The Name “${fnE}”`,
-    nameNum, nc.planetSanskrit, c.name.essence,
-    [`Your name “${fnE}” ${c.name.paras[0]}`, ...c.name.paras.slice(1)],
-    { h: "Your Name Gives You", items: c.name.gives }, { h: "Use It Wisely", items: c.name.useWisely }, "05",
+    "namenum",
+    A ? CHROME_AS.kickers.name : "Name Number · The Sound You Carry",
+    A ? CHROME_AS.titles.name(fnE) : `The Name “${fnE}”`,
+    nameNum,
+    A ? PLANET_AS[r.nameNumber.planet] : NUMBER_CORE[nameNum].planetSanskrit,
+    c.name.essence,
+    [A ? `আপোনাৰ “${fnE}” নামটোৱে ${c.name.paras[0]}` : `Your name “${fnE}” ${c.name.paras[0]}`, ...c.name.paras.slice(1)],
+    { h: A ? CHROME_AS.panels.gives : "Your Name Gives You", items: c.name.gives },
+    { h: A ? CHROME_AS.panels.useWisely : "Use It Wisely", items: c.name.useWisely },
+    "05",
   );
 
   // ---- Lo Shu grid ----
   const cells = LO_SHU_LAYOUT.flat().map((digit) => {
     const count = r.loShu.counts[digit];
     const present = count > 0;
-    const display = present ? String(digit).repeat(count) : String(digit);
-    return `<div class="cell ${present ? "present" : "missing"}"><span class="num">${display}</span><span class="planet-tag">${PLANET_BY_NUMBER[digit]}</span></div>`;
+    const display = num(present ? String(digit).repeat(count) : String(digit));
+    return `<div class="cell ${present ? "present" : "missing"}"><span class="num">${display}</span><span class="planet-tag">${planetName(PLANET_BY_NUMBER[digit])}</span></div>`;
   }).join("");
 
   const activeArrows = activeLoShuLines(r.loShu.counts).map((line) => LO_SHU_ARROWS[line.id]).slice(0, 2);
@@ -325,32 +391,38 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
     ? activeArrows.map((a) => `<div class="arrow-item"><span class="arrow-name">${esc(a.name)}</span><p>${a.text}</p></div>`).join("")
     : `<p class="arrow-empty">${LO_SHU_NO_ARROW_NOTE}</p>`;
 
+  // In Assamese the engine always writes loshu.combo; the static English
+  // arrows listing is never shown (it has no Assamese translation).
+  const loshuLower = c.loshu.combo
+    ? `<div class="body-copy"><p>${c.loshu.combo}</p></div>`
+    : A
+      ? ""
+      : `<div class="arrows-section"><div class="arrows-heading">Lo Shu Arrows · Lines Your Chart Completes</div>${arrowsHtml}</div>`;
+
   const loshuPage = `
 <section class="page" id="loshu">
   ${STARS}${FRAME}
   <div class="content-inner">
-    <div class="section-kicker">Lo Shu Grid · Your Energy Map</div>
-    <h2 class="section-title">The Numbers You Carry</h2>
+    <div class="section-kicker">${A ? CHROME_AS.kickers.loshu : "Lo Shu Grid · Your Energy Map"}</div>
+    <h2 class="section-title">${A ? CHROME_AS.titles.loshu : "The Numbers You Carry"}</h2>
     <div class="loshu-wrap">
       <div class="loshu">
-        <svg class="loshu-geo" viewBox="0 0 200 200" fill="none" stroke="#C9A84C" stroke-width="0.5"><circle cx="100" cy="100" r="98"/><circle cx="100" cy="100" r="74"/><rect x="28" y="28" width="144" height="144"/><rect x="28" y="28" width="144" height="144" transform="rotate(45 100 100)"/>${petals(4)}</svg>
+        <svg class="loshu-geo" viewBox="0 0 200 200" fill="none" stroke="#C9A84C" stroke-width="0.5"><circle cx="100" cy="100" r="98"/><circle cx="100" cy="100" r="74"/><rect x="28" y="28" width="144" height="144"/><rect x="28" y="28" width="144" height="144" transform="rotate(45 100 100)"/>${PETAL_DEF}${petals(4)}</svg>
         <div class="loshu-grid">${cells}</div>
       </div>
     </div>
     <div class="legend">
-      <span><i class="swatch" style="background:var(--gold-bright)"></i> Present in your chart</span>
-      <span><i class="swatch" style="background:rgba(224,90,78,0.4)"></i> Missing number</span>
+      <span><i class="swatch" style="background:var(--gold-bright)"></i> ${A ? CHROME_AS.loshu.legendPresent : "Present in your chart"}</span>
+      <span><i class="swatch" style="background:rgba(224,90,78,0.4)"></i> ${A ? CHROME_AS.loshu.legendMissing : "Missing number"}</span>
     </div>
     <div class="gold-rule"></div>
     <div class="panels">
-      <div class="panel"><h4>Your Strong Planes</h4><ul>${list(c.loshu.strongPlanes.slice(0, 4))}</ul></div>
+      <div class="panel"><h4>${A ? CHROME_AS.panels.strongPlanes : "Your Strong Planes"}</h4><ul>${list(c.loshu.strongPlanes.slice(0, 4))}</ul></div>
       <div class="panel"><h4>${c.loshu.missingTitle}</h4><ul>${list(c.loshu.missingItems.slice(0, 4))}</ul></div>
     </div>
-    ${c.loshu.combo
-      ? `<div class="body-copy"><p>${c.loshu.combo}</p></div>`
-      : `<div class="arrows-section"><div class="arrows-heading">Lo Shu Arrows · Lines Your Chart Completes</div>${arrowsHtml}</div>`}
+    ${loshuLower}
   </div>
-  ${foot(r.input.fullName, "04")}
+  ${foot("04")}
 </section>`;
 
   // ---- year prediction page ----
@@ -358,30 +430,30 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
 <section class="page" id="${id}">
   ${STARS}${mandala(0.06, 6, [96, 70])}${FRAME}
   <div class="content-inner">
-    <div class="section-kicker">Your Year Ahead · ${year}</div>
+    <div class="section-kicker">${A ? CHROME_AS.kickers.year(year) : `Your Year Ahead · ${year}`}</div>
     <h2 class="section-title">${yc.theme}</h2>
     <div class="hero-row">
-      <div class="hero-circle">${uy}</div>
+      <div class="hero-circle">${num(uy)}</div>
       <div class="hero-meta">
-        <div class="rule-by">Universal Year</div>
-        <div class="planet-name">Number ${uy} · ${PLANET_BY_NUMBER[uy]}</div>
-        <div class="essence">${year} ${yc.essence}</div>
-        <div class="year-tier tier-${TIER_CLASS[tier]}"><span class="yt-label">Your Personal Outlook</span><strong>${tier}</strong></div>
+        <div class="rule-by">${A ? CHROME_AS.year.universalYear : "Universal Year"}</div>
+        <div class="planet-name">${A ? CHROME_AS.year.planetLine(uy, PLANET_BY_NUMBER[uy]) : `Number ${uy} · ${PLANET_BY_NUMBER[uy]}`}</div>
+        <div class="essence">${num(year)} ${yc.essence}</div>
+        <div class="year-tier tier-${TIER_CLASS[tier]}"><span class="yt-label">${A ? CHROME_AS.year.tierLabel : "Your Personal Outlook"}</span><strong>${tierName(tier)}</strong></div>
       </div>
     </div>
     <div class="gold-rule"></div>
-    <div class="body-copy">${bodyParas([`${fnE}, ${year} ${yc.paras[0]}`, ...yc.paras.slice(1)])}</div>
+    <div class="body-copy">${bodyParas([`${fnE}, ${num(year)} ${yc.paras[0]}`, ...yc.paras.slice(1)])}</div>
     <div class="panels">
-      <div class="panel"><h4>Opportunities</h4><ul>${list(yc.opportunities)}</ul></div>
-      <div class="panel"><h4>Take Care</h4><ul>${list(yc.takeCare)}</ul></div>
+      <div class="panel"><h4>${A ? CHROME_AS.panels.opportunities : "Opportunities"}</h4><ul>${list(yc.opportunities)}</ul></div>
+      <div class="panel"><h4>${A ? CHROME_AS.panels.takeCare : "Take Care"}</h4><ul>${list(yc.takeCare)}</ul></div>
     </div>
   </div>
-  ${foot(r.input.fullName, page)}
+  ${foot(page)}
 </section>`;
 
   // ---- lucky elements ----
-  const colorDots = lucky.colors.map((c) => `<i style="background:${c.hex}"></i>`).join("");
-  const colorNames = lucky.colors.map((c) => c.name).join(", ");
+  const colorDots = lucky.colors.map((cc) => `<i style="background:${cc.hex}"></i>`).join("");
+  const colorNames = lucky.colors.map((cc) => cc.name).join(", ");
   const luckyIcon = {
     sun: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.4"><circle cx="12" cy="12" r="4.5"/><g stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="5" y1="5" x2="7" y2="7"/><line x1="17" y1="17" x2="19" y2="19"/><line x1="19" y1="5" x2="17" y2="7"/><line x1="7" y1="17" x2="5" y2="19"/></g></svg>`,
     palette: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.4"><path d="M12 3a9 9 0 100 18 3 3 0 003-3v-1a2 2 0 012-2h1a3 3 0 003-3 9 9 0 00-12-6z"/></svg>`,
@@ -393,47 +465,55 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   const luckyItem = (icon: string, label: string, value: string) =>
     `<div class="lucky-item"><div class="lucky-ic">${icon}</div><div><div class="l-label">${label}</div><div class="l-value">${value}</div></div></div>`;
 
+  const luckyBonus = A
+    ? CHROME_AS.lucky.bonusText(r.bhagyank.planet, bLucky.days, bLucky.colors[0].name)
+    : `${bLucky.days} and ${bLucky.colors[0].name.toLowerCase()} also lean in your favour.`;
+
   const luckyPage = `
 <section class="page" id="lucky">
   ${STARS}${mandala(0.05, 8, [96, 60])}${FRAME}
   <div class="content-inner">
-    <div class="section-kicker">Lucky Elements · Aligned to Your ${r.mulank.planet}</div>
-    <h2 class="section-title">What Brings You Fortune</h2>
+    <div class="section-kicker">${A ? CHROME_AS.kickers.lucky(r.mulank.planet) : `Lucky Elements · Aligned to Your ${r.mulank.planet}`}</div>
+    <h2 class="section-title">${A ? CHROME_AS.titles.lucky : "What Brings You Fortune"}</h2>
     <div class="lucky-grid">
-      ${luckyItem(luckyIcon.sun, "Lucky Days", lucky.days)}
-      ${luckyItem(luckyIcon.palette, "Lucky Colours", `${colorNames} <span class="color-dots">${colorDots}</span>`)}
-      ${luckyItem(luckyIcon.hash, "Lucky Numbers", lucky.numbers)}
-      ${luckyItem(luckyIcon.gem, "Gemstone", lucky.gemstone)}
-      ${luckyItem(luckyIcon.metal, "Lucky Metal", lucky.metal)}
-      ${luckyItem(luckyIcon.compass, "Favourable Direction", lucky.direction)}
+      ${luckyItem(luckyIcon.sun, A ? CHROME_AS.lucky.days : "Lucky Days", lucky.days)}
+      ${luckyItem(luckyIcon.palette, A ? CHROME_AS.lucky.colors : "Lucky Colours", `${colorNames} <span class="color-dots">${colorDots}</span>`)}
+      ${luckyItem(luckyIcon.hash, A ? CHROME_AS.lucky.numbers : "Lucky Numbers", lucky.numbers)}
+      ${luckyItem(luckyIcon.gem, A ? CHROME_AS.lucky.gemstone : "Gemstone", lucky.gemstone)}
+      ${luckyItem(luckyIcon.metal, A ? CHROME_AS.lucky.metal : "Lucky Metal", lucky.metal)}
+      ${luckyItem(luckyIcon.compass, A ? CHROME_AS.lucky.direction : "Favourable Direction", lucky.direction)}
     </div>
-    ${hasBhagyankBonus ? `<div class="secondary-note"><span class="sn-label">Bhagyank Bonus · ${r.bhagyank.planet}</span><span class="sn-text">${bLucky.days} and ${bLucky.colors[0].name.toLowerCase()} also lean in your favour.</span></div>` : ""}
+    ${hasBhagyankBonus ? `<div class="secondary-note"><span class="sn-label">${A ? CHROME_AS.lucky.bonusLabel(r.bhagyank.planet) : `Bhagyank Bonus · ${r.bhagyank.planet}`}</span><span class="sn-text">${luckyBonus}</span></div>` : ""}
     ${c.lucky.combo ? `<div class="body-copy"><p>${c.lucky.combo}</p></div>` : ""}
   </div>
-  ${foot(r.input.fullName, "08")}
+  ${foot("08")}
 </section>`;
 
   // ---- remedies ----
   const remedyRows = rem.items.map((it, i) =>
-    `<div class="remedy"><div class="r-no">${i + 1}</div><div><div class="r-title">${it.title}</div><div class="r-desc">${it.desc}</div></div></div>`
+    `<div class="remedy"><div class="r-no">${num(i + 1)}</div><div><div class="r-title">${it.title}</div><div class="r-desc">${it.desc}</div></div></div>`
   ).join("");
+
+  const remedyBonus = A
+    ? CHROME_AS.remedies.bonusText(bRem.mantra, bRem.mantraSub)
+    : `${bRem.mantra} — ${bRem.mantraSub.toLowerCase()}.`;
 
   const remediesPage = `
 <section class="page" id="remedies">
   ${STARS}${mandala(0.06, 8, [96, 70, 44])}${FRAME}
   <div class="content-inner">
-    <div class="section-kicker">Vedic Remedies · Strengthen Your ${r.mulank.planet}</div>
-    <h2 class="section-title">Simple Daily Practices</h2>
+    <div class="section-kicker">${A ? CHROME_AS.kickers.remedies(r.mulank.planet) : `Vedic Remedies · Strengthen Your ${r.mulank.planet}`}</div>
+    <h2 class="section-title">${A ? CHROME_AS.titles.remedies : "Simple Daily Practices"}</h2>
     <div class="mantra-box">
-      <div class="m-label">Your Mantra</div>
+      <div class="m-label">${A ? CHROME_AS.remedies.mantraLabel : "Your Mantra"}</div>
       <div class="m-text">${rem.mantra}</div>
       <div class="m-sub">${rem.mantraSub}</div>
     </div>
     <div class="remedies">${remedyRows}</div>
-    ${hasBhagyankBonus ? `<div class="secondary-note"><span class="sn-label">Bhagyank Bonus · ${r.bhagyank.planet}</span><span class="sn-text">${bRem.mantra} — ${bRem.mantraSub.toLowerCase()}.</span></div>` : ""}
+    ${hasBhagyankBonus ? `<div class="secondary-note"><span class="sn-label">${A ? CHROME_AS.remedies.bonusLabel(r.bhagyank.planet) : `Bhagyank Bonus · ${r.bhagyank.planet}`}</span><span class="sn-text">${remedyBonus}</span></div>` : ""}
     ${c.remedy.combo ? `<div class="body-copy"><p>${c.remedy.combo}</p></div>` : ""}
   </div>
-  ${foot(r.input.fullName, "09")}
+  ${foot("09")}
 </section>`;
 
   // ---- thank you + upsell ----
@@ -442,20 +522,32 @@ export function buildReportHtml(opts: ReportOptions, content?: ResolvedContent):
   ${STARS}${mandala(0.09, 12, [96, 78, 54, 30])}${FRAME}${CORNERS}
   <div class="ty-inner">
     <div class="wordmark" style="font-size:18px">Mystic Digits</div>
-    <div class="ty-namaste">Namaste, ${fnE}</div>
+    <div class="ty-namaste">${A ? CHROME_AS.thankyou.namaste(fnE) : `Namaste, ${fnE}`}</div>
     <p class="ty-msg">${c.thankyou.message}</p>
   </div>
 </section>`;
 
+  const fontsHref = A
+    ? "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&family=Noto+Serif+Bengali:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600&display=swap"
+    : "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap";
+
+  const css = A
+    ? CSS
+        .replaceAll("'Cormorant Garamond', serif", "'Cormorant Garamond', 'Noto Serif Bengali', serif")
+        .replaceAll("'Jost', sans-serif", "'Jost', 'Noto Sans Bengali', sans-serif")
+        .replaceAll("'Marcellus', serif", "'Marcellus', 'Noto Serif Bengali', serif")
+      + AS_CSS
+    : CSS;
+
   return `<!doctype html>
-<html lang="en">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8" />
 <title>Mystic Digits Report — ${fullE}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<style>${CSS}</style>
+<link href="${fontsHref}" rel="stylesheet" />
+<style>${css}</style>
 </head>
 <body>
 ${cover}
@@ -596,4 +688,46 @@ const CSS = `
   .ty-inner { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:110px 80px 70px; }
   .ty-namaste { font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--gold); }
   .ty-msg { font-size:18px; line-height:1.6; color:#D5D5E2; max-width:460px; margin-top:18px; }
+`;
+
+/**
+ * Assamese overrides, appended after the base CSS (which also gets the
+ * Bengali-Assamese fonts injected into its stacks). Three concerns, matching
+ * the approved sample render:
+ * 1. no drop-cap — ::first-letter can split a conjunct cluster;
+ * 2. softer letter-spacing — wide tracking breaks the script's rhythm
+ *    (text-transform is left in place; it's a no-op for Bengali-Assamese);
+ * 3. more line-height + slightly smaller sizes — matras need vertical room.
+ */
+const AS_CSS = `
+  .body-copy .lead::first-letter { font-family:inherit; color:inherit; font-size:inherit; float:none; line-height:inherit; margin:0; }
+  .tagline { font-size:12px; letter-spacing:1.5px; text-transform:none; }
+  .cover-title { font-size:54px; line-height:1.25; }
+  .cover-title .accent { font-style:normal; }
+  .cover-name { font-size:38px; letter-spacing:0.5px; }
+  .cover-dob { font-size:14px; letter-spacing:1.5px; text-transform:none; }
+  .keynum .label { font-size:11px; letter-spacing:1px; text-transform:none; }
+  .keynum .planet { font-size:12px; letter-spacing:0.5px; }
+  .cover-foot { letter-spacing:1.5px; text-transform:none; }
+  .section-kicker { font-size:13px; letter-spacing:2px; text-transform:none; }
+  .section-title { font-size:42px; line-height:1.25; margin-top:8px; }
+  .hero-meta .rule-by { letter-spacing:1.5px; text-transform:none; }
+  .hero-meta .planet-name { font-size:36px; }
+  .hero-meta .essence { font-size:16px; line-height:1.55; }
+  .year-tier .yt-label { font-size:11px; letter-spacing:0.5px; text-transform:none; }
+  .year-tier strong { font-size:14px; }
+  .body-copy { font-size:16.5px; line-height:1.65; }
+  .panel h4 { font-size:16.5px; letter-spacing:0.5px; }
+  .panel li { font-size:14.5px; line-height:1.45; }
+  .panel li::before { top:8px; }
+  .page-foot { font-size:11px; letter-spacing:1px; text-transform:none; }
+  .cell .planet-tag { font-size:10px; letter-spacing:1px; text-transform:none; }
+  .lucky-item .l-label { font-size:11.5px; letter-spacing:1px; text-transform:none; }
+  .lucky-item .l-value { font-size:21px; }
+  .mantra-box .m-label { font-size:12px; letter-spacing:2px; text-transform:none; }
+  .mantra-box .m-sub { letter-spacing:0.3px; }
+  .remedy .r-title { font-size:16.5px; letter-spacing:0.3px; }
+  .remedy .r-desc { font-size:14.5px; line-height:1.55; }
+  .secondary-note .sn-label { font-size:12px; letter-spacing:0.5px; text-transform:none; }
+  .ty-msg { font-size:17px; line-height:1.75; }
 `;

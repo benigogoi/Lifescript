@@ -93,6 +93,8 @@ function reportOptionsFor(order: Order): ReportOptions {
     year: order.dob_year,
     year1,
     year2: year1 + 1,
+    // Older rows (pre-migration-0005) have no report_lang → English.
+    lang: order.report_lang ?? "en",
   };
 }
 
@@ -114,6 +116,10 @@ export async function processPaidOrder(order: Order): Promise<void> {
       html = buildReportHtml(opts, content);
       claudeCostUsd = costUsd;
     } catch (e) {
+      // Non-English narratives have no static fallback — sending an English
+      // report to a customer who paid for an Assamese one is worse than a
+      // 'failed' order the admin can retry. English keeps the old behaviour.
+      if (opts.lang && opts.lang !== "en") throw e;
       console.error(`order ${order.id}: Claude content generation failed, falling back to static`, e);
       html = buildReportHtml(opts);
     }
@@ -171,6 +177,7 @@ export async function deliverScheduledOrder(order: Order): Promise<void> {
       firstName: order.full_name.split(/\s+/)[0] ?? order.full_name,
       pdf,
       filename,
+      lang: order.report_lang ?? "en",
     });
 
     await updateOrder(order.id, { status: "sent", sent_at: new Date().toISOString(), error: null });

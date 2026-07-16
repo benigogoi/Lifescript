@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { pageMetadata } from "@/lib/seo";
+import { isReportLang } from "@/lib/report-lang";
 import OrderForm from "./OrderForm";
 
 export const metadata = pageMetadata({
@@ -9,7 +10,15 @@ export const metadata = pageMetadata({
   path: "/order",
 });
 
-export default function OrderPage() {
+export default async function OrderPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  // Ad links can pre-select the report language: /order?lang=as
+  const { lang } = await searchParams;
+  const initialLang = isReportLang(lang) ? lang : "en";
+
   return (
     <>
       <SiteHeader />
@@ -20,7 +29,7 @@ export default function OrderPage() {
           <div className="divider" />
           <p className="sub">Enter your details exactly as you'd like them to appear on your report.</p>
         </div>
-        <OrderForm />
+        <OrderForm initialLang={initialLang} />
       </main>
 
       <SiteFooter />
