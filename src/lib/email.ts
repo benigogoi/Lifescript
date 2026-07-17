@@ -49,7 +49,7 @@ const EMAIL_COPY = {
   },
   as: {
     confirmSubject: "আপোনাৰ অৰ্ডাৰ পাইছোঁ — আপোনাৰ Mystic Digits ৰিপ'ৰ্ট প্ৰস্তুত হৈ আছে",
-    confirmHeading: "আপোনাৰ পঠন প্ৰস্তুত হৈ আছে",
+    confirmHeading: "আপোনাৰ ৰিপ'ৰ্ট প্ৰস্তুত কৰা হৈ আছে",
     confirmBody: (name: string) =>
       `মৰমৰ ${name}, ধন্যবাদ — আপোনাৰ পেমেণ্ট পোৱা গৈছে।
                   আপোনাৰ নাম আৰু জন্ম তাৰিখৰ পৰা আপোনাৰ ব্যক্তিগত ১০-পৃষ্ঠাৰ
@@ -58,7 +58,7 @@ const EMAIL_COPY = {
     confirmBadge: "অৰ্ডাৰ নিশ্চিত &nbsp;·&nbsp; ₹৯৯",
     confirmFooter: "আপুনি একো কৰিবলগীয়া নাই। ৰিপ'ৰ্ট সাজু হোৱাৰ লগে লগে আমি ইমেইল কৰিম।",
     readySubject: (name: string) => `${name}, আপোনাৰ Mystic Digits সংখ্যাতত্ত্ব ৰিপ'ৰ্ট সাজু হৈছে`,
-    readyHeading: "আপোনাৰ পঠন আহি পালে",
+    readyHeading: "আপোনাৰ ৰিপ'ৰ্ট আহি পালে",
     readyBody: (name: string) =>
       `মৰমৰ ${name}, আপোনাৰ ব্যক্তিগত ১০-পৃষ্ঠাৰ Mystic Digits সংখ্যাতত্ত্ব
                   ৰিপ'ৰ্টখন সাজু — <strong style="color:#e6c766;">এই ইমেইলৰ লগত PDF হিচাপে
@@ -115,9 +115,9 @@ function emailShell(heading: string, body: string, badge: string, footer: string
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#0d0d12;border:1px solid rgba(201,168,76,0.18);border-radius:10px;">
             <tr>
               <td style="padding:36px 40px 8px;text-align:center;">
-                <div style="font-family:'Marcellus',Georgia,serif;letter-spacing:6px;font-size:18px;color:#c9a84c;text-transform:uppercase;">
-                  MYSTIC DIGITS
-                </div>
+                <!-- Absolute URL: email clients can't resolve relative paths,
+                     and most strip data: URIs — must point at the live site. -->
+                <img src="https://mysticdigits.in/logo.png" alt="MYSTIC DIGITS" width="110" style="display:block;margin:0 auto;max-width:110px;height:auto;" />
               </td>
             </tr>
             <tr>
