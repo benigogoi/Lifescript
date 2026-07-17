@@ -6,8 +6,9 @@ import { processPaidOrder } from "@/lib/generate";
 
 export const runtime = "nodejs";
 // processPaidOrder (Claude call + Puppeteer PDF render) runs in the after()
-// callback below, within this same invocation's budget.
-export const maxDuration = 60;
+// callback below, within this same invocation's budget. 300s: Assamese
+// full-narrative generation runs ~2-3 min; 60s killed it mid-flight.
+export const maxDuration = 300;
 
 /**
  * Razorpay webhook — authoritative backstop for `payment.captured`. Covers

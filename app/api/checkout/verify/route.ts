@@ -7,8 +7,10 @@ import { processPaidOrder } from "@/lib/generate";
 
 export const runtime = "nodejs";
 // processPaidOrder (Claude call + Puppeteer PDF render) runs in the after()
-// callback below, within this same invocation's budget.
-export const maxDuration = 60;
+// callback below, within this same invocation's budget. Assamese reports
+// generate the full narrative (~7k output tokens ≈ 2-3 min) — 60s killed the
+// function mid-generation, stranding orders in 'generating'.
+export const maxDuration = 300;
 
 const verifySchema = z.object({
   razorpay_order_id: z.string().min(1),
