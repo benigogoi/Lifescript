@@ -1,5 +1,22 @@
 # Reels — how to make one
 
+## Animated scenes (current style)
+
+```
+npx tsx scripts/render-reel-frames.ts reels/scenes/<scene>.html
+```
+
+Each scene is a self-contained HTML file exposing `window.seekMs(t)` +
+`window.TOTAL_MS` — every visual is a pure function of t, so the renderer
+captures deterministic frames through headless Chrome and pipes them straight
+into ffmpeg (nothing hits disk except the MP4 and a few `preview-*s.png`
+stills). Fonts are vendored in `reels/fonts/` so no network is needed.
+First scene: `reels/scenes/reel-07-lucky-day.html` — copy it as a starting
+point. Requires ffmpeg on PATH; set CHROME_PATH if Chrome isn't in the
+default spot (e.g. `CHROME_PATH=/opt/pw-browsers/chromium` in sandboxes).
+
+## Static slide decks (v1 style — retired, kept for reference)
+
 ```
 npx tsx scripts/render-reel.ts reels/specs/<your-spec>.json
 ```

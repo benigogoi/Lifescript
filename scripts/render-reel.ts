@@ -175,10 +175,15 @@ async function main() {
   const htmlPath = path.join(outDir, "slides.html");
   await writeFile(htmlPath, buildHtml(spec, logoUrl), "utf8");
 
+  // In sandboxed/CI environments all HTTPS goes through a MITM proxy that
+  // Chrome won't discover from env vars — pass it through explicitly so the
+  // Google Fonts stylesheets still load (no-op on the main PC).
+  const proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
+  const proxyArgs = proxy ? [`--proxy-server=${proxy}`, "--ignore-certificate-errors"] : [];
   const browser = await puppeteer.launch({
     executablePath: browserPath(),
     headless: true,
-    args: ["--no-sandbox", "--disable-dev-shm-usage", "--force-color-profile=srgb"],
+    args: ["--no-sandbox", "--disable-dev-shm-usage", "--force-color-profile=srgb", ...proxyArgs],
   });
   const page = await browser.newPage();
   await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });

@@ -1,0 +1,368 @@
+<!doctype html>
+<!--
+  Mystic Digits — reel 07 "Your lucky day" (animated scene, v1 "aurora week-strip" style).
+
+  Deterministic: window.seekMs(t) draws the exact state for time t, so the
+  frame renderer (scripts/render-reel-frames.ts) can capture any frame in any
+  order. window.TOTAL_MS is the scene length. No CSS animations, no rAF —
+  every property is a pure function of t.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; background: #060b16; overflow: hidden; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  #bg { position: absolute; inset: 0; }
+
+  .screen { position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            padding: 0 90px; opacity: 0; }
+
+  .eyebrow { font-family: 'Marcellus', serif; font-size: 32px; letter-spacing: 9px;
+             text-transform: uppercase; color: #e6c766; margin-bottom: 48px; }
+  .title { font-family: 'Cormorant Garamond', serif; font-weight: 600;
+           font-size: 116px; line-height: 1.1; color: #eef0f6; max-width: 880px; }
+  .title .gold { color: #e6c766; font-style: italic; }
+  .title .word { display: inline-block; }
+  .body { font-family: 'Jost', sans-serif; font-size: 44px; line-height: 1.45;
+          color: #a7b0c4; max-width: 780px; margin-top: 56px; }
+
+  /* mapping screen */
+  #map-born { font-family: 'Jost', sans-serif; font-size: 40px; letter-spacing: 6px;
+              color: #a7b0c4; text-transform: uppercase; }
+  #map-born b { color: #eef0f6; font-weight: 500; }
+  #map-digit { font-family: 'Cormorant Garamond', serif; font-weight: 700;
+               font-size: 430px; line-height: 1; color: #e6c766;
+               text-shadow: 0 0 90px rgba(230,199,102,.55), 0 0 30px rgba(230,199,102,.35); }
+  #map-day { font-family: 'Marcellus', serif; font-size: 86px; letter-spacing: 14px;
+             text-transform: uppercase; color: #eef0f6; margin-top: 10px; }
+
+  /* verbs screen */
+  .verb { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 148px;
+          line-height: 1.18; color: #eef0f6; }
+  .verb.gold { color: #e6c766; font-style: italic; }
+
+  /* end screen */
+  #end-logo { width: 320px; height: 320px; object-fit: contain; }
+  #end-title { font-family: 'Cormorant Garamond', serif; font-weight: 600;
+               font-size: 104px; color: #eef0f6; margin-top: 28px; }
+  #end-cta { font-family: 'Marcellus', serif; font-size: 46px; color: #e6c766;
+             letter-spacing: 2px; margin-top: 48px; }
+  #end-url { font-family: 'Jost', sans-serif; font-size: 38px; color: #a7b0c4;
+             letter-spacing: 4px; margin-top: 26px; }
+
+  /* week strip */
+  #strip { position: absolute; left: 60px; right: 60px; top: 1430px;
+           display: flex; gap: 13px; justify-content: center; opacity: 0; }
+  .tile { width: 126px; height: 158px; border-radius: 20px;
+          border: 2px solid rgba(167,176,196,.28);
+          background: rgba(14,24,44,.55);
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 14px; }
+  .tile .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(167,176,196,.4); }
+  .tile .lbl { font-family: 'Jost', sans-serif; font-size: 32px; letter-spacing: 3px;
+               color: #a7b0c4; }
+
+  #fontprobe { position: absolute; left: -9999px; top: -9999px; }
+  #fontprobe i { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 600; }
+  #fontprobe b { font-family: 'Cormorant Garamond', serif; font-weight: 700; }
+  #fontprobe u { font-family: 'Marcellus', serif; }
+  #fontprobe s { font-family: 'Jost', sans-serif; font-weight: 500; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+
+  <div class="screen" id="s-hook">
+    <div class="eyebrow" data-w>Vedic Numerology</div>
+    <div class="title" id="hook-title"></div>
+  </div>
+
+  <div class="screen" id="s-how">
+    <div class="title">Your <span class="gold">birth day</span> decides it.</div>
+    <div class="body">Just the DAY you were born.<br>Watch yours light up.</div>
+  </div>
+
+  <div class="screen" id="s-map" style="justify-content:flex-start; padding-top: 330px;">
+    <div id="map-born"></div>
+    <div id="map-digit"></div>
+    <div id="map-day"></div>
+  </div>
+
+  <div class="screen" id="s-verbs" style="padding-bottom: 300px;">
+    <div class="verb" data-v>Sign.</div>
+    <div class="verb" data-v>Launch.</div>
+    <div class="verb gold" data-v>Propose.</div>
+    <div class="verb" data-v>Ask.</div>
+    <div class="body" id="verbs-body">Your biggest moves land better<br>on your day.</div>
+  </div>
+
+  <div class="screen" id="s-end">
+    <img id="end-logo" src="../../public/logo.png" alt="">
+    <div id="end-title">What's your lucky day?</div>
+    <div id="end-cta">Comment your birth date 👇</div>
+    <div id="end-url">mysticdigits.in</div>
+  </div>
+
+  <div id="strip"></div>
+  <div id="fontprobe"><i>ag</i><b>ag</b><u>ag</u><s>ag</s>Aa</div>
+</div>
+
+<script>
+// ---------- timeline ----------
+const HOOK = [0, 3600];
+const HOW = [3600, 6400];
+const MAP0 = 6400, GROUP_MS = 1050;      // 9 groups
+const GROUPS = [
+  { d: "1", born: "1 · 10 · 19 · 28", day: "Sunday",    tile: 0 },
+  { d: "2", born: "2 · 11 · 20 · 29", day: "Monday",    tile: 1 },
+  { d: "3", born: "3 · 12 · 21 · 30", day: "Thursday",  tile: 4 },
+  { d: "4", born: "4 · 13 · 22 · 31", day: "Saturday",  tile: 6 },
+  { d: "5", born: "5 · 14 · 23",      day: "Wednesday", tile: 3 },
+  { d: "6", born: "6 · 15 · 24",      day: "Friday",    tile: 5 },
+  { d: "7", born: "7 · 16 · 25",      day: "Monday",    tile: 1 },
+  { d: "8", born: "8 · 17 · 26",      day: "Saturday",  tile: 6 },
+  { d: "9", born: "9 · 18 · 27",      day: "Tuesday",   tile: 2 },
+];
+const MAP = [MAP0, MAP0 + GROUPS.length * GROUP_MS];          // 6400..15850
+const VERBS = [MAP[1], MAP[1] + 3100];                        // ..18950
+const END = [VERBS[1], VERBS[1] + 3400];                      // ..22350
+window.TOTAL_MS = END[1];
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const GOLD = "230,199,102";
+
+// ---------- helpers ----------
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const lin = (t, a, b) => clamp01((t - a) / (b - a));
+const cubicOut = p => 1 - Math.pow(1 - p, 3);
+const cubicIn = p => p * p * p;
+const backOut = p => { const c = 1.9; p -= 1; return 1 + (c + 1) * p * p * p + c * p * p; };
+
+// seeded PRNG for stars/dust — same layout every frame
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rng = mulberry32(20260718);
+const STARS = Array.from({ length: 150 }, () => ({
+  x: rng() * 1080, y: rng() * 1920, r: 0.7 + rng() * 1.7,
+  ph: rng() * Math.PI * 2, sp: 0.4 + rng() * 1.1,
+}));
+const DUST = Array.from({ length: 55 }, () => ({
+  x: rng() * 1080, y0: rng() * 1920, r: 1.2 + rng() * 2.4,
+  vy: 26 + rng() * 40, drift: 30 + rng() * 60, ph: rng() * Math.PI * 2,
+}));
+
+// build hook title words
+const hookWords = ["One", "day", "of", "the", "week", "is", '<span class="gold">yours.</span>'];
+document.getElementById("hook-title").innerHTML =
+  hookWords.map(w => `<span class="word">${w}</span>`).join(" ");
+
+// build strip tiles
+const strip = document.getElementById("strip");
+for (const d of DAYS) {
+  const t = document.createElement("div");
+  t.className = "tile";
+  t.innerHTML = `<div class="dot"></div><div class="lbl">${d}</div>`;
+  strip.appendChild(t);
+}
+const tiles = [...strip.children];
+
+// ---------- background ----------
+const ctx = document.getElementById("bg").getContext("2d");
+function drawBg(t) {
+  const s = t / 1000;
+  ctx.globalCompositeOperation = "source-over";
+  const g = ctx.createLinearGradient(0, 0, 0, 1920);
+  g.addColorStop(0, "#081124");
+  g.addColorStop(0.55, "#060b16");
+  g.addColorStop(1, "#03060d");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 1080, 1920);
+
+  // aurora ribbons (screen blend, slow drift)
+  ctx.globalCompositeOperation = "screen";
+  const ribbons = [
+    { hue: "22,90,84",  cx: 540 + 260 * Math.sin(s * 0.21),        cy: 330 + 60 * Math.sin(s * 0.13 + 1), rx: 720, ry: 300, a: 0.5 },
+    { hue: "16,64,96",  cx: 300 + 220 * Math.sin(s * 0.17 + 2.4),  cy: 620 + 80 * Math.sin(s * 0.11 + 3), rx: 620, ry: 260, a: 0.42 },
+    { hue: "94,74,36",  cx: 800 + 200 * Math.sin(s * 0.14 + 4.2),  cy: 210 + 50 * Math.sin(s * 0.16),     rx: 520, ry: 210, a: 0.30 },
+    { hue: "36,110,92", cx: 540 + 300 * Math.sin(s * 0.10 + 1.2),  cy: 1560 + 60 * Math.sin(s * 0.12),    rx: 760, ry: 300, a: 0.26 },
+  ];
+  for (const r of ribbons) {
+    const rg = ctx.createRadialGradient(r.cx, r.cy, 0, r.cx, r.cy, r.rx);
+    rg.addColorStop(0, `rgba(${r.hue},${r.a})`);
+    rg.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = rg;
+    ctx.save();
+    ctx.translate(r.cx, r.cy);
+    ctx.scale(1, r.ry / r.rx);
+    ctx.translate(-r.cx, -r.cy);
+    ctx.beginPath(); ctx.arc(r.cx, r.cy, r.rx, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // stars
+  for (const st of STARS) {
+    const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(st.ph + s * st.sp));
+    ctx.fillStyle = `rgba(238,240,246,${(0.55 * tw).toFixed(3)})`;
+    ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // rising gold dust
+  for (const p of DUST) {
+    const y = ((p.y0 - p.vy * s) % 1920 + 1920) % 1920;
+    const x = p.x + p.drift * Math.sin(p.ph + s * 0.6);
+    ctx.fillStyle = `rgba(${GOLD},0.5)`;
+    ctx.beginPath(); ctx.arc(x, y, p.r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalCompositeOperation = "source-over";
+}
+
+// ---------- screen enter/exit (zoom transition) ----------
+function screenState(el, t, t0, t1, enter = 500, exit = 380) {
+  if (t < t0 || t > t1 + exit) { el.style.opacity = 0; return -1; }
+  const pi = cubicOut(lin(t, t0, t0 + enter));
+  const po = lin(t, t1 - exit, t1);
+  const op = pi * (1 - cubicIn(po));
+  const scale = 0.94 + 0.06 * pi + 0.10 * cubicIn(po);
+  el.style.opacity = op.toFixed(3);
+  el.style.transform = `scale(${scale.toFixed(4)})`;
+  return t - t0;
+}
+
+function popWord(el, t, t0, dur = 340, rise = 40) {
+  const p = lin(t, t0, t0 + dur);
+  const b = backOut(p);
+  el.style.opacity = p <= 0 ? 0 : Math.min(1, p * 2).toFixed(3);
+  el.style.transform = `translateY(${((1 - b) * rise).toFixed(1)}px) scale(${(0.6 + 0.4 * b).toFixed(3)})`;
+}
+
+// ---------- strip ----------
+function setTile(i, glow, lift) {
+  const el = tiles[i];
+  el.style.borderColor = `rgba(${GOLD},${(0.28 + 0.72 * glow).toFixed(3)})`;
+  el.style.background = `rgba(${glow > 0.05 ? "42,36,16" : "14,24,44"},${(0.55 + 0.25 * glow).toFixed(3)})`;
+  el.style.boxShadow = glow > 0.03 ? `0 0 ${Math.round(60 * glow)}px rgba(${GOLD},${(0.55 * glow).toFixed(3)})` : "none";
+  el.style.transform = `translateY(${(-16 * lift).toFixed(1)}px) scale(${(1 + 0.06 * lift).toFixed(4)})`;
+  el.querySelector(".dot").style.background = glow > 0.3 ? `rgb(${GOLD})` : "rgba(167,176,196,.4)";
+  el.querySelector(".lbl").style.color = glow > 0.3 ? "#f3e2ae" : "#a7b0c4";
+}
+
+function drawStrip(t) {
+  // visibility: rises at 1200ms, fades in end screen
+  const vis = cubicOut(lin(t, 1200, 1900)) * (1 - cubicIn(lin(t, END[0], END[0] + 600)));
+  strip.style.opacity = vis.toFixed(3);
+  strip.style.transform = `translateY(${((1 - cubicOut(lin(t, 1200, 1900))) * 90).toFixed(1)}px)`;
+  if (vis <= 0) return;
+
+  let glows = new Array(7).fill(0), lifts = new Array(7).fill(0);
+
+  if (t < MAP[0]) {
+    // roulette sweep, slowing down as it approaches the mapping phase
+    const sweepPeriod = t < HOW[0] ? 120 : 200;
+    const idx = Math.floor(t / sweepPeriod) % 7;
+    glows[idx] = 0.8; lifts[idx] = 0.4;
+    const prev = (idx + 6) % 7; glows[prev] = Math.max(glows[prev], 0.25);
+  } else if (t < MAP[1]) {
+    const gi = Math.min(GROUPS.length - 1, Math.floor((t - MAP0) / GROUP_MS));
+    const gt = (t - MAP0) - gi * GROUP_MS;
+    const target = GROUPS[gi].tile;
+    const flash = Math.max(0, 1 - gt / 260);                  // arrival flash
+    const hold = cubicOut(lin(gt, 60, 260));
+    glows[target] = Math.min(1, hold + 0.6 * flash);
+    lifts[target] = hold;
+  } else if (t < END[0]) {
+    // shimmer wave across all tiles
+    for (let i = 0; i < 7; i++) {
+      const w = 0.5 + 0.5 * Math.sin((t - MAP[1]) / 260 - i * 0.8);
+      glows[i] = 0.15 + 0.45 * w; lifts[i] = 0.18 * w;
+    }
+  }
+  for (let i = 0; i < 7; i++) setTile(i, glows[i], lifts[i]);
+}
+
+// ---------- screens ----------
+const sHook = document.getElementById("s-hook");
+const sHow = document.getElementById("s-how");
+const sMap = document.getElementById("s-map");
+const sVerbs = document.getElementById("s-verbs");
+const sEnd = document.getElementById("s-end");
+const words = [...sHook.querySelectorAll(".word")];
+const eyebrow = sHook.querySelector(".eyebrow");
+const mapBorn = document.getElementById("map-born");
+const mapDigit = document.getElementById("map-digit");
+const mapDay = document.getElementById("map-day");
+const verbs = [...sVerbs.querySelectorAll("[data-v]")];
+const verbsBody = document.getElementById("verbs-body");
+const endLogo = document.getElementById("end-logo");
+const endTitle = document.getElementById("end-title");
+const endCta = document.getElementById("end-cta");
+const endUrl = document.getElementById("end-url");
+
+window.seekMs = function (t) {
+  drawBg(t);
+  drawStrip(t);
+
+  // hook
+  const ht = screenState(sHook, t, HOOK[0], HOOK[1]);
+  if (ht >= 0) {
+    eyebrow.style.opacity = lin(t, 200, 700).toFixed(3);
+    words.forEach((w, i) => popWord(w, t, 500 + i * 170));
+  }
+
+  // how
+  screenState(sHow, t, HOW[0], HOW[1]);
+
+  // mapping
+  const mt = screenState(sMap, t, MAP[0], MAP[1], 350);
+  if (mt >= 0) {
+    const gi = Math.min(GROUPS.length - 1, Math.floor((t - MAP0) / GROUP_MS));
+    const g = GROUPS[gi];
+    const gt = (t - MAP0) - gi * GROUP_MS;
+    mapBorn.innerHTML = `born <b>${g.born}</b>`;
+    mapDigit.textContent = g.d;
+    mapDay.textContent = g.day;
+    const pin = backOut(lin(gt, 40, 400));
+    const pout = cubicIn(lin(gt, GROUP_MS - 160, GROUP_MS));
+    mapDigit.style.transform = `scale(${(0.4 + 0.6 * pin).toFixed(3)})`;
+    mapDigit.style.opacity = (Math.min(1, lin(gt, 40, 220) * 1.6) * (1 - pout)).toFixed(3);
+    mapBorn.style.opacity = (lin(gt, 0, 160) * (1 - pout)).toFixed(3);
+    const dp = backOut(lin(gt, 260, 620));
+    mapDay.style.opacity = (lin(gt, 260, 460) * (1 - pout)).toFixed(3);
+    mapDay.style.transform = `translateY(${((1 - dp) * 46).toFixed(1)}px)`;
+  }
+
+  // verbs
+  const vt = screenState(sVerbs, t, VERBS[0], VERBS[1]);
+  if (vt >= 0) {
+    verbs.forEach((v, i) => popWord(v, t, VERBS[0] + 120 + i * 330, 380, 54));
+    verbsBody.style.opacity = lin(t, VERBS[0] + 1650, VERBS[0] + 2100).toFixed(3);
+  }
+
+  // end
+  const et = screenState(sEnd, t, END[0], END[1], 550, 1);
+  if (et >= 0) {
+    const lp = backOut(lin(t, END[0] + 100, END[0] + 700));
+    endLogo.style.transform = `scale(${(0.5 + 0.5 * lp).toFixed(3)})`;
+    endLogo.style.opacity = lin(t, END[0] + 100, END[0] + 450).toFixed(3);
+    endTitle.style.opacity = lin(t, END[0] + 500, END[0] + 900).toFixed(3);
+    endCta.style.opacity = lin(t, END[0] + 850, END[0] + 1250).toFixed(3);
+    const pulse = 1 + 0.03 * Math.sin((t - END[0]) / 300);
+    endCta.style.transform = `scale(${pulse.toFixed(4)})`;
+    endUrl.style.opacity = lin(t, END[0] + 1100, END[0] + 1500).toFixed(3);
+  }
+};
+
+window.seekMs(0);
+</script>
+</body>
+</html>

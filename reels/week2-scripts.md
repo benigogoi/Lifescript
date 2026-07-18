@@ -58,8 +58,11 @@ Your full year, decoded month-by-month, is in the ₹99 report → link in the p
 
 ---
 
-## Sat 18 Jul — "Your lucky day" (Entertain)
-`reels/specs/reel-07-lucky-day.json` → `reels/out/reel-07-lucky-day/`
+## Sat 18 Jul — "Your lucky day" (Entertain) ✅ PRODUCED
+New animated style (static slides + purple countdown both retired):
+`npx tsx scripts/render-reel-frames.ts reels/scenes/reel-07-lucky-day.html` → `reels/out/reel-07-lucky-day/`
+Aurora night-sky, persistent 7-day week strip that roulette-scans then lights up
+gold as each Mulank group claims its day, kinetic word-pop titles.
 
 Day mapping matches the paid report engine (src/lib/mulank-content.ts):
 1→Sun, 2→Mon, 3→Thu, 4→Sat, 5→Wed, 6→Fri, 7→Mon, 8→Sat, 9→Tue.
