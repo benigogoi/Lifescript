@@ -2,7 +2,7 @@ import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { getOrderByRazorpayId, updateOrder } from "@/lib/orders";
 import { verifyCheckoutSignature } from "@/lib/razorpay";
-import { sendOrderConfirmation } from "@/lib/email";
+import { sendAdminOrderNotification, sendOrderConfirmation } from "@/lib/email";
 import { processPaidOrder } from "@/lib/generate";
 
 export const runtime = "nodejs";
@@ -66,6 +66,20 @@ export async function POST(req: Request) {
       });
     } catch (e) {
       console.error("confirmation email failed", e);
+    }
+
+    // Owner alert — so a paid order is never missed even if the admin
+    // dashboard isn't open (e.g. offline when the payment lands).
+    try {
+      await sendAdminOrderNotification({
+        fullName: order.full_name,
+        email: order.email,
+        tier: order.tier,
+        amountInr: order.amount_inr,
+        orderId: order.id,
+      });
+    } catch (e) {
+      console.error("admin order notification failed", e);
     }
 
     // Kick off report generation in the background — fire-and-forget so the

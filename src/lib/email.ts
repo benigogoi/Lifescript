@@ -26,6 +26,9 @@ function client(): Resend {
 
 const FROM = process.env.EMAIL_FROM ?? "Mystic Digits <onboarding@resend.dev>";
 
+/** Where new-order alerts go. Falls back to the account owner's inbox. */
+const ADMIN_NOTIFY_EMAIL = process.env.ADMIN_NOTIFY_EMAIL ?? "beni.gogoi1@gmail.com";
+
 /** Per-language email copy. The layout/template is shared; only text swaps. */
 const EMAIL_COPY = {
   en: {
@@ -100,6 +103,40 @@ export async function sendReportReady(opts: {
     subject: copy.readySubject(firstName),
     html: reportReadyHtml(firstName, lang),
     attachments: [{ filename, content: pdf }],
+  });
+  if (error) throw new Error(`Resend: ${error.message}`);
+}
+
+/**
+ * Alert the site owner that a new order has been paid. Fire-and-forget from
+ * the checkout verify/webhook routes — a flaky connection on the customer's
+ * end must never block their confirmation, but the owner still needs to know
+ * an order landed even if they're offline when it happens (it'll be sitting
+ * in their inbox once they're back).
+ */
+export async function sendAdminOrderNotification(opts: {
+  fullName: string;
+  email: string;
+  tier: string;
+  amountInr: number;
+  orderId: string;
+}) {
+  const escape = (s: string) => s.replace(/[<>&]/g, "");
+  const { fullName, email, tier, amountInr, orderId } = opts;
+  const { error } = await client().emails.send({
+    from: FROM,
+    to: ADMIN_NOTIFY_EMAIL,
+    subject: `New order: ${escape(fullName)} — ₹${amountInr}`,
+    html: `<div style="font-family:Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#111;">
+      <p><strong>New paid order</strong></p>
+      <ul>
+        <li>Name: ${escape(fullName)}</li>
+        <li>Email: ${escape(email)}</li>
+        <li>Tier: ${escape(tier)}</li>
+        <li>Amount: ₹${amountInr}</li>
+        <li>Order ID: ${orderId}</li>
+      </ul>
+    </div>`,
   });
   if (error) throw new Error(`Resend: ${error.message}`);
 }
