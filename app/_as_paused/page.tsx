@@ -76,7 +76,7 @@ const STEPS = [
 export default function HomeAssamese() {
   return (
     <div lang="as" className={`${serifAs.variable} ${sansAs.variable} page-as`}>
-      <SiteHeader lang="as" />
+      <SiteHeader />
 
       <main className="wrap">
         <section className="hero">
