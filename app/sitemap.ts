@@ -7,7 +7,7 @@ import { BASE_URL } from "@/lib/seo";
  * obviously fake (e.g. every URL changing on every build).
  */
 const LAST_MODIFIED: Record<string, string> = {
-  "": "2026-07-06",
+  "": "2026-07-19",
   "/order": "2026-07-06",
   "/calculator": "2026-07-06",
   "/about": "2026-07-06",

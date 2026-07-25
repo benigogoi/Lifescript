@@ -41,9 +41,11 @@ function loadRazorpay(): Promise<boolean> {
   });
 }
 
-export default function OrderForm({ initialLang = "en" }: { initialLang?: ReportLang }) {
+export default function OrderForm({ initialLang: _initialLang = "en" }: { initialLang?: ReportLang }) {
+  // Assamese report language is paused site-wide for now (Assam flood
+  // relief in progress) — force English regardless of ?lang= in the URL.
   const router = useRouter();
-  const [form, setForm] = useState({ fullName: "", email: "", day: "", month: "", year: "", lang: initialLang as string });
+  const [form, setForm] = useState({ fullName: "", email: "", day: "", month: "", year: "", lang: "en" as string });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -228,33 +230,6 @@ export default function OrderForm({ initialLang = "en" }: { initialLang?: Report
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
             />
-          </div>
-
-          <div className="field">
-            <label>Report language · ৰিপ&rsquo;ৰ্টৰ ভাষা</label>
-            <div className="lang-pills" role="radiogroup" aria-label="Report language">
-              <button
-                type="button"
-                role="radio"
-                aria-checked={form.lang === "en"}
-                className={form.lang === "en" ? "pill active" : "pill"}
-                onClick={() => update("lang", "en")}
-              >
-                English
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={form.lang === "as"}
-                className={form.lang === "as" ? "pill active" : "pill"}
-                onClick={() => update("lang", "as")}
-              >
-                অসমীয়া
-              </button>
-            </div>
-            {form.lang === "as" && (
-              <div className="lang-note">আপোনাৰ সম্পূৰ্ণ ১০-পৃষ্ঠাৰ ৰিপ&rsquo;ৰ্টখন অসমীয়াত প্ৰস্তুত কৰা হ&rsquo;ব।</div>
-            )}
           </div>
 
           {error && <div className="field err" role="alert">{error}</div>}
