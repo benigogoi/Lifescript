@@ -22,15 +22,14 @@ const sansAs = Noto_Sans_Bengali({
   display: "swap",
 });
 
-const LANGUAGES = { "en-IN": "/", "as-IN": "/as", "x-default": "/" };
-
+// NOTE: paused/unrouted page (see app/_as_paused). locale/languages support
+// on pageMetadata is still local-only WIP, so this call is trimmed to the
+// fields the committed pageMetadata() signature actually accepts.
 export const metadata = pageMetadata({
   title: "Mystic Digits — আপোনাৰ ব্যক্তিগত অসমীয়া সংখ্যাতত্ত্ব ৰিপ’ৰ্ট",
   description:
     "আপোনাৰ নাম আৰু জন্ম তাৰিখৰ পৰা সম্পূৰ্ণ অসমীয়াত লিখা ১০-পৃষ্ঠাৰ বৈদিক সংখ্যাতত্ত্ব ৰিপ’ৰ্ট — মাত্ৰ ₹৯৯, আপোনাৰ ইমেইললৈ।",
   path: "/as",
-  locale: "as_IN",
-  languages: LANGUAGES,
 });
 
 const ORDER_HREF = "/order?lang=as";
