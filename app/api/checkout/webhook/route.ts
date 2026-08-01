@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { getOrderByRazorpayId, updateOrder } from "@/lib/orders";
 import { sendAdminOrderNotification, sendOrderConfirmation } from "@/lib/email";
 import { processPaidOrder } from "@/lib/generate";
+import { sendMetaPurchaseEvent } from "@/lib/metaCapi";
 
 export const runtime = "nodejs";
 // processPaidOrder (Claude call + Puppeteer PDF render) runs in the after()
@@ -85,6 +86,16 @@ export async function POST(req: Request) {
       });
     } catch (e) {
       console.error("admin order notification failed", e);
+    }
+
+    // Server-side Purchase event. This is the authoritative path for
+    // customers who close the tab before the client-side verify call fires —
+    // exactly the case where the client pixel would otherwise miss them.
+    // No customer IP/UA available here (Razorpay's servers call this route).
+    try {
+      await sendMetaPurchaseEvent({ ...order, status: "paid", razorpay_payment_id: razorpayPaymentId });
+    } catch (e) {
+      console.error("meta capi purchase event failed", e);
     }
 
     after(() => processPaidOrder({ ...order, status: "paid", razorpay_payment_id: razorpayPaymentId }));

@@ -4,6 +4,7 @@ import { getOrderByRazorpayId, updateOrder } from "@/lib/orders";
 import { verifyCheckoutSignature } from "@/lib/razorpay";
 import { sendAdminOrderNotification, sendOrderConfirmation } from "@/lib/email";
 import { processPaidOrder } from "@/lib/generate";
+import { sendMetaPurchaseEvent } from "@/lib/metaCapi";
 
 export const runtime = "nodejs";
 // processPaidOrder (Claude call + Puppeteer PDF render) runs in the after()
@@ -80,6 +81,21 @@ export async function POST(req: Request) {
       });
     } catch (e) {
       console.error("admin order notification failed", e);
+    }
+
+    // Server-side Purchase event — backstop for the client pixel in case of
+    // ad blockers or browser privacy settings; same order id dedupes it
+    // against the client-side event on Meta's side.
+    try {
+      await sendMetaPurchaseEvent(
+        { ...order, status: "paid", razorpay_payment_id },
+        {
+          ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+          userAgent: req.headers.get("user-agent"),
+        },
+      );
+    } catch (e) {
+      console.error("meta capi purchase event failed", e);
     }
 
     // Kick off report generation in the background — fire-and-forget so the
