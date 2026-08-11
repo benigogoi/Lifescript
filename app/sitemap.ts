@@ -7,8 +7,8 @@ import { BASE_URL } from "@/lib/seo";
  * obviously fake (e.g. every URL changing on every build).
  */
 const LAST_MODIFIED: Record<string, string> = {
-  "": "2026-07-19",
-  "/order": "2026-07-06",
+  "": "2026-08-11",
+  "/order": "2026-08-11",
   "/calculator": "2026-07-06",
   "/about": "2026-07-06",
   "/faq": "2026-07-06",
@@ -18,7 +18,7 @@ const LAST_MODIFIED: Record<string, string> = {
   "/refund": "2026-07-06",
 };
 const MULANK_MODIFIED = "2026-07-06";
-const BHAGYANK_MODIFIED = "2026-07-06";
+const BHAGYANK_MODIFIED = "2026-08-11";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const numbered = (prefix: string, lastModified: string) =>

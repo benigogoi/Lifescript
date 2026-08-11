@@ -233,15 +233,19 @@ body {
   font-style: italic;
   color: var(--gold-bright);
 }
+/* Sits inside the hero <h1> so the keyword phrase is part of the heading,
+   not a sibling — hence display:block and its own line-height. */
 .hero-subtitle {
+  display: block;
   font-family: var(--font-label);
   font-weight: 400;
   font-size: 15px;
   letter-spacing: 3px;
+  line-height: 1.4;
   text-transform: uppercase;
   color: var(--gold);
   opacity: 0.9;
-  margin: 0 0 16px;
+  margin: 18px 0 0;
 }
 .hero-calc-note {
   max-width: 520px;
@@ -358,6 +362,8 @@ section.block {
   text-align: center;
   margin-bottom: 36px;
 }
+/* /order leads with an h1 here rather than an h2 — same look, correct outline. */
+.section-head h1,
 .section-head h2 {
   font-family: var(--font-display);
   font-weight: 600;

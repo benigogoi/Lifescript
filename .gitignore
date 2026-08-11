@@ -6,6 +6,23 @@ report/out/
 reels/out/
 *.log
 
+# Marketing source assets — kept locally, not in the repo. These are large
+# binaries (the meta posts/ folder alone is >130 MB) and git would carry every
+# revision of them forever.
+meta posts/
+reports/
+*.mp4
+*.mov
+*.ai
+*.psd
+*.docx
+*.xlsx
+/logo.png
+/logoBlack.png
+/logoInsta.png
+/logoBrad.jpg
+/fb banner.png
+
 # Next.js
 .next/
 /out/

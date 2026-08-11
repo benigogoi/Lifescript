@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Marcellus, Jost } from "next/font/google";
 import Script from "next/script";
 import { AttributionCapture } from "@/components/AttributionCapture";
-import { BASE_URL, SOCIAL_LINKS } from "@/lib/seo";
+import { BASE_URL, organizationSchema, schemaGraph, websiteSchema } from "@/lib/seo";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = "G-9S182GLZY6";
@@ -56,15 +56,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Mystic Digits",
-    url: BASE_URL,
-    description: SITE_DESCRIPTION,
-    email: "support@mysticdigits.in",
-    sameAs: [SOCIAL_LINKS.facebook, SOCIAL_LINKS.instagram],
-  };
+  // Organization + WebSite carry stable @ids so per-page schema (Article,
+  // Product, FAQPage) can point at them by reference instead of restating them.
+  const jsonLd = schemaGraph(
+    { ...organizationSchema, description: SITE_DESCRIPTION },
+    websiteSchema,
+  );
 
   return (
     <html lang="en">

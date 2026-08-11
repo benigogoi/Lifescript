@@ -8,7 +8,7 @@ import {
   BHAGYANK_NUMBERS,
   type BhagyankNumber,
 } from "@/lib/bhagyank-content";
-import { pageMetadata, BASE_URL, SITE_NAME } from "@/lib/seo";
+import { pageMetadata, schemaGraph, BASE_URL } from "@/lib/seo";
 
 /** Pre-render /bhagyank/1 … /bhagyank/9 at build time. */
 export function generateStaticParams() {
@@ -52,21 +52,19 @@ export default async function BhagyankPage({
 
   const info = BHAGYANK_CONTENT[n];
 
-  const jsonLd = [
+  const jsonLd = schemaGraph(
     {
-      "@context": "https://schema.org",
       "@type": "Article",
       headline: `Bhagyank ${n}: The ${info.planet} Life Path`,
       description: `Bhagyank ${n} meaning, life path, opportunities, challenges, careers and Vedic remedies.`,
       about: `Vedic Numerology Bhagyank ${n}`,
       datePublished: "2026-07-06",
-      dateModified: "2026-07-06",
-      author: { "@type": "Organization", name: SITE_NAME, url: BASE_URL },
-      publisher: { "@type": "Organization", name: SITE_NAME, url: BASE_URL },
+      dateModified: "2026-08-11",
+      author: { "@id": `${BASE_URL}/#organization` },
+      publisher: { "@id": `${BASE_URL}/#organization` },
       mainEntityOfPage: `${BASE_URL}/bhagyank/${n}`,
     },
     {
-      "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
@@ -78,7 +76,15 @@ export default async function BhagyankPage({
         },
       ],
     },
-  ];
+    {
+      "@type": "FAQPage",
+      mainEntity: info.faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  );
 
   return (
     <>
@@ -137,6 +143,14 @@ export default async function BhagyankPage({
 
           <h2>Vedic Remedy for Bhagyank {n}</h2>
           <p>{info.remedy}</p>
+
+          <h2>Frequently Asked Questions</h2>
+          {info.faqs.map((f) => (
+            <div key={f.q}>
+              <h3>{f.q}</h3>
+              <p>{f.a}</p>
+            </div>
+          ))}
 
           <p style={{ marginTop: 8 }}>
             Not sure of your numbers?{" "}

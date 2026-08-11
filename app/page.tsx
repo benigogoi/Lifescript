@@ -4,12 +4,15 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Mandala } from "@/components/Mandala";
 import { SECTION_ICONS, ShieldCheckIcon, ClockIcon, SparkleIcon } from "@/components/icons";
-import { pageMetadata } from "@/lib/seo";
+import { BASE_URL, pageMetadata, productSchema, schemaGraph } from "@/lib/seo";
+import { PRICE_INR } from "@/lib/order";
 
+// Keyword-first: with little brand authority yet, the leading characters of
+// the title are better spent on what people actually search for.
 export const metadata = pageMetadata({
-  title: "Mystic Digits — Your Personalised Indian Numerology Report",
+  title: "Personalised Indian Numerology Report — Mystic Digits",
   description:
-    "A beautiful 10-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.",
+    "Get a 10-page Vedic numerology report written from your name and date of birth — Mulank, Bhagyank, Lo Shu grid, the year ahead and your remedies. ₹99, delivered within 24 hours.",
   path: "/",
 });
 
@@ -52,9 +55,51 @@ const STEPS = [
   { n: "3", t: "Delivered to your inbox", d: "A beautiful PDF arrives within 24 hours, ready to keep forever." },
 ];
 
+/**
+ * Homepage FAQ — deliberately answers the calculation questions people search
+ * for ("how is mulank calculated", "difference between mulank and bhagyank")
+ * rather than repeating the support answers already on /faq.
+ */
+const HOME_FAQS = [
+  {
+    q: "How is your numerology report calculated?",
+    a: "Everything is derived from two inputs: your full name and your date of birth. Your Mulank comes from the day you were born, reduced to a single digit. Your Bhagyank comes from your complete date of birth — day, month and year — added together and reduced. Your name number comes from the Vedic (Chaldean) letter values of your full name. Your Lo Shu grid is built by placing every digit of your birth date into a 3×3 grid, which reveals both the numbers you carry and the ones missing from your chart.",
+  },
+  {
+    q: "What is the difference between Mulank and Bhagyank?",
+    a: "Mulank is your birth number — it describes your personality, instincts and how you meet the world day to day. Bhagyank is your destiny number, drawn from your whole date of birth, and it describes the direction your life keeps pulling towards regardless of temperament. Mulank is who you are; Bhagyank is where you are going. A full reading needs both, which is why the report interprets them together rather than separately.",
+  },
+  {
+    q: "How much does the numerology report cost and when will I get it?",
+    a: `The complete 10-page report is ₹${PRICE_INR}, paid securely through Razorpay — there is no subscription and nothing recurring. Your report is prepared and emailed to you as a PDF within 24 hours of ordering. You can also see your Mulank, Bhagyank and name number for free in the instant preview before you pay anything.`,
+  },
+  {
+    q: "Is this Indian Vedic numerology or Western numerology?",
+    a: "This is Indian Vedic numerology. The calculations follow the Chaldean-Vedic system used across India — Mulank, Bhagyank, the Lo Shu grid, ruling planets, and remedies tied to those planets. It is not the Pythagorean system common in Western numerology, which assigns different values to letters and produces different numbers from the same name.",
+  },
+  {
+    q: "Do I need to know my birth time?",
+    a: "No. Numerology works from your date of birth and your name only — unlike astrology, it does not need a birth time or place. That makes it useful for anyone who has never known their exact time of birth.",
+  },
+];
+
 export default function Home() {
+  const jsonLd = schemaGraph(productSchema(), {
+    "@type": "FAQPage",
+    "@id": `${BASE_URL}/#faq`,
+    mainEntity: HOME_FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  });
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <SiteHeader />
 
       <main className="wrap">
@@ -63,8 +108,8 @@ export default function Home() {
           <div className="eyebrow">Indian · Vedic Numerology</div>
           <h1>
             Your life, written in <em>numbers</em>.
+            <span className="hero-subtitle">Personalised Indian Numerology Report</span>
           </h1>
-          <h2 className="hero-subtitle">Personalised Vedic Numerology Report</h2>
           <p className="lede">
             A beautiful 10-page numerology report, prepared uniquely from your name and date of
             birth — your Mulank, Bhagyank, Lo Shu grid, the year ahead, and your personal Vedic
@@ -140,7 +185,16 @@ export default function Home() {
           <div className="samples">
             {SAMPLE_PAGES.map((s) => (
               <figure className="sample-page" key={s.src}>
-                <Image src={s.src} alt={s.alt} width={1191} height={1685} loading="lazy" />
+                {/* Without `sizes`, Next assumes 100vw and browsers pull the
+                    3840px candidate for a column that is never wider than ~360px. */}
+                <Image
+                  src={s.src}
+                  alt={s.alt}
+                  width={1191}
+                  height={1685}
+                  loading="lazy"
+                  sizes="(max-width: 620px) 95vw, 300px"
+                />
                 <figcaption>{s.caption}</figcaption>
               </figure>
             ))}
@@ -166,6 +220,28 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="block" id="faq">
+          <div className="section-head">
+            <h2>Common questions about Indian numerology</h2>
+            <div className="divider" />
+            <p className="sub">
+              How the numbers are worked out, and what your report actually contains.
+            </p>
+          </div>
+          <div className="faq-list">
+            {HOME_FAQS.map((f) => (
+              <details className="faq-item" key={f.q}>
+                <summary>{f.q}</summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
+          </div>
+          <p style={{ textAlign: "center", marginTop: 22, color: "var(--muted)", fontSize: 14 }}>
+            More answers on the <Link href="/faq" style={{ color: "var(--gold)" }}>full FAQ page</Link>, or{" "}
+            <Link href="/calculator" style={{ color: "var(--gold)" }}>find your numbers free</Link> first.
+          </p>
         </section>
 
         <section className="block" style={{ textAlign: "center" }}>

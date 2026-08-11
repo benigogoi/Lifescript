@@ -9,7 +9,7 @@ import {
   mulankBirthDays,
   type MulankNumber,
 } from "@/lib/mulank-content";
-import { pageMetadata, BASE_URL, SITE_NAME } from "@/lib/seo";
+import { pageMetadata, schemaGraph, BASE_URL } from "@/lib/seo";
 
 /** Pre-render /mulank/1 … /mulank/9 at build time. */
 export function generateStaticParams() {
@@ -53,21 +53,19 @@ export default async function MulankPage({
 
   const info = MULANK_CONTENT[n];
 
-  const jsonLd = [
+  const jsonLd = schemaGraph(
     {
-      "@context": "https://schema.org",
       "@type": "Article",
       headline: `Mulank ${n}: The ${info.planet} Personality`,
       description: `Mulank ${n} meaning, personality, strengths, weaknesses, career paths and Vedic remedies.`,
       about: `Vedic Numerology Mulank ${n}`,
       datePublished: "2026-06-27",
       dateModified: "2026-07-06",
-      author: { "@type": "Organization", name: SITE_NAME, url: BASE_URL },
-      publisher: { "@type": "Organization", name: SITE_NAME, url: BASE_URL },
+      author: { "@id": `${BASE_URL}/#organization` },
+      publisher: { "@id": `${BASE_URL}/#organization` },
       mainEntityOfPage: `${BASE_URL}/mulank/${n}`,
     },
     {
-      "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
@@ -80,7 +78,6 @@ export default async function MulankPage({
       ],
     },
     {
-      "@context": "https://schema.org",
       "@type": "FAQPage",
       mainEntity: info.faqs.map((f) => ({
         "@type": "Question",
@@ -88,7 +85,7 @@ export default async function MulankPage({
         acceptedAnswer: { "@type": "Answer", text: f.a },
       })),
     },
-  ];
+  );
 
   const birthDays = mulankBirthDays(n);
 
