@@ -165,24 +165,3 @@ export async function listDueForDelivery(now = new Date()): Promise<Order[]> {
   if (error) throw error;
   return (data as Order[]) ?? [];
 }
-
-/**
- * Checkouts that opened the Razorpay popup but never paid: still 'created',
- * more than an hour old (payment may genuinely still be in progress), less
- * than 48 hours old (older attempts are stale — the customer moved on), and
- * not already nudged. Used by the recovery-email cron.
- */
-export async function listAbandonedCheckouts(now = new Date()): Promise<Order[]> {
-  const windowStart = new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString();
-  const windowEnd = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
-  const { data, error } = await supabaseAdmin()
-    .from(TABLE)
-    .select()
-    .eq("status", "created")
-    .not("razorpay_order_id", "is", null)
-    .is("recovery_email_sent_at", null)
-    .gte("created_at", windowStart)
-    .lte("created_at", windowEnd);
-  if (error) throw error;
-  return (data as Order[]) ?? [];
-}

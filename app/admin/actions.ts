@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getOrder, updateOrder } from "@/lib/orders";
 import { deliverScheduledOrder, processPaidOrder } from "@/lib/generate";
+import { sendAbandonedCheckoutEmail } from "@/lib/email";
 import { SESSION_COOKIE } from "@/lib/session";
 import { setAdminCredentials, verifyCurrentPassword } from "@/lib/admin-auth";
 import { addExpense, deleteExpense } from "@/lib/expenses";
@@ -48,6 +49,37 @@ export async function retryOrderAction(id: string) {
   const order = await getOrder(id);
   if (!order) return;
   await processPaidOrder(order);
+  revalidatePath("/admin/orders");
+}
+
+async function sendRecovery(id: string) {
+  const order = await getOrder(id);
+  if (!order) return;
+  await sendAbandonedCheckoutEmail({
+    to: order.email,
+    firstName: order.full_name.split(/\s+/)[0] ?? order.full_name,
+    lang: order.report_lang ?? "en",
+  });
+  await updateOrder(id, { recovery_email_sent_at: new Date().toISOString() });
+}
+
+/** Manually nudge one abandoned checkout ('created', never paid) to complete payment. */
+export async function sendRecoveryAction(id: string) {
+  await sendRecovery(id);
+  revalidatePath("/admin/orders");
+}
+
+/** Send the recovery nudge to every checked abandoned checkout from the bulk-select toolbar. */
+export async function sendRecoverySelectedAction(formData: FormData) {
+  const ids = formData.getAll("orderIds").map(String);
+  for (const id of ids) {
+    try {
+      await sendRecovery(id);
+    } catch (e) {
+      // One flaky send must not block the rest of the batch.
+      console.error("recovery email failed", id, e);
+    }
+  }
   revalidatePath("/admin/orders");
 }
 
