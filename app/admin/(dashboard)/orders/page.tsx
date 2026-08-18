@@ -1,6 +1,14 @@
 import Link from "next/link";
-import { listOrdersPage, type OrderStatus } from "@/lib/orders";
-import { holdOrder, releaseOrder, sendNowAction, retryOrderAction, sendSelectedAction } from "../../actions";
+import { listOrdersPage, type Order, type OrderStatus } from "@/lib/orders";
+import {
+  holdOrder,
+  releaseOrder,
+  sendNowAction,
+  retryOrderAction,
+  sendSelectedAction,
+  sendRecoveryAction,
+  sendRecoverySelectedAction,
+} from "../../actions";
 import { SubmitButton } from "../../SubmitButton";
 import { SelectAllCheckbox } from "../../SelectAllCheckbox";
 
@@ -45,6 +53,7 @@ const FILTERS: { key: string; label: string; statuses?: readonly OrderStatus[] }
   { key: "unsent", label: "Unsent", statuses: ["scheduled", "held"] },
   { key: "sent", label: "Sent", statuses: ["sent"] },
   { key: "failed", label: "Failed", statuses: ["failed"] },
+  { key: "abandoned", label: "Abandoned", statuses: ["created"] },
 ];
 
 function ordersHref(filterKey: string, page: number) {
@@ -90,13 +99,24 @@ export default async function AdminOrdersPage({
             </Link>
           ))}
         </div>
-        <form id="bulk-send-form" action={sendSelectedAction}>
-          <SubmitButton pendingLabel="Sending…" className="admin-action admin-action-add">
-            Send selected
-          </SubmitButton>
-        </form>
+        {filter.key === "abandoned" ? (
+          <form id="bulk-send-form" action={sendRecoverySelectedAction}>
+            <SubmitButton pendingLabel="Sending…" className="admin-action admin-action-add">
+              Send recovery emails
+            </SubmitButton>
+          </form>
+        ) : (
+          <form id="bulk-send-form" action={sendSelectedAction}>
+            <SubmitButton pendingLabel="Sending…" className="admin-action admin-action-add">
+              Send selected
+            </SubmitButton>
+          </form>
+        )}
       </div>
 
+      {filter.key === "abandoned" ? (
+        <AbandonedTable orders={orders} />
+      ) : (
       <div className="admin-panel">
         <table className="admin-table">
           <thead>
@@ -199,6 +219,7 @@ export default async function AdminOrdersPage({
           </tbody>
         </table>
       </div>
+      )}
 
       {totalPages > 1 && (
         <div className="admin-pagination">
@@ -222,5 +243,77 @@ export default async function AdminOrdersPage({
         </div>
       )}
     </>
+  );
+}
+
+/**
+ * Checkouts that opened the Razorpay popup but never paid ('created'). A
+ * separate, purpose-built table from the report pipeline above — different
+ * columns (no AI cost/scheduled-for, which are always empty here) and a
+ * manual recovery-email action instead of send/hold/retry.
+ */
+function AbandonedTable({ orders }: { orders: Order[] }) {
+  return (
+    <div className="admin-panel">
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>
+              <SelectAllCheckbox />
+            </th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Source</th>
+            <th>Created</th>
+            <th>Recovery</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((o) => (
+            <tr key={o.id}>
+              <td>
+                {!o.recovery_email_sent_at && (
+                  <input
+                    type="checkbox"
+                    name="orderIds"
+                    value={o.id}
+                    form="bulk-send-form"
+                    aria-label={`Select order for ${o.full_name}`}
+                  />
+                )}
+              </td>
+              <td>{o.full_name}</td>
+              <td>{o.email}</td>
+              <td style={{ fontSize: 12 }} title={o.attribution ? JSON.stringify(o.attribution, null, 2) : undefined}>
+                {formatSource(o.attribution)}
+              </td>
+              <td>{formatDate(o.created_at)}</td>
+              <td>
+                {o.recovery_email_sent_at ? (
+                  <span style={{ color: "var(--muted)", fontSize: 12 }}>Sent {formatDate(o.recovery_email_sent_at)}</span>
+                ) : (
+                  <span style={{ color: "var(--muted)", fontSize: 12 }}>Not sent</span>
+                )}
+              </td>
+              <td>
+                {!o.recovery_email_sent_at && (
+                  <form action={sendRecoveryAction.bind(null, o.id)} style={{ display: "inline" }}>
+                    <SubmitButton pendingLabel="Sending…">Send recovery</SubmitButton>
+                  </form>
+                )}
+              </td>
+            </tr>
+          ))}
+          {orders.length === 0 && (
+            <tr>
+              <td colSpan={7} style={{ textAlign: "center", color: "var(--muted)" }}>
+                No abandoned checkouts.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }

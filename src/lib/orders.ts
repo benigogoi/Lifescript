@@ -44,6 +44,8 @@ export interface Order {
   /** Traffic origin captured at checkout: { first_touch, last_touch } with
    * utm_*, gclid, fbclid, referrer, landing_page (see src/lib/attribution.ts). */
   attribution: Record<string, unknown> | null;
+  /** Set once the abandoned-checkout recovery email has been sent (never resent). */
+  recovery_email_sent_at: string | null;
 }
 
 const TABLE = "orders";

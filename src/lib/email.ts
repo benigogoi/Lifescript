@@ -49,6 +49,16 @@ const EMAIL_COPY = {
                   Read it somewhere quiet — it was written for you and no one else.`,
     readyBadge: "YOUR REPORT &nbsp;·&nbsp; PDF ATTACHED",
     readyFooter: "With warmth, the Mystic Digits team. Reply to this email if you have any questions.",
+    recoverSubject: (name: string) => `${name}, your numbers are ready — complete your report`,
+    recoverHeading: "You're one step away",
+    recoverBody: (name: string) =>
+      `Dear ${name}, you started your Mystic Digits reading but the payment didn't go through.
+                  Your Mulank and Bhagyank are already calculated — pick up right where you left off
+                  and get your full 10-page report for <strong style="color:#e6c766;">just ₹99</strong>.
+                  <br /><br />
+                  <a href="https://mysticdigits.in/order" style="color:#c9a84c;text-decoration:underline;">Complete your order &rarr;</a>`,
+    recoverBadge: "COMPLETE YOUR ORDER &nbsp;·&nbsp; ₹99",
+    recoverFooter: "If you've already paid, please ignore this — your report is on its way.",
   },
   as: {
     confirmSubject: "আপোনাৰ অৰ্ডাৰ পাইছোঁ — আপোনাৰ Mystic Digits ৰিপ'ৰ্ট প্ৰস্তুত হৈ আছে",
@@ -69,6 +79,16 @@ const EMAIL_COPY = {
                   কেৱল আপোনাৰ বাবে।`,
     readyBadge: "আপোনাৰ ৰিপ'ৰ্ট &nbsp;·&nbsp; PDF সংলগ্ন",
     readyFooter: "আন্তৰিকতাৰে, Mystic Digits। কিবা প্ৰশ্ন থাকিলে এই ইমেইলতে উত্তৰ দিব।",
+    recoverSubject: (name: string) => `${name}, আপোনাৰ সংখ্যা সাজু — অৰ্ডাৰটো সম্পূৰ্ণ কৰক`,
+    recoverHeading: "আপুনি এক পদক্ষেপ দূৰত আছে",
+    recoverBody: (name: string) =>
+      `মৰমৰ ${name}, আপুনি আপোনাৰ Mystic Digits ৰিপ'ৰ্ট আৰম্ভ কৰিছিল কিন্তু পেমেণ্টটো সম্পূৰ্ণ হোৱা নাই।
+                  আপোনাৰ Mulank আৰু Bhagyank ইতিমধ্যে গণনা কৰা হৈছে — য'ত এৰিছিল তাৰ পৰাই আৰম্ভ কৰক
+                  আৰু আপোনাৰ সম্পূৰ্ণ ১০-পৃষ্ঠাৰ ৰিপ'ৰ্ট মাত্ৰ <strong style="color:#e6c766;">₹৯৯</strong>ত লাভ কৰক।
+                  <br /><br />
+                  <a href="https://mysticdigits.in/order" style="color:#c9a84c;text-decoration:underline;">অৰ্ডাৰ সম্পূৰ্ণ কৰক &rarr;</a>`,
+    recoverBadge: "অৰ্ডাৰ সম্পূৰ্ণ কৰক &nbsp;·&nbsp; ₹৯৯",
+    recoverFooter: "যদি আপুনি ইতিমধ্যে পেমেণ্ট কৰিছে, অনুগ্ৰহ কৰি এইটো আওকাণ কৰক — আপোনাৰ ৰিপ'ৰ্ট পঠোৱা হৈ আছে।",
   },
 } satisfies Record<ReportLang, unknown>;
 
@@ -84,6 +104,19 @@ export async function sendOrderConfirmation(opts: { to: string; firstName: strin
   // The Resend SDK resolves with { error } on API-level failures (e.g. an
   // unverified sender domain) instead of throwing — surface it so callers'
   // error handling (order status, retries) actually engages.
+  if (error) throw new Error(`Resend: ${error.message}`);
+}
+
+/** Nudge a customer whose Razorpay checkout opened but never completed payment. */
+export async function sendAbandonedCheckoutEmail(opts: { to: string; firstName: string; lang?: ReportLang }) {
+  const { to, firstName, lang = "en" } = opts;
+  const copy = EMAIL_COPY[lang] ?? EMAIL_COPY.en;
+  const { error } = await client().emails.send({
+    from: FROM,
+    to,
+    subject: copy.recoverSubject(firstName),
+    html: recoveryHtml(firstName, lang),
+  });
   if (error) throw new Error(`Resend: ${error.message}`);
 }
 
@@ -203,4 +236,10 @@ function reportReadyHtml(firstName: string, lang: ReportLang): string {
   const copy = EMAIL_COPY[lang] ?? EMAIL_COPY.en;
   const safeName = firstName.replace(/[<>&]/g, "").trim() || "there";
   return emailShell(copy.readyHeading, copy.readyBody(safeName), copy.readyBadge, copy.readyFooter);
+}
+
+function recoveryHtml(firstName: string, lang: ReportLang): string {
+  const copy = EMAIL_COPY[lang] ?? EMAIL_COPY.en;
+  const safeName = firstName.replace(/[<>&]/g, "").trim() || "there";
+  return emailShell(copy.recoverHeading, copy.recoverBody(safeName), copy.recoverBadge, copy.recoverFooter);
 }
