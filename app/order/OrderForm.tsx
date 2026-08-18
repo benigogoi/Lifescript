@@ -52,6 +52,7 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
   const [paying, setPaying] = useState(false);
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   function update(key: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -144,6 +145,31 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
     // A declined/failed payment is a terminal outcome → the status page.
     rzp.on("payment.failed", () => finish("failed"));
     rzp.open();
+  }
+
+  /**
+   * Web Share API on mobile opens the native share sheet straight to
+   * WhatsApp/Instagram — the calculator link is the target (not /order)
+   * since it shows a result with no email required, the lowest-friction
+   * landing spot for whoever the link reaches.
+   */
+  async function handleShare() {
+    if (!preview) return;
+    const shareText = `My Mulank is ${preview.mulank.number} and Bhagyank is ${preview.bhagyank.number} — find yours free on Mystic Digits ✨`;
+    const shareUrl = `${window.location.origin}/calculator`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "My Numerology Numbers", text: shareText, url: shareUrl });
+      } catch {
+        // User dismissed the share sheet — not an error.
+      }
+      return;
+    }
+
+    await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -294,6 +320,14 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
               {payError}
             </div>
           )}
+          <button
+            type="button"
+            className="cta cta-ghost"
+            style={{ marginTop: 12, width: "100%", justifyContent: "center" }}
+            onClick={handleShare}
+          >
+            {shareCopied ? "Link Copied!" : "Share My Numbers"}
+          </button>
         </div>
       )}
     </div>
