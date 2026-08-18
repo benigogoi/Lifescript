@@ -44,6 +44,7 @@ export default function CalculatorForm() {
   const [dob, setDob] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,6 +67,31 @@ export default function CalculatorForm() {
   }
 
   const firstName = name.trim().split(/\s+/)[0] ?? "";
+
+  /**
+   * Web Share API on mobile (the vast majority of this traffic) opens the
+   * native share sheet straight to WhatsApp/Instagram/etc — the calculator's
+   * best organic distribution loop, since a result is inherently personal
+   * and shareable. Desktop/unsupported browsers fall back to clipboard.
+   */
+  async function handleShare() {
+    if (!result) return;
+    const shareText = `My Mulank is ${result.mulank} and Bhagyank is ${result.bhagyank} — find yours free on Mystic Digits ✨`;
+    const shareUrl = `${window.location.origin}/calculator`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "My Numerology Numbers", text: shareText, url: shareUrl });
+      } catch {
+        // User dismissed the share sheet — not an error.
+      }
+      return;
+    }
+
+    await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
+  }
 
   return (
     <>
@@ -137,6 +163,15 @@ export default function CalculatorForm() {
             <Link href="/order" className="cta" style={{ marginTop: 18, width: "100%", justifyContent: "center" }}>
               Get Your Full 10-Page Vedic Report — ₹99
             </Link>
+
+            <button
+              type="button"
+              className="cta cta-ghost"
+              style={{ marginTop: 12, width: "100%", justifyContent: "center" }}
+              onClick={handleShare}
+            >
+              {shareCopied ? "Link Copied!" : "Share My Numbers"}
+            </button>
 
             <p style={{ marginTop: 14, fontSize: 13 }}>
               <Link href={`/mulank/${result.mulank}`} style={{ color: "var(--gold)" }}>
