@@ -33,8 +33,16 @@ export interface Attribution {
 const FIRST_KEY = "md_attribution_first";
 const LAST_KEY = "md_attribution_last";
 
+/** Cookie names for the server-side (middleware) capture fallback — see
+ * middleware.ts and app/api/checkout/route.ts. Separate from the localStorage
+ * keys above because the two mechanisms run independently: middleware covers
+ * browsers (chiefly Instagram/Facebook's in-app WebView) that restrict
+ * localStorage, so the client's richer capture stays the primary source. */
+export const ATTR_COOKIE_FIRST = "md_attr_first";
+export const ATTR_COOKIE_LAST = "md_attr_last";
+
 /** Referrer hostname → friendly source name for non-UTM traffic. */
-function sourceFromReferrer(host: string): string {
+export function sourceFromReferrer(host: string): string {
   const h = host.toLowerCase();
   if (h.includes("instagram")) return "instagram";
   if (h.includes("facebook") || h === "fb.com" || h.endsWith(".fb.com")) return "facebook";

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { orderInputSchema, isRealDate, PRICE_INR } from "@/lib/order";
 import { createOrder, updateOrder } from "@/lib/orders";
 import { razorpay } from "@/lib/razorpay";
+import { ATTR_COOKIE_FIRST, ATTR_COOKIE_LAST } from "@/lib/attribution";
 
 // Razorpay SDK + Supabase admin run on Node, not the Edge runtime.
 export const runtime = "nodejs";
@@ -37,6 +39,30 @@ function parseAttribution(body: unknown): Record<string, unknown> | null {
 }
 
 /**
+ * Fallback when the client sent no usable attribution: middleware.ts writes
+ * the same shape into cookies on every page request, as a safety net for
+ * browsers (chiefly Instagram/Facebook's in-app WebView) that restrict
+ * localStorage — the exact click path most of this site's ad traffic uses.
+ */
+function parseAttributionFromCookies(
+  store: Awaited<ReturnType<typeof cookies>>,
+): Record<string, unknown> | null {
+  const parseTouch = (raw: string | undefined) => {
+    if (!raw) return null;
+    try {
+      const parsed = touchSchema.safeParse(JSON.parse(raw));
+      return parsed.success ? parsed.data : null;
+    } catch {
+      return null;
+    }
+  };
+  const first = parseTouch(store.get(ATTR_COOKIE_FIRST)?.value);
+  const last = parseTouch(store.get(ATTR_COOKIE_LAST)?.value);
+  if (!first && !last) return null;
+  return { first_touch: first ?? last, last_touch: last ?? first };
+}
+
+/**
  * Begin checkout: persist a 'created' order, create the matching Razorpay order,
  * and return the params the browser needs to open Razorpay Checkout. No money
  * has moved yet — the order flips to 'paid' only after /api/checkout/verify.
@@ -62,9 +88,10 @@ export async function POST(req: Request) {
 
   try {
     // 1. Our order row first, so we own the id used as the Razorpay receipt.
+    const attribution = parseAttribution(body) ?? parseAttributionFromCookies(await cookies());
     const order = await createOrder(input, {
       amountInr: PRICE_INR,
-      attribution: parseAttribution(body),
+      attribution,
     });
 
     // 2. The Razorpay order (amount is in paise).

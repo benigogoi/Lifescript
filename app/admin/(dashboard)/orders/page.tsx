@@ -48,12 +48,15 @@ function formatDate(iso: string) {
 
 const PAGE_SIZE = 20;
 
-const FILTERS: { key: string; label: string; statuses?: readonly OrderStatus[] }[] = [
+type TestFilter = "real" | "test" | "all";
+
+const FILTERS: { key: string; label: string; statuses?: readonly OrderStatus[]; testFilter?: TestFilter }[] = [
   { key: "all", label: "All" },
   { key: "unsent", label: "Unsent", statuses: ["scheduled", "held"] },
   { key: "sent", label: "Sent", statuses: ["sent"] },
   { key: "failed", label: "Failed", statuses: ["failed"] },
   { key: "abandoned", label: "Abandoned", statuses: ["created"] },
+  { key: "test", label: "Test", testFilter: "test" },
 ];
 
 function ordersHref(filterKey: string, page: number) {
@@ -75,6 +78,7 @@ export default async function AdminOrdersPage({
   const requestedPage = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
   const { orders, total, page } = await listOrdersPage({
     statuses: filter.statuses,
+    testFilter: filter.testFilter,
     page: requestedPage,
     pageSize: PAGE_SIZE,
   });

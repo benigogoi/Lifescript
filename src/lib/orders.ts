@@ -46,9 +46,16 @@ export interface Order {
   attribution: Record<string, unknown> | null;
   /** Set once the abandoned-checkout recovery email has been sent (never resent). */
   recovery_email_sent_at: string | null;
+  /** Internal/QA order (owner's own test emails, ₹1 dev amounts) — excluded
+   * from the admin dashboard's revenue/order stats and the default orders list. */
+  is_test: boolean;
 }
 
 const TABLE = "orders";
+
+/** Owner's own emails, used to auto-flag self-testing so it never has to be
+ * cleaned up by hand again (see migration 0007 for the one-time backfill). */
+const TEST_EMAILS = new Set(["beni.gogoi1@gmail.com", "benigogoi28@gmail.com"]);
 
 /** Create an order row in the 'created' state (awaiting payment). */
 export async function createOrder(
@@ -71,18 +78,19 @@ export async function createOrder(
     razorpay_order_id: opts.razorpayOrderId ?? null,
     attribution: opts.attribution ?? null,
     report_lang: input.lang ?? "en",
+    is_test: TEST_EMAILS.has(input.email) || (opts.amountInr ?? 99) === 1,
   };
 
   let { data, error } = await supabaseAdmin().from(TABLE).insert(row).select().single();
 
   // A checkout must never fail over optional metadata: if a newer column
-  // doesn't exist yet (migration 0004/0005 not applied), retry without it.
+  // doesn't exist yet (migration 0004/0005/0007 not applied), retry without it.
   // NOTE: dropping report_lang silently downgrades the order to English —
-  // acceptable only as a never-fail-checkout last resort; apply 0005 before
-  // exposing the language selector.
+  // acceptable only as a never-fail-checkout last resort; apply the migrations
+  // before exposing the language selector.
   if (error?.code === "PGRST204") {
-    console.error("orders column missing (run migrations 0004/0005); saving order without optional columns");
-    const { attribution: _dropped, report_lang: _dropped2, ...bare } = row;
+    console.error("orders column missing (run migrations 0004/0005/0007); saving order without optional columns");
+    const { attribution: _dropped, report_lang: _dropped2, is_test: _dropped3, ...bare } = row;
     ({ data, error } = await supabaseAdmin().from(TABLE).insert(bare).select().single());
   }
 
@@ -116,9 +124,15 @@ export async function updateOrder(
   return data as Order;
 }
 
-export async function listOrders(status?: OrderStatus): Promise<Order[]> {
+/** `includeTest` defaults to false — internal/QA orders (see `is_test`) are
+ * noise everywhere this is used (dashboard stats, delivery lists). */
+export async function listOrders(
+  status?: OrderStatus,
+  opts: { includeTest?: boolean } = {},
+): Promise<Order[]> {
   let q = supabaseAdmin().from(TABLE).select().order("created_at", { ascending: false });
   if (status) q = q.eq("status", status);
+  if (!opts.includeTest) q = q.eq("is_test", false);
   const { data, error } = await q;
   if (error) throw error;
   return (data as Order[]) ?? [];
@@ -127,14 +141,20 @@ export async function listOrders(status?: OrderStatus): Promise<Order[]> {
 /**
  * One page of orders (newest first) plus the total row count for the filter.
  * `page` is 1-based and clamped to the last page, so a stale ?page= URL never 416s.
+ * `testFilter` defaults to "real" (excludes internal/QA orders); pass "test"
+ * for the admin's Test tab or "all" to see everything.
  */
 export async function listOrdersPage(opts: {
   statuses?: readonly OrderStatus[];
+  testFilter?: "real" | "test" | "all";
   page: number;
   pageSize: number;
 }): Promise<{ orders: Order[]; total: number; page: number }> {
+  const testFilter = opts.testFilter ?? "real";
+
   let countQuery = supabaseAdmin().from(TABLE).select("id", { count: "exact", head: true });
   if (opts.statuses?.length) countQuery = countQuery.in("status", [...opts.statuses]);
+  if (testFilter !== "all") countQuery = countQuery.eq("is_test", testFilter === "test");
   const { count, error: countError } = await countQuery;
   if (countError) throw countError;
 
@@ -150,6 +170,7 @@ export async function listOrdersPage(opts: {
     .order("created_at", { ascending: false })
     .range(offset, offset + opts.pageSize - 1);
   if (opts.statuses?.length) q = q.in("status", [...opts.statuses]);
+  if (testFilter !== "all") q = q.eq("is_test", testFilter === "test");
   const { data, error } = await q;
   if (error) throw error;
   return { orders: (data as Order[]) ?? [], total, page };
