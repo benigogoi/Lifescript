@@ -62,6 +62,27 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
   const [payError, setPayError] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
 
+  const resultRef = useRef<HTMLDivElement>(null);
+  // Scroll only when they pressed the button themselves. Arriving prefilled
+  // from the calculator already lands on the numbers, so scrolling there would
+  // yank the page for no reason.
+  const scrollOnNextResult = useRef(false);
+
+  /** The numbers render below the fold on a phone; without this the button looks dead. */
+  useEffect(() => {
+    if (!preview || !scrollOnNextResult.current) return;
+    scrollOnNextResult.current = false;
+
+    const el = resultRef.current;
+    if (!el) return;
+
+    const reduceMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  }, [preview]);
+
   /**
    * Ask the server for the free preview. Name + DOB only — no email, so the
    * customer sees their numbers before being asked for anything.
@@ -171,6 +192,7 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
       setError("Please enter your full date of birth.");
       return;
     }
+    scrollOnNextResult.current = true;
     await fetchPreview(fullName.trim(), dob);
   }
 
@@ -315,7 +337,7 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
 
   return (
     <>
-      <div className="form-card">
+      <div ref={resultRef} className="form-card" style={{ scrollMarginTop: 16 }}>
         <div className="preview">
           <button type="button" className="edit-link" onClick={resetToForm}>
             ← Edit details

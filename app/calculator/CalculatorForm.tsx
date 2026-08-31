@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { reduceToSingleDigit } from "@/lib/numerology";
 import { MULANK_CONTENT, type MulankNumber } from "@/lib/mulank-content";
@@ -52,6 +52,28 @@ export default function CalculatorForm() {
   const [result, setResult] = useState<Result | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
 
+  const resultRef = useRef<HTMLDivElement>(null);
+  // Only scroll when the customer just pressed Calculate — never on a re-render.
+  const scrollOnNextResult = useRef(false);
+
+  /**
+   * The result renders below the fold on a phone, so without this it looks like
+   * the button did nothing. Runs after paint so the card has its real position.
+   */
+  useEffect(() => {
+    if (!result || !scrollOnNextResult.current) return;
+    scrollOnNextResult.current = false;
+
+    const el = resultRef.current;
+    if (!el) return;
+
+    const reduceMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  }, [result]);
+
   /** Any first keystroke counts as starting — the event itself fires once. */
   function markStarted() {
     trackCalculatorStarted("calculator");
@@ -83,6 +105,7 @@ export default function CalculatorForm() {
       return;
     }
 
+    scrollOnNextResult.current = true;
     setResult({
       mulank: reduceToSingleDigit(day) as MulankNumber,
       bhagyank: bhagyankOf(day, month, year),
@@ -172,7 +195,7 @@ export default function CalculatorForm() {
 
       {result && (
         <>
-          <div className="form-card" style={{ marginTop: 22 }}>
+          <div ref={resultRef} className="form-card" style={{ marginTop: 22, scrollMarginTop: 16 }}>
             <div className="preview" style={{ marginTop: 0, paddingTop: 0, borderTop: "none" }}>
               <div className="preview-label">
                 {firstName ? `${firstName}, your core numbers` : "Your core numbers"}
