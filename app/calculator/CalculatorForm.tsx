@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { reduceToSingleDigit } from "@/lib/numerology";
+import { reduceToSingleDigit, loShuGrid, type LoShuGrid } from "@/lib/numerology";
 import { MULANK_CONTENT, type MulankNumber } from "@/lib/mulank-content";
 import { DobFields, type DobValue } from "@/components/DobFields";
 import { ReportOffer } from "@/components/ReportOffer";
@@ -26,6 +26,7 @@ import {
 interface Result {
   mulank: MulankNumber;
   bhagyank: MulankNumber;
+  loShu: LoShuGrid;
   day: number;
   month: number;
   year: number;
@@ -109,6 +110,7 @@ export default function CalculatorForm() {
     setResult({
       mulank: reduceToSingleDigit(day) as MulankNumber,
       bhagyank: bhagyankOf(day, month, year),
+      loShu: loShuGrid(day, month, year),
       day,
       month,
       year,
@@ -243,7 +245,7 @@ export default function CalculatorForm() {
             </div>
           </div>
 
-          <ReportOffer where="calculator">
+          <ReportOffer where="calculator" chart={{ mulank: result.mulank, loShu: result.loShu }}>
             <Link
               href={orderHref}
               className="cta"

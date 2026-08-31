@@ -13,6 +13,7 @@ import {
   trackBeginCheckout,
 } from "@/lib/analytics";
 import { getAttribution } from "@/lib/attribution";
+import { loShuGrid, type Digit } from "@/lib/numerology";
 
 const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
 
@@ -335,6 +336,16 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
     );
   }
 
+  // Same arithmetic the calculator runs, from the DOB already in state — no
+  // extra request just to draw the grid.
+  const chart =
+    preview && dob.day && dob.month && dob.year
+      ? {
+          mulank: preview.mulank.number as Digit,
+          loShu: loShuGrid(Number(dob.day), Number(dob.month), Number(dob.year)),
+        }
+      : undefined;
+
   return (
     <>
       <div ref={resultRef} className="form-card" style={{ scrollMarginTop: 16 }}>
@@ -382,7 +393,7 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
         </div>
       </div>
 
-      <ReportOffer where="order">
+      <ReportOffer where="order" chart={chart}>
         <div className="field" style={{ marginTop: 6, textAlign: "left" }}>
           <label htmlFor="email">Email (where we&apos;ll send your report)</label>
           <input
