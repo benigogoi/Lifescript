@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
+import { PRICE_LABEL } from "@/lib/pricing";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
   BHAGYANK_CONTENT,
@@ -176,7 +177,7 @@ export default async function BhagyankPage({
             </p>
           </div>
           <Link href="/order" className="cta">
-            Discover your complete Vedic numerology report — ₹99
+            Discover your complete Vedic numerology report — {PRICE_LABEL}
           </Link>
         </section>
 

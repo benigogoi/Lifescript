@@ -478,6 +478,30 @@ section.block {
   margin-top: 32px;
 }
 
+/* Compact variant used inside the in-funnel offer card. The default .samples
+   grid collapses to one full-width column under ~600px, which pushed the buy
+   button roughly 2,000px down the page on a phone. Three across keeps the
+   "there is a real designed document here" signal while leaving the CTA
+   reachable; the homepage keeps the large showcase. */
+.samples.samples-compact {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 560px;
+}
+.samples.samples-compact figcaption {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+@media (min-width: 620px) {
+  .samples.samples-compact {
+    gap: 18px;
+  }
+  .samples.samples-compact figcaption {
+    font-size: 12px;
+  }
+}
+
 /* ---- Steps ---- */
 .steps {
   display: grid;
@@ -1503,4 +1527,37 @@ section.block {
   .admin-stats {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---- /as — Assamese landing page ---- */
+/* Bengali-script families (next/font in app/as/page.tsx) take over all three
+   font slots for the page subtree; Noto's Latin glyphs cover ₹, digits and
+   "Mystic Digits", so nothing falls back mid-word. */
+.page-as {
+  --font-display: var(--font-as-serif), "Cormorant Garamond", Georgia, serif;
+  --font-label: var(--font-as-serif), "Marcellus", serif;
+  --font-body: var(--font-as-sans), system-ui, sans-serif;
+  font-family: var(--font-body);
+}
+/* Bengali script carries marks above and below the baseline — tight display
+   line-heights clip them. */
+.page-as h1,
+.page-as h2,
+.page-as h3 {
+  line-height: 1.35;
+}
+
+.lang-switch {
+  margin-top: 22px;
+  font-size: 13px;
+}
+.lang-switch a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1px;
+  transition: color 0.2s ease;
+}
+.lang-switch a:hover {
+  color: var(--gold-bright);
 }

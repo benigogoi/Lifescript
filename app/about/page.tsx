@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader";
+import { PRICE_LABEL } from "@/lib/pricing";
 import { SiteFooter } from "@/components/SiteFooter";
 import { pageMetadata } from "@/lib/seo";
 
@@ -38,11 +39,12 @@ export default function AboutPage() {
             misfortune.
           </p>
 
-          <h2>Why ₹99</h2>
+          <h2>What you pay for</h2>
           <p>
-            We kept the price of a full report low and transparent on purpose: a detailed, well
-            written reading shouldn't be locked behind a premium price tag. You can preview your
-            core numbers for free before deciding to order the complete 10-page report.
+            Your core numbers are free, and always will be — you can see your Mulank, Bhagyank
+            and Name Number without paying anything, or even giving us an email. What the{" "}
+            {PRICE_LABEL} buys is the complete report: ten designed pages written for your chart
+            alone, as a PDF you can keep, revisit, share or give to someone.
           </p>
 
           <h2>Our approach</h2>

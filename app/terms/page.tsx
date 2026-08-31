@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader";
+import { PRICE_LABEL } from "@/lib/pricing";
 import { SiteFooter } from "@/components/SiteFooter";
 import { pageMetadata } from "@/lib/seo";
 
@@ -30,7 +31,7 @@ export default function TermsPage() {
           <p>
             Mystic Digits prepares a personalised numerology report based on the full name and date of
             birth you provide. We offer a free preview of your core numbers, and a complete 10-page
-            report for a one-time fee of ₹99. Reports are generated using classical Vedic and
+            report for a one-time fee of {PRICE_LABEL}. Reports are generated using classical Vedic and
             Chaldean numerology methods and are intended for entertainment, self-reflection, and
             guidance purposes only.
           </p>
@@ -52,7 +53,7 @@ export default function TermsPage() {
           <h2>5. Payment</h2>
           <p>
             Payment for the full report is processed securely through our third-party payment
-            gateway. The report fee is ₹99 unless otherwise stated on the order page at checkout.
+            gateway. The report fee is {PRICE_LABEL} unless otherwise stated on the order page at checkout.
           </p>
 
           <h2>6. Delivery</h2>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { orderInputSchema, isRealDate } from "@/lib/order";
+import { previewInputSchema, isRealDate } from "@/lib/order";
 import { calculateNumerology } from "@/lib/numerology";
 import { NUMBER_CORE } from "@/lib/report-data";
 
@@ -14,7 +14,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const parsed = orderInputSchema.safeParse(body);
+  // Name + DOB only. Email is deliberately NOT required here — the customer
+  // sees their numbers first and only gives an email at checkout.
+  const parsed = previewInputSchema.safeParse(body);
   if (!parsed.success) {
     const first = parsed.error.issues[0]?.message ?? "Please check your details.";
     return NextResponse.json({ error: first }, { status: 400 });

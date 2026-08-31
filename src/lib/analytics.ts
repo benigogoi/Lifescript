@@ -6,12 +6,21 @@
  * functions are safe to call anywhere: they no-op on the server and when
  * the underlying tag hasn't loaded (ad blockers, consent, slow network).
  *
- * Customer journey → events fired (GA4 / Meta):
- *   free preview shown   → generate_lead + view_item / Lead
- *   tapped "Get Report"  → begin_checkout            / InitiateCheckout
- *   payment verified     → purchase                  / Purchase (eventID-deduped)
+ * The funnel, and the event fired at each step (GA4 / Meta):
+ *
+ *   1. Landing page view      → (automatic)          / PageView
+ *   2. Calculator started     → calculator_started   / CalculatorStarted (custom)
+ *   3. Free result viewed     → generate_lead        / Lead          ← optimise on this
+ *   4. Report offer viewed    → view_item            / ViewContent
+ *   5. Paid CTA clicked       → add_to_cart          / AddToCart
+ *   6. Checkout initiated     → begin_checkout       / InitiateCheckout
+ *   7. Payment successful     → purchase             / Purchase (eventID-deduped)
+ *
+ * Step 7 is also sent server-side via Meta CAPI (src/lib/metaCapi.ts) using the
+ * order id as the event id, so the browser and server events deduplicate.
+ * Report delivery is a server-side state change and is not a browser event.
  */
-import { PRICE_INR } from "./order";
+import { PRICE_INR } from "./pricing";
 
 declare global {
   interface Window {
@@ -37,7 +46,7 @@ export function trackGA(eventName: string, params?: Record<string, unknown>) {
   }
 }
 
-/** Low-level Meta Pixel event. `eventId` enables Meta-side deduplication. */
+/** Low-level Meta Pixel standard event. `eventId` enables Meta-side dedup. */
 export function trackMeta(event: string, params?: Record<string, unknown>, eventId?: string) {
   if (typeof window !== "undefined" && typeof window.fbq === "function") {
     if (eventId) {
@@ -48,18 +57,75 @@ export function trackMeta(event: string, params?: Record<string, unknown>, event
   }
 }
 
-/** The free preview was shown: they gave name/DOB/email and saw the product. */
-export function trackPreviewShown() {
-  trackGA("generate_lead", { currency: CURRENCY, value: PRICE_INR });
-  trackGA("view_item", {
-    currency: CURRENCY,
-    value: PRICE_INR,
-    items: [REPORT_ITEM],
-  });
-  trackMeta("Lead");
+/**
+ * Low-level Meta Pixel *custom* event. Meta only recognises a fixed set of
+ * standard event names; anything else must go through `trackCustom` or it is
+ * silently dropped.
+ */
+export function trackMetaCustom(event: string, params?: Record<string, unknown>) {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
+    window.fbq("trackCustom", event, params ?? {});
+  }
 }
 
-/** The customer tapped "Get Full Report" — checkout is opening. */
+/**
+ * Fire-once guards. Someone editing their date of birth shouldn't inflate the
+ * funnel with a second "started" or "result viewed" event on the same page.
+ */
+const fired = new Set<string>();
+function once(key: string, fn: () => void) {
+  if (fired.has(key)) return;
+  fired.add(key);
+  fn();
+}
+
+/** Step 2 — first real interaction with the calculator (typing a name/DOB). */
+export function trackCalculatorStarted(where: "calculator" | "order") {
+  once(`calc_started:${where}`, () => {
+    trackGA("calculator_started", { location: where });
+    trackMetaCustom("CalculatorStarted", { location: where });
+  });
+}
+
+/**
+ * Step 3 — they submitted name + DOB and their numbers are on screen. This is
+ * the moment a stranger becomes a known-intent visitor, and it is the event
+ * Meta should optimise toward until Purchase has enough volume to learn from.
+ */
+export function trackFreeResultViewed(where: "calculator" | "order") {
+  once(`free_result:${where}`, () => {
+    trackGA("generate_lead", { currency: CURRENCY, value: PRICE_INR, location: where });
+    trackMeta("Lead", { content_name: "Free numerology result" });
+  });
+}
+
+/** Step 4 — the paid report offer (sample pages + price) scrolled into view. */
+export function trackOfferViewed(where: "calculator" | "order") {
+  once(`offer_viewed:${where}`, () => {
+    trackGA("view_item", { currency: CURRENCY, value: PRICE_INR, items: [REPORT_ITEM] });
+    trackMeta("ViewContent", {
+      content_name: REPORT_ITEM.item_name,
+      content_ids: [REPORT_ITEM.item_id],
+      content_type: "product",
+      value: PRICE_INR,
+      currency: CURRENCY,
+    });
+  });
+}
+
+/** Step 5 — they tapped the buy CTA. Intent, but no payment window yet. */
+export function trackPaidCtaClicked(where: "calculator" | "order") {
+  trackGA("add_to_cart", { currency: CURRENCY, value: PRICE_INR, items: [REPORT_ITEM], location: where });
+  trackMeta("AddToCart", {
+    content_name: REPORT_ITEM.item_name,
+    content_ids: [REPORT_ITEM.item_id],
+    content_type: "product",
+    value: PRICE_INR,
+    currency: CURRENCY,
+  });
+}
+
+/** Step 6 — the Razorpay window is opening. */
 export function trackBeginCheckout() {
   trackGA("begin_checkout", {
     currency: CURRENCY,
@@ -72,7 +138,7 @@ export function trackBeginCheckout() {
 const PURCHASE_GUARD_PREFIX = "md_purchase_tracked:";
 
 /**
- * Fire the purchase conversion exactly once per order.
+ * Step 7 — fire the purchase conversion exactly once per order.
  *
  * Called from the thank-you page only when it carries a real order id (which
  * the page only gets after /api/checkout/verify confirmed the Razorpay

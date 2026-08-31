@@ -11,6 +11,7 @@
 import "server-only";
 import { Resend } from "resend";
 import type { ReportLang } from "./report-lang";
+import { PRICE_LABEL } from "./pricing";
 
 let cached: Resend | null = null;
 
@@ -39,7 +40,7 @@ const EMAIL_COPY = {
                   Your personalised 10-page numerology report is now being prepared
                   by hand from your name and date of birth, and will arrive in this
                   inbox <strong style="color:#e6c766;">within 24 hours</strong>.`,
-    confirmBadge: "ORDER CONFIRMED &nbsp;·&nbsp; ₹99",
+    confirmBadge: `ORDER CONFIRMED &nbsp;·&nbsp; ${PRICE_LABEL}`,
     confirmFooter: "No action is needed from you. We'll email your report the moment it's ready.",
     readySubject: (name: string) => `${name}, your Mystic Digits numerology report is ready`,
     readyHeading: "Your reading has arrived",
@@ -54,10 +55,10 @@ const EMAIL_COPY = {
     recoverBody: (name: string) =>
       `Dear ${name}, you started your Mystic Digits reading but the payment didn't go through.
                   Your Mulank and Bhagyank are already calculated — pick up right where you left off
-                  and get your full 10-page report for <strong style="color:#e6c766;">just ₹99</strong>.
+                  and get your full 10-page report for <strong style="color:#e6c766;">just ${PRICE_LABEL}</strong>.
                   <br /><br />
                   <a href="https://mysticdigits.in/order" style="color:#c9a84c;text-decoration:underline;">Complete your order &rarr;</a>`,
-    recoverBadge: "COMPLETE YOUR ORDER &nbsp;·&nbsp; ₹99",
+    recoverBadge: `COMPLETE YOUR ORDER &nbsp;·&nbsp; ${PRICE_LABEL}`,
     recoverFooter: "If you've already paid, please ignore this — your report is on its way.",
   },
   as: {

@@ -1,11 +1,13 @@
+import { Suspense } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { pageMetadata, productSchema, schemaGraph, BASE_URL } from "@/lib/seo";
 import OrderForm from "./OrderForm";
+import { PRICE_LABEL } from "@/lib/pricing";
 
 export const metadata = pageMetadata({
   title: "Get Your Numerology Report — Mystic Digits",
-  description: "Enter your name and date of birth to see your Mulank, Bhagyank and name number free, then order your full 10-page Indian numerology report for ₹99.",
+  description: `See your Mulank, Bhagyank and Name Number free — no signup. Then get your complete 10-page personalised Vedic numerology report for ${PRICE_LABEL}, delivered within 24 hours.`,
   path: "/order",
 });
 
@@ -38,9 +40,14 @@ export default function OrderPage() {
         <div className="section-head" style={{ marginTop: 24 }}>
           <h1>Get Your Personalised Numerology Report</h1>
           <div className="divider" />
-          <p className="sub">Enter your details exactly as you&apos;d like them to appear on your report.</p>
+          <p className="sub">
+            See your core numbers free — just your name and date of birth. No signup, and we
+            only ask for an email if you decide you want the full report.
+          </p>
         </div>
-        <OrderForm />
+        <Suspense fallback={<div className="form-card" aria-busy="true" />}>
+          <OrderForm />
+        </Suspense>
       </main>
 
       <SiteFooter />

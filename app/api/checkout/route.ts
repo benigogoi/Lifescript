@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { orderInputSchema, isRealDate, PRICE_INR } from "@/lib/order";
+import { orderInputSchema, isRealDate } from "@/lib/order";
+// Price comes from the server's own config, never from the request body —
+// a tampered client cannot choose what it pays.
+import { PRICE_INR, PRICE_PAISE } from "@/lib/pricing";
 import { createOrder, updateOrder } from "@/lib/orders";
 import { razorpay } from "@/lib/razorpay";
 import { ATTR_COOKIE_FIRST, ATTR_COOKIE_LAST } from "@/lib/attribution";
@@ -96,7 +99,7 @@ export async function POST(req: Request) {
 
     // 2. The Razorpay order (amount is in paise).
     const rzpOrder = await razorpay().orders.create({
-      amount: PRICE_INR * 100,
+      amount: PRICE_PAISE,
       currency: "INR",
       receipt: order.id,
       notes: { mysticdigits_order_id: order.id },
@@ -108,7 +111,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       orderId: order.id,
       razorpayOrderId: rzpOrder.id,
-      amount: PRICE_INR * 100,
+      amount: PRICE_PAISE,
       currency: "INR",
       keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       prefill: { name: input.fullName, email: input.email },

@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader";
+import { PRICE_LABEL } from "@/lib/pricing";
 import { SiteFooter } from "@/components/SiteFooter";
 import { pageMetadata } from "@/lib/seo";
 
@@ -33,7 +34,7 @@ export default function RefundPage() {
             You can preview your core numbers — Mulank, Bhagyank, Lo Shu grid, and Name Number — for
             free before paying anything. We recommend checking your free preview carefully and
             making sure your name and date of birth are entered correctly before proceeding to the
-            ₹99 payment for your full report.
+            {PRICE_LABEL} payment for your full report.
           </p>
 
           <h2>3. When we will make it right</h2>

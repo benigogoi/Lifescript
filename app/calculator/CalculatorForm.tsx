@@ -4,31 +4,31 @@ import { useState } from "react";
 import Link from "next/link";
 import { reduceToSingleDigit } from "@/lib/numerology";
 import { MULANK_CONTENT, type MulankNumber } from "@/lib/mulank-content";
+import { DobFields, type DobValue } from "@/components/DobFields";
+import { ReportOffer } from "@/components/ReportOffer";
+import { PRICE_LABEL } from "@/lib/pricing";
+import {
+  trackCalculatorStarted,
+  trackFreeResultViewed,
+  trackPaidCtaClicked,
+} from "@/lib/analytics";
 
 /**
- * Free Mulank & Bhagyank calculator. Fully client-side — no API calls, no
- * login, no storage. Calculation rules mirror src/lib/numerology.ts:
- *   • Mulank  — birth DAY reduced to a single digit (e.g. 28 -> 1)
+ * Free Mulank & Bhagyank calculator — the top of the funnel.
+ *
+ * Fully client-side: no API call, no signup, no email, no storage. The visitor
+ * gets something genuinely useful before being asked for anything, and only
+ * then sees the paid report. Calculation rules mirror src/lib/numerology.ts:
+ *   • Mulank   — birth DAY reduced to a single digit (e.g. 28 -> 1)
  *   • Bhagyank — every digit of the full DOB summed, then reduced
  */
 
 interface Result {
   mulank: MulankNumber;
   bhagyank: MulankNumber;
-}
-
-/** Parse the YYYY-MM-DD value a native date input produces. */
-function parseDob(value: string): { day: number; month: number; year: number } | null {
-  const parts = value.trim().split("-").map(Number);
-  if (parts.length !== 3) return null;
-
-  const [year, month, day] = parts;
-  if (![day, month, year].every(Number.isInteger)) return null;
-  if (day < 1 || day > 31) return null;
-  if (month < 1 || month > 12) return null;
-  if (year < 1900 || year > 2100) return null;
-
-  return { day, month, year };
+  day: number;
+  month: number;
+  year: number;
 }
 
 /** Sum every digit of the full DOB and reduce — the Bhagyank (destiny number). */
@@ -39,12 +39,23 @@ function bhagyankOf(day: number, month: number, year: number): MulankNumber {
   return reduceToSingleDigit(allDigits) as MulankNumber;
 }
 
+/** A real calendar-date check, so 31 February can't produce a reading. */
+function isRealDate(day: number, month: number, year: number): boolean {
+  const d = new Date(year, month - 1, day);
+  return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day;
+}
+
 export default function CalculatorForm() {
   const [name, setName] = useState("");
-  const [dob, setDob] = useState("");
+  const [dob, setDob] = useState<DobValue>({ day: "", month: "", year: "" });
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
+
+  /** Any first keystroke counts as starting — the event itself fires once. */
+  function markStarted() {
+    trackCalculatorStarted("calculator");
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,18 +66,42 @@ export default function CalculatorForm() {
       return;
     }
 
-    const parsed = parseDob(dob);
-    if (!parsed) {
-      setError("Please select your date of birth.");
+    const day = Number(dob.day);
+    const month = Number(dob.month);
+    const year = Number(dob.year);
+
+    if (!day || !month || !year) {
+      setError("Please enter your full date of birth.");
+      return;
+    }
+    if (year < 1900 || year > new Date().getFullYear()) {
+      setError("Please check the year of birth.");
+      return;
+    }
+    if (!isRealDate(day, month, year)) {
+      setError("That date of birth isn't a real date.");
       return;
     }
 
-    const mulank = reduceToSingleDigit(parsed.day) as MulankNumber;
-    const bhagyank = bhagyankOf(parsed.day, parsed.month, parsed.year);
-    setResult({ mulank, bhagyank });
+    setResult({
+      mulank: reduceToSingleDigit(day) as MulankNumber,
+      bhagyank: bhagyankOf(day, month, year),
+      day,
+      month,
+      year,
+    });
+    trackFreeResultViewed("calculator");
   }
 
   const firstName = name.trim().split(/\s+/)[0] ?? "";
+
+  /**
+   * Carry the name and DOB across so the customer never types them twice.
+   * /order reads these and jumps straight to their numbers.
+   */
+  const orderHref = result
+    ? `/order?name=${encodeURIComponent(name.trim())}&d=${result.day}&m=${result.month}&y=${result.year}`
+    : "/order";
 
   /**
    * Web Share API on mobile (the vast majority of this traffic) opens the
@@ -104,86 +139,98 @@ export default function CalculatorForm() {
             autoComplete="name"
             placeholder="e.g. Priya Sharma"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              markStarted();
+              setName(e.target.value);
+            }}
           />
         </div>
 
-        <div className="field">
-          <label htmlFor="calc-dob">Date of Birth</label>
-          <input
-            id="calc-dob"
-            type="date"
-            autoComplete="bday"
-            min="1900-01-01"
-            max={new Date().toISOString().slice(0, 10)}
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
-          {error && <div className="err">{error}</div>}
-        </div>
+        <DobFields
+          idPrefix="calc"
+          value={dob}
+          onChange={(next) => {
+            markStarted();
+            setDob((d) => ({ ...d, ...next }));
+          }}
+        />
+
+        {error && (
+          <div className="field err" role="alert">
+            {error}
+          </div>
+        )}
 
         <button type="submit" className="cta">
           Calculate My Numbers
         </button>
+
+        <p className="notice" style={{ marginTop: 12 }}>
+          Free · no signup · no email needed
+        </p>
       </form>
 
       {result && (
-        <div className="form-card" style={{ marginTop: 22 }}>
-          <div className="preview" style={{ marginTop: 0, paddingTop: 0, borderTop: "none" }}>
-            <div className="preview-label">
-              {firstName ? `${firstName}, your core numbers` : "Your core numbers"}
+        <>
+          <div className="form-card" style={{ marginTop: 22 }}>
+            <div className="preview" style={{ marginTop: 0, paddingTop: 0, borderTop: "none" }}>
+              <div className="preview-label">
+                {firstName ? `${firstName}, your core numbers` : "Your core numbers"}
+              </div>
+
+              <div className="nums">
+                {([
+                  { key: "Mulank", info: MULANK_CONTENT[result.mulank] },
+                  { key: "Bhagyank", info: MULANK_CONTENT[result.bhagyank] },
+                ] as const).map(({ key, info }) => (
+                  <div className="num-chip" key={key}>
+                    <div className="n">{info.number}</div>
+                    <div className="k">{key}</div>
+                    <div className="planet">{info.planet}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ textAlign: "left", maxWidth: 460, margin: "18px auto 0" }}>
+                <ResultLine label="Mulank" />
+                <ResultRow info={MULANK_CONTENT[result.mulank]} />
+                <div style={{ height: 18 }} />
+                <ResultLine label="Bhagyank" />
+                <ResultRow info={MULANK_CONTENT[result.bhagyank]} />
+              </div>
+
+              <button
+                type="button"
+                className="cta cta-ghost"
+                style={{ marginTop: 20, width: "100%", justifyContent: "center" }}
+                onClick={handleShare}
+              >
+                {shareCopied ? "Link Copied!" : "Share My Numbers"}
+              </button>
+
+              <p style={{ marginTop: 14, fontSize: 13 }}>
+                <Link href={`/mulank/${result.mulank}`} style={{ color: "var(--gold)" }}>
+                  Read more about Mulank {result.mulank} →
+                </Link>
+                {"  ·  "}
+                <Link href={`/bhagyank/${result.bhagyank}`} style={{ color: "var(--gold)" }}>
+                  Read more about Bhagyank {result.bhagyank} →
+                </Link>
+              </p>
             </div>
-
-            <div className="nums">
-              {([
-                { key: "Mulank", info: MULANK_CONTENT[result.mulank] },
-                { key: "Bhagyank", info: MULANK_CONTENT[result.bhagyank] },
-              ] as const).map(({ key, info }) => (
-                <div className="num-chip" key={key}>
-                  <div className="n">{info.number}</div>
-                  <div className="k">{key}</div>
-                  <div className="planet">{info.planet}</div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ textAlign: "left", maxWidth: 460, margin: "18px auto 0" }}>
-              <ResultLine label="Mulank" />
-              <ResultRow info={MULANK_CONTENT[result.mulank]} />
-              <div style={{ height: 18 }} />
-              <ResultLine label="Bhagyank" />
-              <ResultRow info={MULANK_CONTENT[result.bhagyank]} />
-            </div>
-
-            <p className="notice" style={{ marginTop: 22 }}>
-              This is a free snapshot. Your full 10-page report adds your Lo Shu grid, Name Number,
-              the year ahead, lucky elements, and personal Vedic remedies.
-            </p>
-
-            <Link href="/order" className="cta" style={{ marginTop: 18, width: "100%", justifyContent: "center" }}>
-              Get Your Full 10-Page Vedic Report — ₹99
-            </Link>
-
-            <button
-              type="button"
-              className="cta cta-ghost"
-              style={{ marginTop: 12, width: "100%", justifyContent: "center" }}
-              onClick={handleShare}
-            >
-              {shareCopied ? "Link Copied!" : "Share My Numbers"}
-            </button>
-
-            <p style={{ marginTop: 14, fontSize: 13 }}>
-              <Link href={`/mulank/${result.mulank}`} style={{ color: "var(--gold)" }}>
-                Read more about Mulank {result.mulank} →
-              </Link>
-              {"  ·  "}
-              <Link href={`/bhagyank/${result.bhagyank}`} style={{ color: "var(--gold)" }}>
-                Read more about Bhagyank {result.bhagyank} →
-              </Link>
-            </p>
           </div>
-        </div>
+
+          <ReportOffer where="calculator">
+            <Link
+              href={orderHref}
+              className="cta"
+              style={{ marginTop: 6, width: "100%", justifyContent: "center" }}
+              onClick={() => trackPaidCtaClicked("calculator")}
+            >
+              Get My Full Report — {PRICE_LABEL}
+            </Link>
+          </ReportOffer>
+        </>
       )}
     </>
   );

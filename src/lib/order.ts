@@ -32,6 +32,15 @@ export const orderInputSchema = z.object({
 
 export type OrderInput = z.infer<typeof orderInputSchema>;
 
+/**
+ * The free preview needs only a name and a date of birth — asking for an email
+ * before showing any value is the single biggest drop-off in the funnel, so the
+ * preview endpoint validates against this and email is collected at checkout.
+ */
+export const previewInputSchema = orderInputSchema.omit({ email: true });
+
+export type PreviewInput = z.infer<typeof previewInputSchema>;
+
 /** A real calendar-date check (the schema only bounds each field individually). */
 export function isRealDate({ day, month, year }: { day: number; month: number; year: number }): boolean {
   const d = new Date(year, month - 1, day);
@@ -52,4 +61,6 @@ export function toReportOptions(input: OrderInput): ReportOptions {
   };
 }
 
-export const PRICE_INR = 99;
+// Price now lives in ./pricing so a price test is a config change. Re-exported
+// here because callers have always imported it from this module.
+export { PRICE_INR, PRICE_PAISE, PRICE_LABEL, formatInr } from "./pricing";

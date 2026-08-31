@@ -6,13 +6,14 @@ import { Mandala } from "@/components/Mandala";
 import { SECTION_ICONS, ShieldCheckIcon, ClockIcon, SparkleIcon } from "@/components/icons";
 import { BASE_URL, pageMetadata, productSchema, schemaGraph } from "@/lib/seo";
 import { PRICE_INR } from "@/lib/order";
+import { PRICE_LABEL } from "@/lib/pricing";
 
 // Keyword-first: with little brand authority yet, the leading characters of
 // the title are better spent on what people actually search for.
 export const metadata = pageMetadata({
   title: "Personalised Indian Numerology Report — Mystic Digits",
   description:
-    "Get a 10-page Vedic numerology report written from your name and date of birth — Mulank, Bhagyank, Lo Shu grid, the year ahead and your remedies. ₹99, delivered within 24 hours.",
+    "Get a 10-page Vedic numerology report written from your name and date of birth — Mulank, Bhagyank, Lo Shu grid, the year ahead and your remedies. ${PRICE_LABEL}, delivered within 24 hours.",
   path: "/",
 });
 
@@ -119,7 +120,7 @@ export default function Home() {
             Get My Report
           </Link>
           <div className="price-note">
-            Just <strong>₹99</strong> · delivered within 24 hours
+            Just <strong>{PRICE_LABEL}</strong> · delivered within 24 hours
           </div>
           <p className="hero-calc-note">
             Curious what your numbers say before you order? Find your Mulank — your birth number —
@@ -251,7 +252,7 @@ export default function Home() {
             <p className="sub">It takes less than a minute to begin.</p>
           </div>
           <Link href="/order" className="cta">
-            Get My Report · ₹99
+            Get My Report · {PRICE_LABEL}
           </Link>
         </section>
       </main>

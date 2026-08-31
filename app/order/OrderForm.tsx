@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { PRICE_INR } from "@/lib/order";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { PRICE_LABEL } from "@/lib/pricing";
 import type { ReportLang } from "@/lib/report-lang";
-import { trackPreviewShown, trackBeginCheckout } from "@/lib/analytics";
+import { DobFields, type DobValue } from "@/components/DobFields";
+import { ReportOffer } from "@/components/ReportOffer";
+import {
+  trackCalculatorStarted,
+  trackFreeResultViewed,
+  trackPaidCtaClicked,
+  trackBeginCheckout,
+} from "@/lib/analytics";
 import { getAttribution } from "@/lib/attribution";
-
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
 
 const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
 
@@ -41,11 +43,17 @@ function loadRazorpay(): Promise<boolean> {
   });
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function OrderForm({ initialLang: _initialLang = "en" }: { initialLang?: ReportLang }) {
   // Assamese report language is paused site-wide for now (Assam flood
   // relief in progress) — force English regardless of ?lang= in the URL.
   const router = useRouter();
-  const [form, setForm] = useState({ fullName: "", email: "", day: "", month: "", year: "", lang: "en" as string });
+  const searchParams = useSearchParams();
+
+  const [fullName, setFullName] = useState("");
+  const [dob, setDob] = useState<DobValue>({ day: "", month: "", year: "" });
+  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -54,8 +62,90 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
   const [payError, setPayError] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
 
-  function update(key: keyof typeof form, value: string) {
-    setForm((f) => ({ ...f, [key]: value }));
+  /**
+   * Ask the server for the free preview. Name + DOB only — no email, so the
+   * customer sees their numbers before being asked for anything.
+   */
+  const fetchPreview = useCallback(
+    async (name: string, d: DobValue) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: name,
+            day: d.day,
+            month: d.month,
+            year: d.year,
+            lang: "en",
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error ?? "Something went wrong. Please check your details.");
+          return false;
+        }
+        setPreview(data.preview as Preview);
+        trackFreeResultViewed("order");
+        return true;
+      } catch {
+        setError("Could not reach the server. Please try again.");
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  /**
+   * Arriving from the free calculator: name and DOB ride along in the query so
+   * nobody types them twice. Jump straight to their numbers.
+   */
+  const prefillDone = useRef(false);
+  useEffect(() => {
+    if (prefillDone.current) return;
+
+    const name = searchParams.get("name")?.trim();
+    const d = searchParams.get("d");
+    const m = searchParams.get("m");
+    const y = searchParams.get("y");
+    if (!name || !d || !m || !y) return;
+
+    prefillDone.current = true;
+    const next = { day: d, month: m, year: y };
+    setFullName(name);
+    setDob(next);
+    void fetchPreview(name, next);
+  }, [searchParams, fetchPreview]);
+
+  /**
+   * Native share sheet on mobile — points at the calculator, which shows a
+   * result with no email required and is the lowest-friction landing spot
+   * for whoever the link reaches.
+   */
+  async function handleShare() {
+    if (!preview) return;
+    const shareText = `My Mulank is ${preview.mulank.number} and Bhagyank is ${preview.bhagyank.number} — find yours free on Mystic Digits ✨`;
+    const shareUrl = `${window.location.origin}/calculator`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "My Numerology Numbers", text: shareText, url: shareUrl });
+      } catch {
+        // User dismissed the share sheet — not an error.
+      }
+      return;
+    }
+
+    await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
+  }
+
+  function resetToForm() {
     setPreview(null);
     setError(null);
     setPayError(null);
@@ -71,10 +161,30 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
     router.replace(`/thank-you?status=${status}${order}`);
   }
 
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!fullName.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+    if (!dob.day || !dob.month || !dob.year) {
+      setError("Please enter your full date of birth.");
+      return;
+    }
+    await fetchPreview(fullName.trim(), dob);
+  }
+
   async function onPay() {
     setPayError(null);
+
+    // Email is collected here, at the point of purchase, where "where should we
+    // send it?" is a question that answers itself.
+    if (!EMAIL_RE.test(email.trim())) {
+      setPayError("Please enter a valid email address so we know where to send your report.");
+      return;
+    }
+
     setPaying(true);
-    // The customer chose to buy — signal purchase intent (GA4 + Meta).
     trackBeginCheckout();
 
     const ready = await loadRazorpay();
@@ -97,7 +207,15 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
         headers: { "Content-Type": "application/json" },
         // Attribution rides along so the order row records where this
         // customer originally came from (UTM/gclid/fbclid/referrer).
-        body: JSON.stringify({ ...form, attribution: getAttribution() }),
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          email: email.trim(),
+          day: dob.day,
+          month: dob.month,
+          year: dob.year,
+          lang: "en",
+          attribution: getAttribution(),
+        }),
       });
       data = await res.json();
       if (!res.ok) {
@@ -147,60 +265,9 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
     rzp.open();
   }
 
-  /**
-   * Web Share API on mobile opens the native share sheet straight to
-   * WhatsApp/Instagram — the calculator link is the target (not /order)
-   * since it shows a result with no email required, the lowest-friction
-   * landing spot for whoever the link reaches.
-   */
-  async function handleShare() {
-    if (!preview) return;
-    const shareText = `My Mulank is ${preview.mulank.number} and Bhagyank is ${preview.bhagyank.number} — find yours free on Mystic Digits ✨`;
-    const shareUrl = `${window.location.origin}/calculator`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "My Numerology Numbers", text: shareText, url: shareUrl });
-      } catch {
-        // User dismissed the share sheet — not an error.
-      }
-      return;
-    }
-
-    await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-    setShareCopied(true);
-    setTimeout(() => setShareCopied(false), 2000);
-  }
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong. Please check your details.");
-        return;
-      }
-      setPreview(data.preview as Preview);
-      // They submitted name/DOB/email and got their preview — a captured lead
-      // who is now looking at the product (GA4 generate_lead + view_item, Meta Lead).
-      trackPreviewShown();
-    } catch {
-      setError("Could not reach the server. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="form-card">
-      {!preview ? (
+  if (!preview) {
+    return (
+      <div className="form-card">
         <form onSubmit={onSubmit} noValidate>
           <div className="field">
             <label htmlFor="fullName">Full name</label>
@@ -209,64 +276,48 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
               type="text"
               autoComplete="name"
               placeholder="Your name here"
-              value={form.fullName}
-              onChange={(e) => update("fullName", e.target.value)}
+              value={fullName}
+              onChange={(e) => {
+                trackCalculatorStarted("order");
+                setFullName(e.target.value);
+                setError(null);
+              }}
             />
           </div>
 
-          <div className="field">
-            <label>Date of birth</label>
-            <div className="dob-row">
-              <input
-                type="number"
-                inputMode="numeric"
-                placeholder="DD"
-                min={1}
-                max={31}
-                value={form.day}
-                onChange={(e) => update("day", e.target.value)}
-                aria-label="Day"
-              />
-              <select value={form.month} onChange={(e) => update("month", e.target.value)} aria-label="Month">
-                <option value="">Month</option>
-                {MONTHS.map((m, i) => (
-                  <option key={m} value={i + 1}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                inputMode="numeric"
-                placeholder="YYYY"
-                value={form.year}
-                onChange={(e) => update("year", e.target.value)}
-                aria-label="Year"
-              />
+          <DobFields
+            idPrefix="order"
+            value={dob}
+            onChange={(next) => {
+              trackCalculatorStarted("order");
+              setDob((d) => ({ ...d, ...next }));
+              setError(null);
+            }}
+          />
+
+          {error && (
+            <div className="field err" role="alert">
+              {error}
             </div>
-          </div>
-
-          <div className="field">
-            <label htmlFor="email">Email (where we'll send the report)</label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
-            />
-          </div>
-
-          {error && <div className="field err" role="alert">{error}</div>}
+          )}
 
           <button type="submit" className="cta" disabled={loading}>
-            {loading ? "Reading your numbers…" : "See My Core Numbers — Free"}
+            {loading ? "Reading your numbers…" : "See My Numbers — Free"}
           </button>
+
+          <p className="notice" style={{ marginTop: 12 }}>
+            Free · no signup · we only ask for an email when you order the full report
+          </p>
         </form>
-      ) : (
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="form-card">
         <div className="preview">
-          <button type="button" className="edit-link" onClick={() => setPreview(null)}>
+          <button type="button" className="edit-link" onClick={resetToForm}>
             ← Edit details
           </button>
           <div className="preview-label">{preview.firstName}, here is your core</div>
@@ -297,39 +348,59 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
               </ul>
             </>
           )}
-          <p className="sub" style={{ fontSize: 13 }}>
-            Your full 10-page report reads all of these together — strengths, the years ahead, your
-            Lo Shu grid, lucky elements and Vedic remedies.
-          </p>
-          <button
-            type="button"
-            className="cta"
-            style={{ marginTop: 18 }}
-            onClick={onPay}
-            disabled={paying || verifyingPayment}
-          >
-            {(paying || verifyingPayment) && <span className="btn-spinner" aria-hidden="true" />}
-            {verifyingPayment
-              ? "Confirming payment..."
-              : paying
-                ? "Opening payment..."
-                : `Get Full Report · ₹${PRICE_INR}`}
-          </button>
-          {payError && (
-            <div className="field err" role="alert" style={{ marginTop: 12 }}>
-              {payError}
-            </div>
-          )}
+
           <button
             type="button"
             className="cta cta-ghost"
-            style={{ marginTop: 12, width: "100%", justifyContent: "center" }}
+            style={{ marginTop: 18, width: "100%", justifyContent: "center" }}
             onClick={handleShare}
           >
             {shareCopied ? "Link Copied!" : "Share My Numbers"}
           </button>
         </div>
-      )}
-    </div>
+      </div>
+
+      <ReportOffer where="order">
+        <div className="field" style={{ marginTop: 6, textAlign: "left" }}>
+          <label htmlFor="email">Email (where we&apos;ll send your report)</label>
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setPayError(null);
+            }}
+          />
+        </div>
+
+        <button
+          type="button"
+          className="cta"
+          style={{ marginTop: 6, width: "100%", justifyContent: "center" }}
+          onClick={() => {
+            trackPaidCtaClicked("order");
+            void onPay();
+          }}
+          disabled={paying || verifyingPayment}
+        >
+          {(paying || verifyingPayment) && <span className="btn-spinner" aria-hidden="true" />}
+          {verifyingPayment
+            ? "Confirming payment..."
+            : paying
+              ? "Opening payment..."
+              : `Get My Full Report · ${PRICE_LABEL}`}
+        </button>
+
+        {payError && (
+          <div className="field err" role="alert" style={{ marginTop: 12 }}>
+            {payError}
+          </div>
+        )}
+      </ReportOffer>
+    </>
   );
 }

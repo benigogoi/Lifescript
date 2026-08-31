@@ -35,21 +35,28 @@ export function pageMetadata({
   title,
   description,
   path,
+  locale = "en_IN",
+  languages,
 }: {
   title: string;
   description: string;
   path: string;
+  /** Open Graph locale, e.g. "as_IN" for the Assamese landing page. */
+  locale?: string;
+  /** hreflang map for pages with language variants — must be reciprocal
+   * (every variant lists the full set, including itself). */
+  languages?: Record<string, string>;
 }): Metadata {
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, ...(languages ? { languages } : {}) },
     openGraph: {
       title,
       description,
       url: path,
       siteName: SITE_NAME,
-      locale: "en_IN",
+      locale,
       type: "website",
       images: [OG_IMAGE],
     },
