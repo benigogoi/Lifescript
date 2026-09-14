@@ -44,6 +44,8 @@ export async function sendMetaPurchaseEvent(order: Order, ctx: RequestContext = 
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const accessToken = process.env.META_CAPI_ACCESS_TOKEN;
   if (!pixelId || !accessToken) return;
+  // Owner QA / ₹1 test orders would teach Meta's ad delivery false purchases.
+  if (order.is_test) return;
 
   const lastTouch = (order.attribution as { last_touch?: { fbclid?: string | null; at?: string } } | null)
     ?.last_touch;
@@ -78,6 +80,9 @@ export async function sendMetaPurchaseEvent(order: Order, ctx: RequestContext = 
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    // The verify route awaits this before answering the customer's browser,
+    // so a slow Graph API must not hold up their payment confirmation.
+    signal: AbortSignal.timeout(3000),
   });
 
   if (!res.ok) {
