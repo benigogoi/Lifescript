@@ -18,12 +18,9 @@
   padding-block: 44px 36px;
 }
 
-.brand {
-  font-family: var(--font-label);
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold);
+.logo {
+  width: 76px;
+  height: 76px;
 }
 
 .heading {
@@ -98,10 +95,58 @@
   border-left: 2px solid var(--gold);
 }
 
+/* Proof the product exists — lazy-loaded, never on the first screen. */
+.sample {
+  padding-block: 28px 8px;
+}
+
+.sample figure {
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.sample img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.sample figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 .bottom {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  padding-block: 28px 56px;
+  padding-block: 28px 36px;
+}
+
+/* Small and quiet: there to be checked, not to pull clicks away from the CTA. */
+.footer {
+  padding-block: 18px 32px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footer nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-bottom: 8px;
+}
+
+.footer a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding-block: 6px;
 }

@@ -37,5 +37,8 @@ export const POSTER_COPY = {
   cta: "रिपोर्ट पाएं",
   priceNote: "एक बार का भुगतान · 24 घंटे में ईमेल पर",
   langNote: "रिपोर्ट अंग्रेज़ी में आती है",
+  payment: "Razorpay से सुरक्षित भुगतान · UPI / कार्ड",
+  sampleHeading: "रिपोर्ट का एक असली पेज",
+  sampleCaption: "सैंपल रिपोर्ट से — आपकी रिपोर्ट आपके नाम और जन्मतिथि से बनेगी",
   traitsHeading: (n: MulankNumber) => `मूलांक ${n} के लोग कैसे होते हैं`,
 } as const;
