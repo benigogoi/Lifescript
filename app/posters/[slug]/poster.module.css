@@ -90,6 +90,20 @@
   border-left: 2px solid var(--gold);
 }
 
+.traits li strong {
+  font-weight: 600;
+  color: var(--gold-bright);
+}
+
+.closer {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
 /* Proof the product exists — lazy-loaded, never on the first screen. */
 .sample {
   padding-block: 28px 8px;
