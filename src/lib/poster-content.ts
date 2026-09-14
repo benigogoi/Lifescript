@@ -4,9 +4,6 @@
  * One entry per Meta ad audience. To launch Mulank 1, 3, 6 or 9, add an entry
  * to POSTERS below — the route, heading, birth dates, price and buttons are all
  * derived, so no new page is needed.
- *
- * Copy is Hindi, but the report itself isn't available in Hindi yet
- * (report-lang.ts: 'hi' is reserved, no pack), so every page says so plainly.
  */
 import type { MulankNumber } from "./mulank-content";
 
@@ -20,25 +17,24 @@ export const POSTERS: Record<string, Poster> = {
   "mulank-5": {
     mulank: 5,
     traits: [
-      "बुध ग्रह से प्रभावित मूलांक 5 के लोग तेज़ दिमाग़ वाले, जिज्ञासु और हर माहौल में ढल जाने वाले होते हैं।",
-      "बात करना, समझाना और लोगों से जुड़ना आपको स्वाभाविक रूप से आता है — व्यापार, सेल्स और मार्केटिंग आपके लिए बने हैं।",
-      "आपकी सबसे बड़ी चुनौती है जल्दी ऊब जाना — कई काम शुरू होते हैं, पर पूरे कम हो पाते हैं।",
-      "2026 शुरुआत का साल है: आपकी नई योजना को ज़मीन मिलेगी, बस दस में से एक चुनिए और उसे पूरा कीजिए।",
+      "Ruled by Mercury, Mulank 5 people are quick-witted, curious, and adapt to almost any situation.",
+      "Talking, persuading and connecting with people come naturally to you — business, sales and marketing suit you well.",
+      "Your biggest challenge is boredom: many things get started, far fewer get finished.",
+      "2026 is a year of beginnings. Your new idea finds solid ground — pick the best one and see it through.",
     ],
   },
 };
 
 export const POSTER_SLUGS = Object.keys(POSTERS);
 
-/** Shared Hindi UI copy, identical on every poster. */
+/** Shared UI copy, identical on every poster. */
 export const POSTER_COPY = {
-  heading: (n: MulankNumber) => `मूलांक ${n} — आपकी 2026 रिपोर्ट`,
-  inside: "लो शू ग्रिड · शुभ रंग, दिन और रत्न · उपाय · मंत्र",
-  cta: "रिपोर्ट पाएं",
-  priceNote: "एक बार का भुगतान · 24 घंटे में ईमेल पर",
-  langNote: "रिपोर्ट अंग्रेज़ी में आती है",
-  payment: "Razorpay से सुरक्षित भुगतान · UPI / कार्ड",
-  sampleHeading: "रिपोर्ट का एक असली पेज",
-  sampleCaption: "सैंपल रिपोर्ट से — आपकी रिपोर्ट आपके नाम और जन्मतिथि से बनेगी",
-  traitsHeading: (n: MulankNumber) => `मूलांक ${n} के लोग कैसे होते हैं`,
+  heading: (n: MulankNumber) => `Mulank ${n} — Your 2026 Report`,
+  inside: "Lo Shu grid · Lucky colours, days & gemstone · Remedies · Mantra",
+  cta: "Get My Report",
+  priceNote: "One-time payment · In your inbox within 24 hours",
+  payment: "Secure payment via Razorpay · UPI / Cards",
+  traitsHeading: (n: MulankNumber) => `What Mulank ${n} people are like`,
+  sampleHeading: "A real page from the report",
+  sampleCaption: "From a sample report — yours is made from your own name and date of birth.",
 } as const;

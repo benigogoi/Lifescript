@@ -1,7 +1,4 @@
-/* Devanagari from the phone's own fonts — no web-font download on an ad page. */
 .page {
-  --font-hi: "Noto Sans Devanagari", "Nirmala UI", "Mangal", system-ui, sans-serif;
-  font-family: var(--font-hi);
   max-width: 520px;
   margin: 0 auto;
   padding-inline: 20px;
@@ -24,9 +21,10 @@
 }
 
 .heading {
-  font-size: clamp(30px, 8.5vw, 40px);
-  font-weight: 700;
-  line-height: 1.35;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 10vw, 48px);
+  font-weight: 600;
+  line-height: 1.12;
   color: var(--white);
 }
 
@@ -50,16 +48,11 @@
   margin-top: 6px;
 }
 
-/* .cta's uppercase + letter-spacing split Devanagari matras apart. */
 .cta {
   width: 100%;
   max-width: 340px;
   min-height: 56px;
-  font-family: var(--font-hi);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
+  font-size: 16px;
 }
 
 .note {
@@ -75,8 +68,10 @@
 }
 
 .traitsHeading {
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-size: 28px;
   font-weight: 600;
+  line-height: 1.2;
   color: var(--gold-bright);
   text-align: center;
   margin-bottom: 18px;
@@ -89,8 +84,8 @@
 }
 
 .traits li {
-  font-size: 17px;
-  line-height: 1.75;
+  font-size: 16px;
+  line-height: 1.7;
   padding-left: 14px;
   border-left: 2px solid var(--gold);
 }

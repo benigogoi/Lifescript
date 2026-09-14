@@ -37,18 +37,23 @@ export async function generateMetadata({
   };
 }
 
+/** 5 -> "5th", 21 -> "21st", 12 -> "12th". */
+function ordinal(day: number): string {
+  if (day % 100 >= 11 && day % 100 <= 13) return `${day}th`;
+  return `${day}${({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[day % 10] ?? "th"}`;
+}
+
 export default async function PosterPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const poster = POSTERS[slug];
   if (!poster) notFound();
 
   const n = poster.mulank;
-  const days = mulankBirthDays(n);
-  const daysText =
-    days.length > 1 ? `${days.slice(0, -1).join(", ")} या ${days[days.length - 1]}` : String(days[0]);
+  const days = mulankBirthDays(n).map(ordinal);
+  const daysText = days.length > 1 ? `${days.slice(0, -1).join(", ")} or ${days[days.length - 1]}` : days[0];
 
   return (
-    <main lang="hi" className={styles.page}>
+    <main className={styles.page}>
       <section className={styles.hero}>
         <Image
           src="/logo.png"
@@ -60,7 +65,7 @@ export default async function PosterPage({ params }: { params: Promise<{ slug: s
           className={styles.logo}
         />
         <h1 className={styles.heading}>{POSTER_COPY.heading(n)}</h1>
-        <p className={styles.for}>{daysText} तारीख को जन्मे लोगों के लिए</p>
+        <p className={styles.for}>For anyone born on the {daysText} of any month</p>
         <p className={styles.inside}>{POSTER_COPY.inside}</p>
         <div className={styles.price}>{PRICE_LABEL}</div>
         <PosterCta slug={slug} position="top" label={POSTER_COPY.cta} className={`cta ${styles.cta}`} />
@@ -68,8 +73,6 @@ export default async function PosterPage({ params }: { params: Promise<{ slug: s
           {POSTER_COPY.payment}
           <br />
           {POSTER_COPY.priceNote}
-          <br />
-          {POSTER_COPY.langNote}
         </p>
       </section>
 
@@ -87,7 +90,7 @@ export default async function PosterPage({ params }: { params: Promise<{ slug: s
         <figure>
           <Image
             src="/samples/sample-loshu.webp"
-            alt="सैंपल रिपोर्ट का लो शू ग्रिड पेज"
+            alt="Lo Shu grid page from a sample report"
             width={1191}
             height={1685}
             sizes="(max-width: 520px) 80vw, 400px"
@@ -100,18 +103,14 @@ export default async function PosterPage({ params }: { params: Promise<{ slug: s
       <section className={styles.bottom}>
         <div className={styles.price}>{PRICE_LABEL}</div>
         <PosterCta slug={slug} position="bottom" label={POSTER_COPY.cta} className={`cta ${styles.cta}`} />
-        <p className={styles.note}>
-          {POSTER_COPY.payment}
-          <br />
-          {POSTER_COPY.langNote}
-        </p>
+        <p className={styles.note}>{POSTER_COPY.payment}</p>
       </section>
 
       <footer className={styles.footer}>
-        <nav aria-label="नीतियां">
-          <Link href="/contact">संपर्क</Link>
-          <Link href="/refund">रिफंड नीति</Link>
-          <Link href="/terms">शर्तें</Link>
+        <nav aria-label="Policies">
+          <Link href="/contact">Contact</Link>
+          <Link href="/refund">Refund Policy</Link>
+          <Link href="/terms">Terms</Link>
         </nav>
         <p>&copy; {new Date().getFullYear()} Mystic Digits</p>
       </footer>
