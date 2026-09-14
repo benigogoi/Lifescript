@@ -36,5 +36,6 @@ export const POSTER_COPY = {
   payment: "Secure payment via Razorpay · UPI / Cards",
   traitsHeading: (n: MulankNumber) => `What Mulank ${n} people are like`,
   sampleHeading: "A real page from the report",
+  sampleHint: "Tap to zoom",
   sampleCaption: "From a sample report — yours is made from your own name and date of birth.",
 } as const;

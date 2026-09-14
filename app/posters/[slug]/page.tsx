@@ -6,6 +6,7 @@ import { PRICE_LABEL } from "@/lib/pricing";
 import { mulankBirthDays } from "@/lib/mulank-content";
 import { POSTERS, POSTER_COPY, POSTER_SLUGS } from "@/lib/poster-content";
 import { PosterCta } from "./PosterCta";
+import { SampleZoom } from "./SampleZoom";
 import styles from "./poster.module.css";
 
 /**
@@ -88,14 +89,7 @@ export default async function PosterPage({ params }: { params: Promise<{ slug: s
       <section className={styles.sample}>
         <h2 className={styles.traitsHeading}>{POSTER_COPY.sampleHeading}</h2>
         <figure>
-          <Image
-            src="/samples/sample-loshu.webp"
-            alt="Lo Shu grid page from a sample report"
-            width={1191}
-            height={1685}
-            sizes="(max-width: 520px) 80vw, 400px"
-            loading="lazy"
-          />
+          <SampleZoom alt="Lo Shu grid page from a sample report" hint={POSTER_COPY.sampleHint} />
           <figcaption>{POSTER_COPY.sampleCaption}</figcaption>
         </figure>
       </section>
