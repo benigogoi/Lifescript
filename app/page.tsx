@@ -13,7 +13,7 @@ import { PRICE_LABEL } from "@/lib/pricing";
 export const metadata = pageMetadata({
   title: "Personalised Indian Numerology Report — Mystic Digits",
   description:
-    "Get a 10-page Vedic numerology report written from your name and date of birth — Mulank, Bhagyank, Lo Shu grid, the year ahead and your remedies. ${PRICE_LABEL}, delivered within 24 hours.",
+    "Get a 27-page Vedic numerology report written from your name and date of birth — Mulank, Bhagyank, Lo Shu grid, the year ahead and your remedies. ${PRICE_LABEL}, delivered within 24 hours.",
   path: "/",
 });
 
@@ -52,7 +52,7 @@ const SAMPLE_PAGES = [
 
 const STEPS = [
   { n: "1", t: "Share your details", d: "Just your full name and date of birth — nothing more." },
-  { n: "2", t: "We prepare your report", d: "Your unique numbers are read and your 10-page report is written for you." },
+  { n: "2", t: "We prepare your report", d: "Your unique numbers are read and your 27-page report is written for you." },
   { n: "3", t: "Delivered to your inbox", d: "A beautiful PDF arrives within 24 hours, ready to keep forever." },
 ];
 
@@ -72,7 +72,7 @@ const HOME_FAQS = [
   },
   {
     q: "How much does the numerology report cost and when will I get it?",
-    a: `The complete 10-page report is ₹${PRICE_INR}, paid securely through Razorpay — there is no subscription and nothing recurring. Your report is prepared and emailed to you as a PDF within 24 hours of ordering. You can also see your Mulank, Bhagyank and name number for free in the instant preview before you pay anything.`,
+    a: `The complete 27-page report is ₹${PRICE_INR}, paid securely through Razorpay — there is no subscription and nothing recurring. Your report is prepared and emailed to you as a PDF within 24 hours of ordering. You can also see your Mulank, Bhagyank and name number for free in the instant preview before you pay anything.`,
   },
   {
     q: "Is this Indian Vedic numerology or Western numerology?",
@@ -112,7 +112,7 @@ export default function Home() {
             <span className="hero-subtitle">Personalised Indian Numerology Report</span>
           </h1>
           <p className="lede">
-            A beautiful 10-page numerology report, prepared uniquely from your name and date of
+            A beautiful 27-page numerology report, prepared uniquely from your name and date of
             birth — your Mulank, Bhagyank, Lo Shu grid, the year ahead, and your personal Vedic
             remedies. Delivered to your inbox.
           </p>
@@ -154,7 +154,7 @@ export default function Home() {
           <div className="section-head">
             <h2>What's inside your report</h2>
             <div className="divider" />
-            <p className="sub">Ten pages, written for you and no one else.</p>
+            <p className="sub">27 pages, written for you and no one else.</p>
           </div>
           <div className="grid">
             {SECTIONS.map((s, i) => {

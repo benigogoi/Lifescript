@@ -30,7 +30,7 @@ export default function TermsPage() {
           <h2>2. The service</h2>
           <p>
             Mystic Digits prepares a personalised numerology report based on the full name and date of
-            birth you provide. We offer a free preview of your core numbers, and a complete 10-page
+            birth you provide. We offer a free preview of your core numbers, and a complete 27-page
             report for a one-time fee of {PRICE_LABEL}. Reports are generated using classical Vedic and
             Chaldean numerology methods and are intended for entertainment, self-reflection, and
             guidance purposes only.

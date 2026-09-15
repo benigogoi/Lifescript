@@ -45,7 +45,7 @@ export const PRODUCTS: Record<ProductId, Product> = {
   numerology: {
     id: "numerology",
     name: "Personal Numerology Report",
-    summary: "Your complete 10-page Vedic numerology report, written from your name and date of birth.",
+    summary: "Your complete 27-page Vedic numerology report, written from your name and date of birth.",
     priceInr: PRICE_INR,
     subject: "self",
     sellable: true,

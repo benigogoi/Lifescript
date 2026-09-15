@@ -113,7 +113,7 @@ export function productSchema() {
     "@id": `${BASE_URL}/#report`,
     name: "Personalised Indian Numerology Report",
     description:
-      "A 10-page Vedic numerology report prepared from your full name and date of birth — Mulank, Bhagyank, Lo Shu grid, name number, the year ahead, lucky elements, remedies and a personal mantra. Delivered as a PDF within 24 hours.",
+      "A 27-page Vedic numerology report prepared from your full name and date of birth — Mulank, Bhagyank, Lo Shu grid, name number, the year ahead, lucky elements, remedies and a personal mantra. Delivered as a PDF within 24 hours.",
     image: `${BASE_URL}/opengraph-image`,
     brand: { "@id": `${BASE_URL}/#organization` },
     category: "Numerology Report",

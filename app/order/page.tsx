@@ -7,7 +7,7 @@ import { PRICE_LABEL } from "@/lib/pricing";
 
 export const metadata = pageMetadata({
   title: "Get Your Numerology Report — Mystic Digits",
-  description: `See your Mulank, Bhagyank and Name Number free — no signup. Then get your complete 10-page personalised Vedic numerology report for ${PRICE_LABEL}, delivered within 24 hours.`,
+  description: `See your Mulank, Bhagyank and Name Number free — no signup. Then get your complete 27-page personalised Vedic numerology report for ${PRICE_LABEL}, delivered within 24 hours.`,
   path: "/order",
 });
 

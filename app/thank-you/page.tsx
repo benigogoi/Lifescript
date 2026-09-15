@@ -46,7 +46,7 @@ export default async function ThankYouPage({
               <div className="status-mark success">✓</div>
               <h1>Thank you — your order is confirmed</h1>
               <p className="sub">
-                Your payment was received. Your personalised 10-page numerology report is being
+                Your payment was received. Your personalised 27-page numerology report is being
                 prepared and will arrive in your inbox <strong>within 24 hours</strong>.
               </p>
               <div className="status-badges">

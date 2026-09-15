@@ -26,14 +26,14 @@ const FAQS: { q: string; a: string; render?: ReactNode }[] = [
   },
   {
     q: "Can I see a preview before I pay?",
-    a: `Yes. Enter your name and date of birth on the order page and we'll instantly show you your core numbers for free, with no signup required. You can also find your core numbers any time with our free Mulank calculator. The ${PRICE_LABEL} payment is only for the complete 10-page report.`,
+    a: `Yes. Enter your name and date of birth on the order page and we'll instantly show you your core numbers for free, with no signup required. You can also find your core numbers any time with our free Mulank calculator. The ${PRICE_LABEL} payment is only for the complete 27-page report.`,
     // Rendered in place of `a`; keep the wording in sync so the FAQPage JSON-LD matches the page.
     render: (
       <>
         Yes. Enter your name and date of birth on the order page and we&apos;ll instantly show you
         your core numbers for free, with no signup required. You can also find your core numbers
         any time with our <Link href="/calculator">free Mulank calculator</Link>. The {PRICE_LABEL} payment
-        is only for the complete 10-page report.
+        is only for the complete 27-page report.
       </>
     ),
   },

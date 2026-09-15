@@ -6,6 +6,7 @@ import { PRICE_LABEL } from "@/lib/pricing";
 import type { ReportLang } from "@/lib/report-lang";
 import { DobFields, type DobValue } from "@/components/DobFields";
 import { ReportOffer } from "@/components/ReportOffer";
+import { StickyReportBar } from "@/components/StickyReportBar";
 import {
   trackCalculatorStarted,
   trackFreeResultViewed,
@@ -64,6 +65,8 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
   const [shareCopied, setShareCopied] = useState(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
+  /** The email + buy button block; the sticky bar hides while it's on screen. */
+  const buyRef = useRef<HTMLDivElement>(null);
   // Scroll only when they pressed the button themselves. Arriving prefilled
   // from the calculator already lands on the numbers, so scrolling there would
   // yank the page for no reason.
@@ -259,7 +262,7 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
       amount: data.amount,
       currency: data.currency,
       name: "Mystic Digits",
-      description: "Personalised 10-page Numerology Report",
+      description: "Personalised 27-page Numerology Report",
       prefill: data.prefill,
       theme: { color: "#c9a84c" },
       handler: async (response: unknown) => {
@@ -394,46 +397,66 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
       </div>
 
       <ReportOffer where="order" chart={chart}>
-        <div className="field" style={{ marginTop: 6, textAlign: "left" }}>
-          <label htmlFor="email">Email (where we&apos;ll send your report)</label>
-          <input
-            id="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setPayError(null);
-            }}
-          />
-        </div>
+        <div ref={buyRef}>
+          <div className="field" style={{ marginTop: 6, textAlign: "left" }}>
+            <label htmlFor="email">Email (where we&apos;ll send your report)</label>
+            <input
+              id="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setPayError(null);
+              }}
+            />
+          </div>
 
-        <button
-          type="button"
-          className="cta"
-          style={{ marginTop: 6, width: "100%", justifyContent: "center" }}
-          onClick={() => {
+          <button
+            type="button"
+            className="cta"
+            style={{ marginTop: 6, width: "100%", justifyContent: "center" }}
+            onClick={() => {
+              trackPaidCtaClicked("order");
+              void onPay();
+            }}
+            disabled={paying || verifyingPayment}
+          >
+            {(paying || verifyingPayment) && <span className="btn-spinner" aria-hidden="true" />}
+            {verifyingPayment
+              ? "Confirming payment..."
+              : paying
+                ? "Opening payment..."
+                : `Get My Full Report · ${PRICE_LABEL}`}
+          </button>
+
+          {payError && (
+            <div className="field err" role="alert" style={{ marginTop: 12 }}>
+              {payError}
+            </div>
+          )}
+        </div>
+      </ReportOffer>
+
+      {/* With a valid email already typed, the bar goes straight to payment;
+          otherwise it brings them to the email field first. */}
+      <StickyReportBar
+        targetRef={buyRef}
+        label="Get My Full Report"
+        priceLabel={PRICE_LABEL}
+        note="27-page report · PDF by email"
+        onClick={() => {
+          if (EMAIL_RE.test(email.trim())) {
             trackPaidCtaClicked("order");
             void onPay();
-          }}
-          disabled={paying || verifyingPayment}
-        >
-          {(paying || verifyingPayment) && <span className="btn-spinner" aria-hidden="true" />}
-          {verifyingPayment
-            ? "Confirming payment..."
-            : paying
-              ? "Opening payment..."
-              : `Get My Full Report · ${PRICE_LABEL}`}
-        </button>
-
-        {payError && (
-          <div className="field err" role="alert" style={{ marginTop: 12 }}>
-            {payError}
-          </div>
-        )}
-      </ReportOffer>
+            return;
+          }
+          buyRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+          document.getElementById("email")?.focus({ preventScroll: true });
+        }}
+      />
     </>
   );
 }

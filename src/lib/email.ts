@@ -37,7 +37,7 @@ const EMAIL_COPY = {
     confirmHeading: "Your reading is being prepared",
     confirmBody: (name: string) =>
       `Dear ${name}, thank you — your payment has been received.
-                  Your personalised 10-page numerology report is now being prepared
+                  Your personalised 27-page numerology report is now being prepared
                   by hand from your name and date of birth, and will arrive in this
                   inbox <strong style="color:#e6c766;">within 24 hours</strong>.`,
     confirmBadge: `ORDER CONFIRMED &nbsp;·&nbsp; ${PRICE_LABEL}`,
@@ -45,7 +45,7 @@ const EMAIL_COPY = {
     readySubject: (name: string) => `${name}, your Mystic Digits numerology report is ready`,
     readyHeading: "Your reading has arrived",
     readyBody: (name: string) =>
-      `Dear ${name}, your personalised 10-page Mystic Digits numerology report is
+      `Dear ${name}, your personalised 27-page Mystic Digits numerology report is
                   ready and <strong style="color:#e6c766;">attached to this email</strong> as a PDF.
                   Read it somewhere quiet — it was written for you and no one else.`,
     readyBadge: "YOUR REPORT &nbsp;·&nbsp; PDF ATTACHED",
@@ -55,7 +55,7 @@ const EMAIL_COPY = {
     recoverBody: (name: string) =>
       `Dear ${name}, you started your Mystic Digits reading but the payment didn't go through.
                   Your Mulank and Bhagyank are already calculated — pick up right where you left off
-                  and get your full 10-page report for <strong style="color:#e6c766;">just ${PRICE_LABEL}</strong>.
+                  and get your full 27-page report for <strong style="color:#e6c766;">just ${PRICE_LABEL}</strong>.
                   <br /><br />
                   <a href="https://mysticdigits.in/order" style="color:#c9a84c;text-decoration:underline;">Complete your order &rarr;</a>`,
     recoverBadge: `COMPLETE YOUR ORDER &nbsp;·&nbsp; ${PRICE_LABEL}`,

@@ -6,6 +6,7 @@ import { reduceToSingleDigit, loShuGrid, type LoShuGrid } from "@/lib/numerology
 import { MULANK_CONTENT, type MulankNumber } from "@/lib/mulank-content";
 import { DobFields, type DobValue } from "@/components/DobFields";
 import { ReportOffer } from "@/components/ReportOffer";
+import { StickyReportBar } from "@/components/StickyReportBar";
 import { PRICE_LABEL } from "@/lib/pricing";
 import {
   trackCalculatorStarted,
@@ -54,6 +55,8 @@ export default function CalculatorForm() {
   const [shareCopied, setShareCopied] = useState(false);
 
   const resultRef = useRef<HTMLDivElement>(null);
+  /** The in-page buy button; the sticky bar hides while it's on screen. */
+  const ctaRef = useRef<HTMLDivElement>(null);
   // Only scroll when the customer just pressed Calculate — never on a re-render.
   const scrollOnNextResult = useRef(false);
 
@@ -246,15 +249,26 @@ export default function CalculatorForm() {
           </div>
 
           <ReportOffer where="calculator" chart={{ mulank: result.mulank, loShu: result.loShu }}>
-            <Link
-              href={orderHref}
-              className="cta"
-              style={{ marginTop: 6, width: "100%", justifyContent: "center" }}
-              onClick={() => trackPaidCtaClicked("calculator")}
-            >
-              Get My Full Report — {PRICE_LABEL}
-            </Link>
+            <div ref={ctaRef}>
+              <Link
+                href={orderHref}
+                className="cta"
+                style={{ marginTop: 6, width: "100%", justifyContent: "center" }}
+                onClick={() => trackPaidCtaClicked("calculator")}
+              >
+                Get My Full Report — {PRICE_LABEL}
+              </Link>
+            </div>
           </ReportOffer>
+
+          <StickyReportBar
+            targetRef={ctaRef}
+            label="Get My Full Report"
+            priceLabel={PRICE_LABEL}
+            note="27-page report · PDF by email"
+            href={orderHref}
+            onClick={() => trackPaidCtaClicked("calculator")}
+          />
         </>
       )}
     </>

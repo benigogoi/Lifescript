@@ -33,7 +33,7 @@ const body = Jost({
 
 const SITE_TITLE = "Mystic Digits — Your Personalised Indian Numerology Report";
 const SITE_DESCRIPTION =
-  "A beautiful 10-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.";
+  "A beautiful 27-page Vedic numerology report written uniquely for your name and date of birth. Delivered to your inbox.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

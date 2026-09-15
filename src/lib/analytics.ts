@@ -32,7 +32,7 @@ declare global {
 /** The single product we sell, in GA4 ecommerce `items[]` shape. */
 export const REPORT_ITEM = {
   item_id: "numerology-report",
-  item_name: "Personalised 10-Page Numerology Report",
+  item_name: "Personalised 27-Page Numerology Report",
   price: PRICE_INR,
   quantity: 1,
 } as const;

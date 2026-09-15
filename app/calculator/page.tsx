@@ -6,7 +6,7 @@ import CalculatorForm from "./CalculatorForm";
 export const metadata = pageMetadata({
   title: "Free Mulank & Bhagyank Calculator — Mystic Digits",
   description:
-    "Instantly calculate your Mulank (birth number) and Bhagyank (destiny number) with our free Vedic numerology calculator — no signup needed. When you're ready, get your full personalised 10-page report.",
+    "Instantly calculate your Mulank (birth number) and Bhagyank (destiny number) with our free Vedic numerology calculator — no signup needed. When you're ready, get your full personalised 27-page report.",
   path: "/calculator",
 });
 
@@ -58,7 +58,7 @@ export default function CalculatorPage() {
           </p>
           <p>
             This free calculator gives you a snapshot. Your complete{" "}
-            <strong>10-page Vedic numerology report</strong> goes much further — your Lo Shu grid,
+            <strong>27-page Vedic numerology report</strong> goes much further — your Lo Shu grid,
             Name Number, a personal reading for the year ahead, your lucky elements, and authentic
             Vedic remedies chosen for your ruling planet.
           </p>

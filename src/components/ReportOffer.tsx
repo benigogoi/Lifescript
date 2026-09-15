@@ -25,10 +25,13 @@ import { LO_SHU_LAYOUT } from "@/lib/numerology";
  * verifiably true of the product.
  */
 
+// The four pages of the 27-page report most likely to make someone want their
+// own — rendered for a fictional customer by scripts/render-samples-27.ts.
 const SAMPLE_PAGES = [
-  { src: "/samples/sample-cover.webp", alt: "Report cover page with the reader's name set in gold", caption: "Your cover, with your name in gold" },
-  { src: "/samples/sample-loshu.webp", alt: "Lo Shu grid page showing planes and arrows", caption: "Your Lo Shu grid, planes & arrows" },
-  { src: "/samples/sample-lucky.webp", alt: "Lucky elements page showing colours, days and gemstone", caption: "Your lucky colours, days & gemstone" },
+  { src: "/samples/sample27-name-align.webp", alt: "Name alignment page with a letter-by-letter reading and verdict", caption: "Is your name aligned with your birth date?" },
+  { src: "/samples/sample27-missing.webp", alt: "Missing numbers page with a remedy for each number", caption: "The numbers you're missing — and the remedy" },
+  { src: "/samples/sample27-compat.webp", alt: "Compatibility grid showing how every Mulank matches", caption: "Who you match with" },
+  { src: "/samples/sample27-actions.webp", alt: "Five-step personal action plan page", caption: "Your personal action plan" },
 ];
 
 export interface OfferChart {
@@ -207,11 +210,11 @@ export function ReportOffer({
           ))}
         </div>
         <p className="notice" style={{ marginTop: 2, marginBottom: 14 }}>
-          Real pages from a sample report — swipe for more.
+          Real pages from a sample report — yours is made from your own name and date of birth.
         </p>
 
         <p className="sub" style={{ marginTop: 4, fontSize: 14 }}>
-          <strong style={{ color: "var(--gold-bright)" }}>{PRICE_LABEL}</strong> — ten designed
+          <strong style={{ color: "var(--gold-bright)" }}>{PRICE_LABEL}</strong> — 27 designed
           pages, one payment, nothing recurring. In your inbox within 24 hours.
         </p>
 

@@ -43,7 +43,7 @@ export default function AboutPage() {
           <p>
             Your core numbers are free, and always will be — you can see your Mulank, Bhagyank
             and Name Number without paying anything, or even giving us an email. What the{" "}
-            {PRICE_LABEL} buys is the complete report: ten designed pages written for your chart
+            {PRICE_LABEL} buys is the complete report: 27 designed pages written for your chart
             alone, as a PDF you can keep, revisit, share or give to someone.
           </p>
 
