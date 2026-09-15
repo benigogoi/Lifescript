@@ -11,7 +11,7 @@
  */
 
 /** Prices we're willing to run. Anything else is a typo, so fall back to 99. */
-const ALLOWED_PRICES = [99, 199, 299] as const;
+const ALLOWED_PRICES = [99, 199, 249, 299] as const;
 const DEFAULT_PRICE = 99;
 
 function resolvePrice(): number {
