@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ReportPreviewPages, ZoomDialog } from "./ReportPreviewPages";
 import Image from "next/image";
 import { PRICE_LABEL } from "@/lib/pricing";
 import { trackOfferViewed } from "@/lib/analytics";
@@ -25,14 +26,39 @@ import { LO_SHU_LAYOUT } from "@/lib/numerology";
  * verifiably true of the product.
  */
 
-// The four pages of the 27-page report most likely to make someone want their
-// own — rendered for a fictional customer by scripts/render-samples-27.ts.
+// Fallback when the visitor's details aren't known: the same four pages,
+// rendered for a fictional customer by scripts/render-samples-27.ts.
 const SAMPLE_PAGES = [
   { src: "/samples/sample27-name-align.webp", alt: "Name alignment page with a letter-by-letter reading and verdict", caption: "Is your name aligned with your birth date?" },
-  { src: "/samples/sample27-missing.webp", alt: "Missing numbers page with a remedy for each number", caption: "The numbers you're missing — and the remedy" },
+  { src: "/samples/sample27-money.webp", alt: "Money and wealth page with do-more-of and watch-out-for lists", caption: "How money moves for you" },
   { src: "/samples/sample27-compat.webp", alt: "Compatibility grid showing how every Mulank matches", caption: "Who you match with" },
-  { src: "/samples/sample27-actions.webp", alt: "Five-step personal action plan page", caption: "Your personal action plan" },
+  { src: "/samples/sample27-months.webp", alt: "Next three months page with a personal month number for each", caption: "Your next three months" },
 ];
+
+/** The fictional sample pages, each opening full-screen on tap. */
+function StaticSamples() {
+  const [open, setOpen] = useState<(typeof SAMPLE_PAGES)[number] | null>(null);
+  return (
+    <>
+      <div className="page-strip" role="group" aria-label="Sample report pages">
+        {SAMPLE_PAGES.map((s) => (
+          <figure className="page-strip-item" key={s.src}>
+            <button type="button" className="page-zoom-btn" onClick={() => setOpen(s)} aria-label={`Zoom in: ${s.caption}`}>
+              <Image src={s.src} alt={s.alt} width={1191} height={1685} loading="lazy" sizes="(max-width: 620px) 62vw, 240px" />
+              <span className="page-zoom-hint">Tap to zoom</span>
+            </button>
+            <figcaption>{s.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+      {open && (
+        <ZoomDialog title={open.caption} onClose={() => setOpen(null)}>
+          <Image src={open.src} alt={open.alt} width={1191} height={1685} sizes="1191px" style={{ width: "100%", height: "auto" }} />
+        </ZoomDialog>
+      )}
+    </>
+  );
+}
 
 export interface OfferChart {
   mulank: Digit;
@@ -49,12 +75,15 @@ function listOut(items: (string | number)[]): string {
 export function ReportOffer({
   where,
   chart,
+  person,
   children,
 }: {
   /** Which page this is rendered on — kept on the analytics events. */
   where: "calculator" | "order";
   /** The visitor's own chart, so the offer can be about them and not the product. */
   chart?: OfferChart;
+  /** The visitor's details, so the preview pages are their own report rather than a sample. */
+  person?: { fullName: string; day: number; month: number; year: number };
   /** The call-to-action: a link on the calculator, a buy button on /order. */
   children: React.ReactNode;
 }) {
@@ -192,26 +221,24 @@ export function ReportOffer({
           </>
         )}
 
-        {/* One page you can actually read, swipe for the rest — three
-            thumbnails at ~90px told the reader nothing. */}
-        <div className="page-strip" role="group" aria-label="Sample report pages">
-          {SAMPLE_PAGES.map((s) => (
-            <figure className="page-strip-item" key={s.src}>
-              <Image
-                src={s.src}
-                alt={s.alt}
-                width={1191}
-                height={1685}
-                loading="lazy"
-                sizes="(max-width: 620px) 62vw, 240px"
-              />
-              <figcaption>{s.caption}</figcaption>
-            </figure>
-          ))}
-        </div>
-        <p className="notice" style={{ marginTop: 2, marginBottom: 14 }}>
-          Real pages from a sample report — yours is made from your own name and date of birth.
-        </p>
+        {/* Their own pages when we know who they are: real numbers, with the
+            personal readings locked until they buy. */}
+        {person ? (
+          <>
+            <ReportPreviewPages {...person} />
+            <p className="notice" style={{ marginTop: 2, marginBottom: 14 }}>
+              These are your real pages, built from your name and date of birth. Your personal readings
+              unlock with the full report — tap a page to zoom in.
+            </p>
+          </>
+        ) : (
+          <>
+            <StaticSamples />
+            <p className="notice" style={{ marginTop: 2, marginBottom: 14 }}>
+              Real pages from a sample report — yours is made from your own name and date of birth.
+            </p>
+          </>
+        )}
 
         <p className="sub" style={{ marginTop: 4, fontSize: 14 }}>
           <strong style={{ color: "var(--gold-bright)" }}>{PRICE_LABEL}</strong> — 27 designed

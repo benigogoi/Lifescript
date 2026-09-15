@@ -39,7 +39,7 @@ const SAMPLE: ReportOptions = {
   preparedDate: new Date("2026-09-15T09:00:00+05:30"),
 };
 
-const PAGES = ["name-align", "missing", "compat", "actions"];
+const PAGES = ["name-align", "money", "compat", "months"];
 
 async function main() {
   await mkdir(OUT, { recursive: true });

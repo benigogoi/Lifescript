@@ -671,6 +671,131 @@ body:has(.sticky-buy.is-visible) {
   }
 }
 
+/* Report pages drawn at full size inside an iframe and scaled to their box
+   (ReportPreviewPages). */
+.scaled-page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 794 / 1123;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #0d0d12;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+.scaled-page iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.scaled-page.is-loading {
+  background: linear-gradient(110deg, #0d0d12 30%, #1a1a24 50%, #0d0d12 70%);
+  background-size: 200% 100%;
+  animation: page-shimmer 1.4s linear infinite;
+}
+@keyframes page-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.page-zoom-btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.page-zoom-btn img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+.page-zoom-hint {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  color: #0d0d12;
+  background: rgba(230, 199, 102, 0.92);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+/* Full-screen page viewer (ZoomDialog). */
+.zoom-dialog {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(5, 5, 10, 0.97);
+  color: var(--white);
+}
+.zoom-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.85);
+}
+.zoom-dialog-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 56px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+}
+.zoom-dialog-bar > span {
+  font-family: var(--font-label);
+  font-size: 13px;
+  color: var(--gold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zoom-dialog-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.zoom-dialog-actions button {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(13, 13, 18, 0.9);
+  color: var(--white);
+  font-size: 13px;
+  cursor: pointer;
+}
+.zoom-dialog-body {
+  height: calc(100dvh - 56px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 14px;
+}
+.zoom-dialog-page {
+  width: min(100%, 794px);
+  margin: 0 auto;
+}
+.zoom-dialog-page.is-zoomed {
+  width: clamp(794px, 180%, 1191px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .scaled-page.is-loading {
+    animation: none;
+  }
+}
+
 /* Compact variant used inside the in-funnel offer card. The default .samples
    grid collapses to one full-width column under ~600px, which pushed the buy
    button roughly 2,000px down the page on a phone. Three across keeps the

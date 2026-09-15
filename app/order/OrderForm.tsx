@@ -396,7 +396,15 @@ export default function OrderForm({ initialLang: _initialLang = "en" }: { initia
         </div>
       </div>
 
-      <ReportOffer where="order" chart={chart}>
+      <ReportOffer
+        where="order"
+        chart={chart}
+        person={
+          dob.day && dob.month && dob.year
+            ? { fullName: fullName.trim(), day: Number(dob.day), month: Number(dob.month), year: Number(dob.year) }
+            : undefined
+        }
+      >
         <div ref={buyRef}>
           <div className="field" style={{ marginTop: 6, textAlign: "left" }}>
             <label htmlFor="email">Email (where we&apos;ll send your report)</label>

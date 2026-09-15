@@ -25,6 +25,8 @@ import {
  */
 
 interface Result {
+  /** The name as it was when they pressed Calculate, so editing the field afterwards doesn't reload the preview pages. */
+  fullName: string;
   mulank: MulankNumber;
   bhagyank: MulankNumber;
   loShu: LoShuGrid;
@@ -111,6 +113,7 @@ export default function CalculatorForm() {
 
     scrollOnNextResult.current = true;
     setResult({
+      fullName: name.trim(),
       mulank: reduceToSingleDigit(day) as MulankNumber,
       bhagyank: bhagyankOf(day, month, year),
       loShu: loShuGrid(day, month, year),
@@ -248,7 +251,11 @@ export default function CalculatorForm() {
             </div>
           </div>
 
-          <ReportOffer where="calculator" chart={{ mulank: result.mulank, loShu: result.loShu }}>
+          <ReportOffer
+            where="calculator"
+            chart={{ mulank: result.mulank, loShu: result.loShu }}
+            person={{ fullName: result.fullName, day: result.day, month: result.month, year: result.year }}
+          >
             <div ref={ctaRef}>
               <Link
                 href={orderHref}
