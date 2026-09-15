@@ -588,7 +588,7 @@ ${thankyouPage}
 
 // --- styles (ported from the approved preview) ------------------------------
 
-const CSS = `
+export const CSS = `
   :root { --bg:#0D0D12; --bg-soft:#14141C; --gold:#C9A84C; --gold-bright:#E6C766; --white:#E8E8F0; --muted:#9A9AB0; --red:#E05A4E; }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { background:#05050a; }

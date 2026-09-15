@@ -1,28 +1,41 @@
 /**
  * Mystic Digits — report generation + delivery.
  *
- * Server-only. Takes a paid order through: generating → ready → scheduled → sent.
+ * Server-only. Takes a paid order through: generating → scheduled → sent.
  *
- * Content: uses the Claude content engine (generateReportContent) for the
- * personalised combination paragraphs, falling back to the static knowledge
- * base (staticContent, via buildReportHtml(opts)) if Claude errors — a report
- * must still go out even if the API call fails.
+ * Content: English orders get the 27-page report (src/lib/report27), Assamese
+ * keeps the 10-page report. There is deliberately no AI-free fallback for the
+ * 27-page report — without its personal paragraphs it reads half-finished —
+ * so a failed generation is retried, and if it still fails the order lands in
+ * 'failed' and the owner is emailed to press Retry. Nothing broken ever
+ * reaches a customer.
  *
- * Delivery: generation happens immediately on payment; the actual send is
- * delayed by a randomized 6–18h window (daytime hours only) and performed by
- * the delivery cron (see app/api/cron/deliver/route.ts), not inline here.
+ * Delivery: once the PDF is stored, AUTO_SEND_REPORTS=true sends it
+ * immediately. Until then (the manual-review phase before the ₹5,000
+ * milestone) the owner is emailed the PDF to review and sends it from the
+ * admin panel.
  */
 import "server-only";
+import Anthropic from "@anthropic-ai/sdk";
 import puppeteer from "puppeteer-core";
 import { existsSync } from "node:fs";
 import { buildReportHtml, reportFileName, type ReportOptions } from "./report-template";
 import { generateReportContent } from "./content-engine";
+import { generateReport27Content } from "./report27/content-engine";
+import { buildReport27Html } from "./report27/template";
 import { supabaseAdmin, REPORTS_BUCKET } from "./supabase";
 import { updateOrder, type Order } from "./orders";
-import { scheduleDelayedDelivery } from "./scheduling";
-import { sendReportReady } from "./email";
+import { sendAdminGenerationFailed, sendAdminReportReady, sendReportReady } from "./email";
 
 const SYSTEM_CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
+
+/** Two tries, 15s apart. With a 100s cap per Claude call, the worst case still leaves the PDF render room inside the routes' 300s maxDuration. */
+const GENERATION_ATTEMPTS = 2;
+const RETRY_PAUSE_MS = 15_000;
+const CLAUDE_TIMEOUT_MS = 100_000;
+
+/** Flip to "true" in Vercel once reports no longer need a manual review before sending. */
+const autoSendReports = () => process.env.AUTO_SEND_REPORTS === "true";
 
 /** On Vercel (no system Chrome available) we launch @sparticuz/chromium's bundled binary. */
 async function launchBrowser() {
@@ -59,7 +72,7 @@ async function renderPdf(html: string): Promise<Buffer> {
     await page.evaluateHandle("document.fonts.ready");
     await page.waitForNetworkIdle({ idleTime: 400 }).catch(() => {});
     await page.evaluate(fitBodyCopySource);
-    const pdf = await page.pdf({ width: "794px", height: "1123px", printBackground: true });
+    const pdf = await page.pdf({ width: "794px", height: "1123px", printBackground: true, preferCSSPageSize: true });
     return Buffer.from(pdf);
   } finally {
     await browser.close();
@@ -93,37 +106,49 @@ function reportOptionsFor(order: Order): ReportOptions {
     year: order.dob_year,
     year1,
     year2: year1 + 1,
+    preparedDate: new Date(),
     // Older rows (pre-migration-0005) have no report_lang → English.
     lang: order.report_lang ?? "en",
   };
 }
 
+/** One generation attempt: Claude content + the right template for the order's language. */
+async function buildHtml(opts: ReportOptions): Promise<{ html: string; costUsd: number }> {
+  if (opts.lang && opts.lang !== "en") {
+    const { content, costUsd } = await generateReportContent(opts);
+    return { html: buildReportHtml(opts, content), costUsd };
+  }
+  // Our own attempts replace the SDK's retries, so one hung call can't eat the function's time budget.
+  const client = new Anthropic({ timeout: CLAUDE_TIMEOUT_MS, maxRetries: 0 });
+  const { content, costUsd } = await generateReport27Content(opts, client);
+  return { html: buildReport27Html(opts, content), costUsd };
+}
+
+async function withRetries<T>(orderId: string, attempt: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let i = 1; i <= GENERATION_ATTEMPTS; i++) {
+    try {
+      return await attempt();
+    } catch (e) {
+      lastError = e;
+      console.error(`order ${orderId}: generation attempt ${i}/${GENERATION_ATTEMPTS} failed`, e);
+      if (i < GENERATION_ATTEMPTS) await new Promise((resolve) => setTimeout(resolve, RETRY_PAUSE_MS));
+    }
+  }
+  throw lastError;
+}
+
 /**
- * Generate and store the report PDF for a paid order, then schedule its
- * (randomly delayed) delivery. Self-contained: manages status transitions and
- * never throws (errors land the order in 'failed' with a message, so the
- * cron/admin can see and retry).
+ * Generate and store the report PDF for a paid order, then either send it
+ * (AUTO_SEND_REPORTS) or hand it to the owner for review. Never throws —
+ * errors land the order in 'failed' and alert the owner.
  */
 export async function processPaidOrder(order: Order): Promise<void> {
   try {
-    await updateOrder(order.id, { status: "generating" });
+    await updateOrder(order.id, { status: "generating", error: null });
 
     const opts = reportOptionsFor(order);
-    let html: string;
-    let claudeCostUsd: number | null = null;
-    try {
-      const { content, costUsd } = await generateReportContent(opts);
-      html = buildReportHtml(opts, content);
-      claudeCostUsd = costUsd;
-    } catch (e) {
-      // Non-English narratives have no static fallback — sending an English
-      // report to a customer who paid for an Assamese one is worse than a
-      // 'failed' order the admin can retry. English keeps the old behaviour.
-      if (opts.lang && opts.lang !== "en") throw e;
-      console.error(`order ${order.id}: Claude content generation failed, falling back to static`, e);
-      html = buildReportHtml(opts);
-    }
-
+    const { html, costUsd } = await withRetries(order.id, () => buildHtml(opts));
     const pdf = await renderPdf(html);
 
     // --- store the PDF in the private 'reports' bucket ---
@@ -134,29 +159,47 @@ export async function processPaidOrder(order: Order): Promise<void> {
       .upload(pdfPath, pdf, { contentType: "application/pdf", upsert: true });
     if (upErr) throw upErr;
 
-    // --- schedule delivery for a randomized 6–18h (daytime-only) delay ---
-    const scheduledAt = scheduleDelayedDelivery();
+    // Queued as due now: sent straight away under AUTO_SEND_REPORTS, otherwise
+    // it waits in the admin panel for the owner's "Send now".
     await updateOrder(order.id, {
       status: "scheduled",
       pdf_path: pdfPath,
-      scheduled_at: scheduledAt.toISOString(),
-      claude_cost_usd: claudeCostUsd,
+      scheduled_at: new Date().toISOString(),
+      claude_cost_usd: costUsd,
       error: null,
     });
-    console.log(`order ${order.id}: report ready, scheduled to send at ${scheduledAt.toISOString()}`);
+
+    if (autoSendReports()) {
+      await deliverScheduledOrder({ ...order, status: "scheduled", pdf_path: pdfPath });
+      return;
+    }
+
+    console.log(`order ${order.id}: report ready, awaiting owner review`);
+    await sendAdminReportReady({
+      fullName: order.full_name,
+      email: order.email,
+      orderId: order.id,
+      pdf,
+      filename,
+      costUsd,
+    }).catch((e) => console.error(`order ${order.id}: review email failed`, e));
   } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
     console.error(`order ${order.id}: processing failed`, e);
-    await updateOrder(order.id, {
-      status: "failed",
-      error: e instanceof Error ? e.message : String(e),
-    }).catch(() => {});
+    await updateOrder(order.id, { status: "failed", error: message }).catch(() => {});
+    await sendAdminGenerationFailed({
+      fullName: order.full_name,
+      email: order.email,
+      orderId: order.id,
+      error: message,
+    }).catch((err) => console.error(`order ${order.id}: failure alert email failed`, err));
   }
 }
 
 /**
- * Send the already-generated report PDF for a 'scheduled' order. Called by
- * the delivery cron once `scheduled_at` has passed, and by the admin panel's
- * "send now" override. Never throws — failures land the order in 'failed'.
+ * Send the already-generated report PDF for a 'scheduled' or 'held' order.
+ * Called straight after generation under AUTO_SEND_REPORTS, and by the admin
+ * panel's "send now". Never throws — failures land the order in 'failed'.
  */
 export async function deliverScheduledOrder(order: Order): Promise<void> {
   if (!order.pdf_path) {

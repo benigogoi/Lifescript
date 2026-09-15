@@ -244,3 +244,68 @@ function recoveryHtml(firstName: string, lang: ReportLang): string {
   const safeName = firstName.replace(/[<>&]/g, "").trim() || "there";
   return emailShell(copy.recoverHeading, copy.recoverBody(safeName), copy.recoverBadge, copy.recoverFooter);
 }
+
+/**
+ * Tell the owner a report is generated and waiting for review, with the PDF
+ * attached so it can be checked from a phone. Used while AUTO_SEND_REPORTS is
+ * off (the manual-review phase before the ₹5,000 milestone).
+ */
+export async function sendAdminReportReady(opts: {
+  fullName: string;
+  email: string;
+  orderId: string;
+  pdf: Buffer;
+  filename: string;
+  costUsd: number | null;
+}) {
+  const escape = (s: string) => s.replace(/[<>&]/g, "");
+  const { fullName, email, orderId, pdf, filename, costUsd } = opts;
+  const { error } = await client().emails.send({
+    from: FROM,
+    to: ADMIN_NOTIFY_EMAIL,
+    subject: `Review & send: ${escape(fullName)}'s report is ready`,
+    html: `<div style="font-family:Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#111;">
+      <p><strong>A report is ready for your review</strong> — the PDF is attached.</p>
+      <ul>
+        <li>Name: ${escape(fullName)}</li>
+        <li>Email: ${escape(email)}</li>
+        <li>Order ID: ${orderId}</li>
+        ${costUsd != null ? `<li>AI cost: $${costUsd.toFixed(4)}</li>` : ""}
+      </ul>
+      <p>If it looks right, send it from <a href="https://mysticdigits.in/admin/orders">the admin panel</a>. The customer was promised it within 24 hours.</p>
+    </div>`,
+    attachments: [{ filename, content: pdf }],
+  });
+  if (error) throw new Error(`Resend: ${error.message}`);
+}
+
+/**
+ * Tell the owner a report could not be generated even after retries. Nothing
+ * reaches the customer; the order sits in 'failed' until Retry is pressed in
+ * the admin panel.
+ */
+export async function sendAdminGenerationFailed(opts: {
+  fullName: string;
+  email: string;
+  orderId: string;
+  error: string;
+}) {
+  const escape = (s: string) => s.replace(/[<>&]/g, "");
+  const { fullName, email, orderId, error: reason } = opts;
+  const { error } = await client().emails.send({
+    from: FROM,
+    to: ADMIN_NOTIFY_EMAIL,
+    subject: `Report FAILED: ${escape(fullName)} — retry needed`,
+    html: `<div style="font-family:Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#111;">
+      <p><strong>Report generation failed after retrying.</strong> Nothing was sent to the customer.</p>
+      <ul>
+        <li>Name: ${escape(fullName)}</li>
+        <li>Email: ${escape(email)}</li>
+        <li>Order ID: ${orderId}</li>
+        <li>Error: ${escape(reason).slice(0, 500)}</li>
+      </ul>
+      <p>Open <a href="https://mysticdigits.in/admin/orders">the admin panel</a> and press Retry. The customer was promised the report within 24 hours.</p>
+    </div>`,
+  });
+  if (error) throw new Error(`Resend: ${error.message}`);
+}
