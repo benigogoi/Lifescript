@@ -1,0 +1,12 @@
+aevalsrc=(0.17*sin(2*PI*110*t)+0.11*sin(2*PI*164.81*t)+0.06*sin(2*PI*220*t))*(0.78+0.22*sin(2*PI*0.11*t)):s=44100:d=12.2[pad];
+aevalsrc=0.05*sin(2*PI*55*t)*(0.7+0.3*sin(2*PI*0.5*t)):s=44100:d=12.2[sub];
+aevalsrc=0.30*sin(2*PI*440*t)*exp(-3.2*t):s=44100:d=3,adelay=300:all=1[c1];
+aevalsrc=0.34*sin(2*PI*329.63*t)*exp(-3.0*t):s=44100:d=3,adelay=3300:all=1[c2];
+aevalsrc=0.30*sin(2*PI*440*t)*exp(-3.0*t):s=44100:d=3,adelay=4200:all=1[c3];
+aevalsrc=0.26*sin(2*PI*523.25*t)*exp(-3.4*t):s=44100:d=3,adelay=6000:all=1[c4];
+aevalsrc=0.26*sin(2*PI*329.63*t)*exp(-3.4*t):s=44100:d=3,adelay=7500:all=1[c5];
+aevalsrc=0.34*sin(2*PI*440*t)*exp(-2.4*t):s=44100:d=3,adelay=9100:all=1[c6];
+aevalsrc=0.22*sin(2*PI*659.25*t)*exp(-2.6*t):s=44100:d=3,adelay=9150:all=1[c7];
+aevalsrc=0.30*sin(2*PI*523.25*t)*exp(-2.6*t):s=44100:d=3,adelay=9900:all=1[c8];
+[c1][c2][c3][c4][c5][c6][c7][c8]amix=inputs=8:duration=longest:normalize=0,aecho=0.8:0.85:190|370:0.28|0.18[chimes];
+[pad][sub][chimes]amix=inputs=3:duration=first:normalize=0,highpass=f=45,afade=t=in:st=0:d=0.9,afade=t=out:st=11.1:d=0.9,alimiter=limit=0.82,volume=1.2[aout]
