@@ -24,7 +24,7 @@ import { generateReportContent } from "./content-engine";
 import { generateReport27Content } from "./report27/content-engine";
 import { buildReport27Html } from "./report27/template";
 import { supabaseAdmin, REPORTS_BUCKET } from "./supabase";
-import { updateOrder, type Order } from "./orders";
+import { claimOrderForGeneration, updateOrder, type Order } from "./orders";
 import { sendAdminGenerationFailed, sendAdminReportReady, sendReportReady } from "./email";
 
 const SYSTEM_CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
@@ -45,12 +45,22 @@ const MIN_ATTEMPT_MS = 60_000;
 /** Flip to "true" in Vercel once reports no longer need a manual review before sending. */
 const autoSendReports = () => process.env.AUTO_SEND_REPORTS === "true";
 
+/**
+ * executablePath() unpacks Chromium into /tmp. Two renders in one warm
+ * instance unpacking at once fail with "spawn ETXTBSY", so share one unpack.
+ */
+let chromiumPath: Promise<string> | null = null;
+
 /** On Vercel (no system Chrome available) we launch @sparticuz/chromium's bundled binary. */
 async function launchBrowser() {
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
     const chromium = (await import("@sparticuz/chromium")).default;
+    chromiumPath ??= chromium.executablePath().catch((e) => {
+      chromiumPath = null;
+      throw e;
+    });
     return puppeteer.launch({
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromiumPath,
       args: chromium.args,
       headless: true,
     });
@@ -156,7 +166,10 @@ async function withRetries<T>(orderId: string, attempt: (timeoutMs: number) => P
  */
 export async function processPaidOrder(order: Order): Promise<void> {
   try {
-    await updateOrder(order.id, { status: "generating", error: null });
+    if (!(await claimOrderForGeneration(order.id))) {
+      console.log(`order ${order.id}: already generating in another run, skipping`);
+      return;
+    }
 
     const opts = reportOptionsFor(order);
     const startedAt = Date.now();

@@ -124,6 +124,28 @@ export async function updateOrder(
   return data as Order;
 }
 
+/** Longer than any single run can live (routes cap at 300s), so a 'generating'
+ * row older than this is a crashed run, not one still in progress. */
+const GENERATION_STALE_MS = 6 * 60_000;
+
+/**
+ * Atomically move an order into 'generating'. Returns false when another run
+ * already holds it — a Retry that fired twice, or the verify and webhook paths
+ * racing — so one report is never written twice at once (17 Sep: a double run
+ * paid Claude twice and its crash overwrote the good run's status).
+ */
+export async function claimOrderForGeneration(id: string): Promise<boolean> {
+  const staleBefore = new Date(Date.now() - GENERATION_STALE_MS).toISOString();
+  const { data, error } = await supabaseAdmin()
+    .from(TABLE)
+    .update({ status: "generating", error: null })
+    .eq("id", id)
+    .or(`status.neq.generating,updated_at.lt."${staleBefore}"`)
+    .select("id");
+  if (error) throw error;
+  return (data?.length ?? 0) > 0;
+}
+
 /** `includeTest` defaults to false — internal/QA orders (see `is_test`) are
  * noise everywhere this is used (dashboard stats, delivery lists). */
 export async function listOrders(
