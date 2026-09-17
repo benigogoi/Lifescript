@@ -29,10 +29,18 @@ import { sendAdminGenerationFailed, sendAdminReportReady, sendReportReady } from
 
 const SYSTEM_CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
 
-/** Two tries, 15s apart. With a 100s cap per Claude call, the worst case still leaves the PDF render room inside the routes' 300s maxDuration. */
+/**
+ * Claude gets one shared time budget rather than a fixed cap per try: the
+ * 27-page content is ~4-5k output tokens, which runs 70-120s depending on API
+ * speed, so a 100s cap per attempt failed both tries on a slow day (17 Sep).
+ * The first attempt may use the whole budget; a retry only starts if a failure
+ * came back early enough to leave a real chance. 210s + PDF render, upload and
+ * emails still fit the routes' 300s maxDuration.
+ */
 const GENERATION_ATTEMPTS = 2;
-const RETRY_PAUSE_MS = 15_000;
-const CLAUDE_TIMEOUT_MS = 100_000;
+const RETRY_PAUSE_MS = 5_000;
+const CLAUDE_BUDGET_MS = 210_000;
+const MIN_ATTEMPT_MS = 60_000;
 
 /** Flip to "true" in Vercel once reports no longer need a manual review before sending. */
 const autoSendReports = () => process.env.AUTO_SEND_REPORTS === "true";
@@ -113,25 +121,28 @@ function reportOptionsFor(order: Order): ReportOptions {
 }
 
 /** One generation attempt: Claude content + the right template for the order's language. */
-async function buildHtml(opts: ReportOptions): Promise<{ html: string; costUsd: number }> {
+async function buildHtml(opts: ReportOptions, timeoutMs: number): Promise<{ html: string; costUsd: number }> {
   if (opts.lang && opts.lang !== "en") {
     const { content, costUsd } = await generateReportContent(opts);
     return { html: buildReportHtml(opts, content), costUsd };
   }
   // Our own attempts replace the SDK's retries, so one hung call can't eat the function's time budget.
-  const client = new Anthropic({ timeout: CLAUDE_TIMEOUT_MS, maxRetries: 0 });
+  const client = new Anthropic({ timeout: timeoutMs, maxRetries: 0 });
   const { content, costUsd } = await generateReport27Content(opts, client);
   return { html: buildReport27Html(opts, content), costUsd };
 }
 
-async function withRetries<T>(orderId: string, attempt: () => Promise<T>): Promise<T> {
+async function withRetries<T>(orderId: string, attempt: (timeoutMs: number) => Promise<T>): Promise<T> {
+  const deadline = Date.now() + CLAUDE_BUDGET_MS;
   let lastError: unknown;
   for (let i = 1; i <= GENERATION_ATTEMPTS; i++) {
+    const remaining = deadline - Date.now();
+    if (i > 1 && remaining < MIN_ATTEMPT_MS) break;
     try {
-      return await attempt();
+      return await attempt(remaining);
     } catch (e) {
       lastError = e;
-      console.error(`order ${orderId}: generation attempt ${i}/${GENERATION_ATTEMPTS} failed`, e);
+      console.error(`order ${orderId}: generation attempt ${i}/${GENERATION_ATTEMPTS} failed after ${Math.round((CLAUDE_BUDGET_MS - (deadline - Date.now())) / 1000)}s`, e);
       if (i < GENERATION_ATTEMPTS) await new Promise((resolve) => setTimeout(resolve, RETRY_PAUSE_MS));
     }
   }
@@ -148,7 +159,9 @@ export async function processPaidOrder(order: Order): Promise<void> {
     await updateOrder(order.id, { status: "generating", error: null });
 
     const opts = reportOptionsFor(order);
-    const { html, costUsd } = await withRetries(order.id, () => buildHtml(opts));
+    const startedAt = Date.now();
+    const { html, costUsd } = await withRetries(order.id, (timeoutMs) => buildHtml(opts, timeoutMs));
+    console.log(`order ${order.id}: content ready in ${Math.round((Date.now() - startedAt) / 1000)}s`);
     const pdf = await renderPdf(html);
 
     // --- store the PDF in the private 'reports' bucket ---
