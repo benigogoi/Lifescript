@@ -1,0 +1,46 @@
+{
+  "slug": "r12-mulank-7-seeker",
+  "accent": "#8f9bb8",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *7th*, *16th* or *25th*?",
+      "sub": "You're not antisocial."
+    },
+    {
+      "type": "text",
+      "text": "You're *selective*.",
+      "sub": "And you can tell who's fake in five minutes."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You need *silence* to recharge.",
+      "sub": "Crowds don't tire you. Pretending does."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "You read people *scarily* well.",
+      "sub": "Ketu gives you an inner radar."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "People call you *distant*.\nYou're just deep."
+    },
+    {
+      "type": "big",
+      "value": "7",
+      "caption": "Ruled by *Ketu*: the seeker."
+    },
+    {
+      "type": "end",
+      "text": "Comment *7*\nif you felt seen",
+      "sub": "Then send it to your favourite introvert."
+    }
+  ]
+}

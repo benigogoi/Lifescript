@@ -1,0 +1,83 @@
+{
+  "slug": "r28-diwali-colour",
+  "accent": "#f0a830",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Wear your *lucky colour*\nthis Diwali.",
+      "sub": "Pause on your birth number.",
+      "kicker": "Diwali · 8 November"
+    },
+    {
+      "type": "rapid",
+      "title": "Your Diwali colour",
+      "items": [
+        {
+          "n": "1",
+          "text": "*Gold* & royal orange",
+          "small": "Born 1 · 10 · 19 · 28",
+          "color": "#f0a830"
+        },
+        {
+          "n": "2",
+          "text": "*White* & silver",
+          "small": "Born 2 · 11 · 20 · 29",
+          "color": "#e8ecf5"
+        },
+        {
+          "n": "3",
+          "text": "*Yellow* & gold",
+          "small": "Born 3 · 12 · 21 · 30",
+          "color": "#f2d03b"
+        },
+        {
+          "n": "4",
+          "text": "*Grey* & electric blue",
+          "small": "Born 4 · 13 · 22 · 31",
+          "color": "#4f8ff7"
+        },
+        {
+          "n": "5",
+          "text": "*Green*, any shade",
+          "small": "Born 5 · 14 · 23",
+          "color": "#3fbf6f"
+        },
+        {
+          "n": "6",
+          "text": "*White* & soft pink",
+          "small": "Born 6 · 15 · 24",
+          "color": "#f4b6cc"
+        },
+        {
+          "n": "7",
+          "text": "*Smoky grey* & white",
+          "small": "Born 7 · 16 · 25",
+          "color": "#a9aebb"
+        },
+        {
+          "n": "8",
+          "text": "*Deep blue*. Skip the black tonight.",
+          "small": "Born 8 · 17 · 26",
+          "color": "#3c63c9"
+        },
+        {
+          "n": "9",
+          "text": "*Red* & crimson",
+          "small": "Born 9 · 18 · 27",
+          "color": "#e0393e"
+        }
+      ],
+      "per": 0.65
+    },
+    {
+      "type": "text",
+      "text": "Screenshot yours.",
+      "sub": "Send it to whoever is still deciding what to wear."
+    },
+    {
+      "type": "end",
+      "text": "Send this to your\n*family group*",
+      "sub": "Happy Diwali in advance."
+    }
+  ]
+}

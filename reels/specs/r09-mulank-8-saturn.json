@@ -1,0 +1,46 @@
+{
+  "slug": "r09-mulank-8-saturn",
+  "accent": "#3c5fb0",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *8th*, *17th* or *26th*?",
+      "sub": "Here's why life tests you harder."
+    },
+    {
+      "type": "text",
+      "text": "You're ruled by *Saturn*.",
+      "sub": "The strictest teacher in the sky."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "Nothing comes *easy*\nto you. Nothing."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "But what you build, *nobody* can take.",
+      "sub": "Saturn delays. It never denies."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "Your best years come *later* than everyone else's.",
+      "sub": "And they last longer."
+    },
+    {
+      "type": "big",
+      "value": "8",
+      "caption": "The number of *late, lasting* success."
+    },
+    {
+      "type": "end",
+      "text": "Comment *8* if this\nis your life",
+      "sub": "Saturday is your day."
+    }
+  ]
+}

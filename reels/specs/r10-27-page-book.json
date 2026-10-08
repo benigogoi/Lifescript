@@ -1,0 +1,45 @@
+{
+  "slug": "r10-27-page-book",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "We wrote a *27-page book* about you.",
+      "sub": "From just your name and birth date."
+    },
+    {
+      "type": "image",
+      "src": "public/samples/sample-cover.webp",
+      "text": "Your *three numbers*,\non the cover.",
+      "focus": "50% 70%"
+    },
+    {
+      "type": "image",
+      "src": "public/samples/sample27-money.webp",
+      "text": "How *money* moves for you.",
+      "focus": "30% 25%"
+    },
+    {
+      "type": "image",
+      "src": "public/samples/sample27-compat.webp",
+      "text": "Who you *match* with.",
+      "focus": "50% 35%"
+    },
+    {
+      "type": "image",
+      "src": "public/samples/sample27-months.webp",
+      "text": "Your next *three months*,\none by one.",
+      "focus": "50% 30%"
+    },
+    {
+      "type": "text",
+      "text": "Nothing generic.\nWritten for *your* date.",
+      "sub": "No two reports are the same."
+    },
+    {
+      "type": "end",
+      "text": "Comment *REPORT*",
+      "sub": "I'll send you the link."
+    }
+  ]
+}

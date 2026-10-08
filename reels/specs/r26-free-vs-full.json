@@ -1,0 +1,39 @@
+{
+  "slug": "r26-free-vs-full",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Your free number is *1 page*.",
+      "sub": "Your full chart is 27."
+    },
+    {
+      "type": "image",
+      "src": "public/samples/sample-loshu.webp",
+      "text": "Your *Lo Shu grid*,\nand what's missing.",
+      "focus": "50% 30%"
+    },
+    {
+      "type": "image",
+      "src": "public/samples/sample27-name-align.webp",
+      "text": "Whether your *name*\nfights your birth date.",
+      "focus": "40% 20%"
+    },
+    {
+      "type": "image",
+      "src": "public/samples/sample-lucky.webp",
+      "text": "Your lucky colours,\ndays and *gemstone*.",
+      "focus": "50% 25%"
+    },
+    {
+      "type": "text",
+      "text": "Written for *your* date.\nIn your inbox.",
+      "sub": "Read it once. Keep it for years."
+    },
+    {
+      "type": "end",
+      "text": "Comment *REPORT*",
+      "sub": "I'll send you the link."
+    }
+  ]
+}

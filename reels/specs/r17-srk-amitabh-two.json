@@ -1,0 +1,41 @@
+{
+  "slug": "r17-srk-amitabh-two",
+  "accent": "#b9c6e0",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "India's two *biggest* stars share one number.",
+      "kicker": "SRK · Big B"
+    },
+    {
+      "type": "text",
+      "text": "SRK: born on the *2nd*.",
+      "sub": "2 November."
+    },
+    {
+      "type": "text",
+      "text": "Amitabh: born on the *11th*.",
+      "sub": "11 October. 1 + 1 = 2."
+    },
+    {
+      "type": "big",
+      "value": "2",
+      "caption": "Ruled by the *Moon*."
+    },
+    {
+      "type": "text",
+      "text": "The Moon rules *emotion*.",
+      "sub": "The number of people who make millions feel something."
+    },
+    {
+      "type": "text",
+      "text": "Charm. Intuition.\n*Connection.*",
+      "sub": "The exact skill of a superstar."
+    },
+    {
+      "type": "end",
+      "text": "Born on the *2nd*, *11th*, *20th* or *29th*?",
+      "sub": "Comment 2. You have it too."
+    }
+  ]
+}

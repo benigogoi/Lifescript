@@ -1,0 +1,42 @@
+{
+  "slug": "r03-mulank-1-leader",
+  "accent": "#f0a830",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *1st*, *10th*, *19th* or *28th*?",
+      "sub": "3 things about you. Wait for #3."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You were never meant to *follow*.",
+      "sub": "Being told what to do drains you faster than hard work."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "You decide *fast*, and you're usually right.",
+      "sub": "Others call it arrogance. It's the Sun in you."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "Your luck *starts* the day you work for yourself.",
+      "sub": "Mulank 1 earns best where its name is on the result."
+    },
+    {
+      "type": "big",
+      "value": "1",
+      "caption": "Ruled by the *Sun*. *Sunday* is your day."
+    },
+    {
+      "type": "end",
+      "text": "Send this to a\n*Mulank 1*",
+      "sub": "You know exactly who."
+    }
+  ]
+}

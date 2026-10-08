@@ -1,0 +1,42 @@
+{
+  "slug": "r08-mulank-6-love",
+  "accent": "#e6a3c0",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *6th*, *15th* or *24th*?",
+      "sub": "You love harder than you're loved back."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You remember *everything* about the people you love.",
+      "sub": "Birthdays. Favourite food. That one bad day."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "You make every place *beautiful*.",
+      "sub": "Venus rules you. A messy room actually bothers you."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "You avoid fights so much it *hurts* you.",
+      "sub": "Peace at any price is still a price."
+    },
+    {
+      "type": "big",
+      "value": "6",
+      "caption": "Ruled by *Venus*: love, beauty, home."
+    },
+    {
+      "type": "end",
+      "text": "Send this to the *6*\nwho takes care of everyone",
+      "sub": "They need to hear it today."
+    }
+  ]
+}

@@ -1,47 +1,72 @@
-# Reels — how to make one
+# Reels
+
+30 faceless reels for Instagram, one a day from 9 Oct to 7 Nov 2026. The posting
+plan (captions, hashtags, comment to pin, tracked DM link per day) is in
+[`CALENDAR.md`](CALENDAR.md).
+
+## Render
 
 ```
-npx tsx scripts/render-reel.ts reels/specs/<your-spec>.json
+npx tsx scripts/render-reel.ts --all                       # every spec → MP4
+npx tsx scripts/render-reel.ts reels/specs/r01-dhoni-seven.json
+npx tsx scripts/render-reel.ts --all --stills-only         # one still per scene, in seconds, for review
 ```
 
-Output lands in `reels/out/<slug>/` — numbered PNG slides plus `<slug>.mp4`
-(silent on purpose: add a trending audio in the Instagram editor for reach).
+Output goes to `reels/out/<slug>/`: `<slug>.mp4` (1080×1920, 30 fps, H.264, with a
+silent audio track) and `cover.jpg` (the hook frame). Needs Chrome (set `CHROME_PATH`
+if it isn't in the default place) and ffmpeg on PATH. A 20-second reel takes about
+two minutes. `--concurrency=N` renders N at once, each in its own browser.
 
-Requires: system Chrome (default path baked in, override with CHROME_PATH)
-and ffmpeg on PATH (installed via winget on the main PC). Without ffmpeg you
-still get the PNGs — Instagram can build a reel from photos directly.
+The renderer (`scripts/render-reel.ts` + `scripts/reel/`) animates every frame as a
+pure function of time, so the same spec always gives the same video.
 
 ## Spec format
 
 ```jsonc
 {
-  "slug": "reel-02-example",        // output folder + mp4 name
-  "slides": [
-    {
-      "kind": "text",               // "text" (default) | "list" | "end"
-      "eyebrow": "VEDIC NUMEROLOGY",// small gold caps line (optional)
-      "title": "The big hook line", // main Cormorant headline
-      "body": "Supporting line.",   // muted Jost paragraph (optional)
-      "durationSec": 2.5            // how long this slide stays on screen
-    },
-    {
-      "kind": "list",               // bullet-free centered list
-      "title": "The nine numbers",
-      "items": ["1 · Sun — the Leader", "2 · Moon — the Intuitive"],
-      "durationSec": 4.5
-    },
-    {
-      "kind": "end",                // logo + CTA end card
-      "title": "Find your full reading",
-      "body": "mysticdigits.in · free calculator",
-      "durationSec": 2.8
-    }
+  "slug": "r09-mulank-8-saturn",
+  "accent": "#3c5fb0",            // glow colour; each Mulank reel uses its planet's
+  "scenes": [
+    { "type": "hook", "text": "Born on the *8th*, *17th* or *26th*?", "sub": "Here's why life tests you harder." },
+    { "type": "point", "n": 1, "of": 3, "text": "Nothing comes *easy*\nto you. Nothing." },
+    { "type": "big", "value": "8", "caption": "The number of *late, lasting* success." },
+    { "type": "end", "text": "Comment *8* if this\nis your life", "sub": "Saturday is your day." }
   ]
 }
 ```
 
-Rules of thumb:
-- 6-7 slides, 16-22 seconds total. Hook slide first, end card last.
-- ~2.2s for short lines, ~3s for lines people must read, ~4.5s for lists.
-- Keep titles under ~6 words; they render at 108px.
-- Scripts + captions + hashtags for the first five reels: `week1-scripts.md`.
+`*word*` turns gold, `\n` breaks the line, and a non-breaking space (` `) keeps
+two words together. Durations are computed from word count; set `"dur"` to override.
+
+| Type    | What it does                                                                      |
+|---------|-----------------------------------------------------------------------------------|
+| `hook`  | Fully legible on frame 0 (it is the frame that stops the scroll, and the cover)   |
+| `text`  | Headline revealed word by word, optional `sub` line                               |
+| `point` | A numbered beat with a `2 / 3` counter, so viewers wait for the last one          |
+| `big`   | One giant number with a burst, then a `caption`                                   |
+| `calc`  | Digits adding up on screen: `"steps": ["28", "2 + 8", "10", "1"]`                 |
+| `rapid` | `items` flash too fast to read, so viewers pause and replay (optional `color`)    |
+| `image` | A report page from `public/samples/` with a slow push-in (`focus` sets the point) |
+| `end`   | Logo, call to action, `mysticdigits.in` pill (`"url": false` hides it)            |
+
+## What makes these hold attention
+
+- **The hook is frame 0.** No fade-in, no logo first. A call-out ("Born on the 8th,
+  17th or 26th?"), a contradiction ("Your lucky number is probably wrong") or an open
+  question ("Why did Ajay Devgan drop the 'a'?").
+- **An open loop in the first 3 seconds.** "Wait for #3", a `1 / 3` counter, a
+  calculation that hasn't landed yet.
+- **A payoff every 2–3 seconds.** New words, a number landing, a page turning.
+  Something moves on every frame (stars, camera push, glow).
+- **15–24 seconds.** Completion rate decides reach more than length does.
+- **Endings that ask for a share, a comment or a save,** not a follow: "Send this
+  to a 9", "Comment your birth date", "Save this for January". Sends to friends are
+  the strongest signal for reaching new people.
+- **Rewatch mechanics.** The `rapid` pause games can't be read in one pass, so
+  every viewer replays them.
+
+## Adding the next batch
+
+Copy a spec that performed well, change the number, angle or celebrity, and
+render. Name it with the next code (`r31-…`) and give its DM link
+`utm_campaign=r31` so orders trace back to it in the admin dashboard.

@@ -1,46 +1,71 @@
 /**
- * Mystic Digits — faceless reel slide generator.
+ * Mystic Digits — animated reel renderer.
  *
- * Renders a reel spec (JSON) into 1080x1920 brand-styled PNG slides via the
- * same headless-Chrome pipeline as the PDF reports, and — when ffmpeg is on
- * PATH — assembles them into a ready-to-post MP4 (silent; add trending audio
- * in the Instagram app, which also helps reach).
+ * Turns a reel spec (reels/specs/*.json) into a ready-to-post 1080x1920 MP4.
+ * The page in scripts/reel/ animates every element as a pure function of time;
+ * this script steps that clock frame by frame in headless Chrome, screenshots
+ * each frame and pipes it into ffmpeg. Deterministic, so a re-render of an
+ * unchanged spec is the same video.
  *
- *   npx tsx scripts/render-reel.ts reels/specs/reel-01-what-is-mulank.json
+ *   npx tsx scripts/render-reel.ts reels/specs/r01-dhoni-seven.json
+ *   npx tsx scripts/render-reel.ts --all                 # every spec
+ *   npx tsx scripts/render-reel.ts --all --stills        # + one still per scene, for review
+ *   npx tsx scripts/render-reel.ts --all --stills-only   # stills only, no video (fast)
  *
- * Spec shape: { slug, slides: [{ kind, eyebrow?, title, body?, items?, durationSec }] }
- * kind: "text" (default) | "list" | "end". The "end" slide shows the logo.
+ * Output: reels/out/<slug>/<slug>.mp4 and cover.jpg (the hook frame, for the
+ * grid). The MP4 carries a silent audio track: add a trending sound in the
+ * Instagram editor — that's a reach lever, not decoration.
+ *
+ * Needs Chrome/Chromium (CHROME_PATH, else the usual install locations) and
+ * ffmpeg on PATH.
  */
-import puppeteer from "puppeteer";
-import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import puppeteer, { type Browser, type Page } from "puppeteer";
+import { execFileSync, spawn } from "node:child_process";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
+import { once } from "node:events";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const ROOT = path.resolve(__dirname, "..");
-const SYSTEM_CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
+const SPECS_DIR = path.join(ROOT, "reels", "specs");
+const OUT_DIR = path.join(ROOT, "reels", "out");
+const FPS = 30;
 
-interface ReelSlide {
-  kind?: "text" | "list" | "end";
-  eyebrow?: string;
-  title: string;
-  body?: string;
-  items?: string[];
-  durationSec: number;
+interface Scene {
+  type: string;
+  src?: string;
+  [key: string]: unknown;
 }
 interface ReelSpec {
   slug: string;
-  slides: ReelSlide[];
+  accent?: string;
+  scenes: Scene[];
+}
+interface Timeline {
+  duration: number;
+  scenes: { type: string; start: number; dur: number }[];
 }
 
-function browserPath(): string {
-  const p = process.env.CHROME_PATH || SYSTEM_CHROME;
-  if (!existsSync(p)) throw new Error(`Chrome not found at ${p}. Set CHROME_PATH.`);
-  return p;
+function chromePath(): string {
+  const candidates = [
+    process.env.CHROME_PATH,
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium",
+  ];
+  if (existsSync("/opt/pw-browsers")) {
+    for (const d of readdirSync("/opt/pw-browsers")) {
+      if (d.startsWith("chromium-")) candidates.push(`/opt/pw-browsers/${d}/chrome-linux/chrome`);
+    }
+  }
+  const found = candidates.find((p) => p && existsSync(p));
+  if (!found) throw new Error("Chrome not found. Set CHROME_PATH.");
+  return found;
 }
 
-function ffmpegPath(): string | null {
+function ffmpegPath(): string {
   const candidates = [
     "ffmpeg",
     path.join(process.env.LOCALAPPDATA ?? "", "Microsoft/WinGet/Links/ffmpeg.exe"),
@@ -53,167 +78,180 @@ function ffmpegPath(): string | null {
       /* keep looking */
     }
   }
-  return null;
+  throw new Error("ffmpeg not found on PATH.");
 }
 
-const esc = (s: string) =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-function slideHtml(s: ReelSlide, logoUrl: string): string {
-  const kind = s.kind ?? "text";
-  if (kind === "end") {
-    return `<div class="slide end">
-      <div class="frame"></div>
-      <img class="logo" src="${logoUrl}" alt="" />
-      <div class="title">${esc(s.title)}</div>
-      ${s.body ? `<div class="body gold">${esc(s.body)}</div>` : ""}
-    </div>`;
-  }
-  if (kind === "list") {
-    return `<div class="slide">
-      <div class="frame"></div>
-      ${s.eyebrow ? `<div class="eyebrow">${esc(s.eyebrow)}</div>` : ""}
-      <div class="title">${esc(s.title)}</div>
-      <ul class="list">${(s.items ?? []).map((i) => `<li>${esc(i)}</li>`).join("")}</ul>
-      ${s.body ? `<div class="body">${esc(s.body)}</div>` : ""}
-    </div>`;
-  }
-  return `<div class="slide">
-    <div class="frame"></div>
-    ${s.eyebrow ? `<div class="eyebrow">${esc(s.eyebrow)}</div>` : ""}
-    <div class="title">${esc(s.title)}</div>
-    ${s.body ? `<div class="body">${esc(s.body)}</div>` : ""}
-  </div>`;
+// The mandala motif from src/components/Mandala.tsx, as a static string.
+function mandalaSvg(): string {
+  const spokes = Array.from({ length: 12 }, (_, i) => (i * 360) / 12).map((deg) => {
+    const rad = (deg * Math.PI) / 180;
+    return { x: 220 + 220 * Math.sin(rad), y: 220 - 220 * Math.cos(rad) };
+  });
+  return `<svg viewBox="0 0 440 440" fill="none">
+    <g stroke="currentColor" stroke-width="0.75" opacity="0.55">
+      ${[220, 180, 140].map((r) => `<circle cx="220" cy="220" r="${r}"/>`).join("")}
+      ${spokes.map((p) => `<line x1="220" y1="220" x2="${p.x}" y2="${p.y}"/>`).join("")}
+    </g>
+    <g stroke="currentColor" stroke-width="1">
+      <polygon points="220,80 339,290 101,290" opacity="0.7"/>
+      <polygon points="220,360 101,150 339,150" opacity="0.7"/>
+    </g>
+    <circle cx="220" cy="220" r="44" stroke="currentColor" stroke-width="1.1"/>
+    <circle cx="220" cy="220" r="3.5" fill="currentColor"/>
+    ${spokes.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="2.2" fill="currentColor" opacity="0.8"/>`).join("")}
+  </svg>`;
 }
 
-function buildHtml(spec: ReelSpec, logoUrl: string): string {
+function buildHtml(spec: ReelSpec): string {
+  // Repo-relative asset paths in the spec become file:// URLs for the page.
+  const resolved: ReelSpec = {
+    ...spec,
+    scenes: spec.scenes.map((s) =>
+      s.src ? { ...s, src: pathToFileURL(path.join(ROOT, s.src)).href } : s,
+    ),
+  };
+  const css = readFileSync(path.join(__dirname, "reel", "reel.css"), "utf8");
+  const engine = readFileSync(path.join(__dirname, "reel", "engine.js"), "utf8");
+  const logo = pathToFileURL(path.join(ROOT, "public", "logo.png")).href;
+  // JSON inside a <script> must not be able to close the tag.
+  const json = JSON.stringify(resolved).replace(/</g, "\\u003c");
   return `<!doctype html>
 <html><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,600&family=Marcellus&family=Jost:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0d0d12; --bg-deep: #05050a;
-    --gold: #c9a84c; --gold-bright: #e6c766;
-    --white: #e8e8f0; --muted: #9a9ab0;
-    --line: rgba(201, 168, 76, 0.35);
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Marcellus&family=Jost:wght@400;500;600&display=block" rel="stylesheet">
+<style>${css}${spec.accent ? `:root{--accent:${spec.accent}}` : ""}</style>
+</head><body>
+<div id="stage">
+  <canvas id="stars" width="1080" height="1920"></canvas>
+  <div id="glow"></div>
+  <div id="mandala">${mandalaSvg()}</div>
+  <div id="vignette"></div>
+  <div id="scenes"></div>
+  <div id="flash"></div>
+  <div id="brand"><i></i>MYSTIC DIGITS<i></i></div>
+</div>
+<script>window.__SPEC = ${json}; window.__LOGO = ${JSON.stringify(logo)};</script>
+<script>${engine}</script>
+</body></html>`;
+}
+
+async function openReel(browser: Browser, spec: ReelSpec, outDir: string): Promise<{ page: Page; timeline: Timeline }> {
+  const htmlPath = path.join(outDir, "reel.html");
+  await writeFile(htmlPath, buildHtml(spec), "utf8");
+  const page = await browser.newPage();
+  page.on("pageerror", (e) => console.error(`[${spec.slug}] page error:`, e));
+  await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
+  await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle0", timeout: 60_000 });
+  await page.evaluate(async () => {
+    // Hidden scenes don't request their fonts, so load every face up front:
+    // text sized (fit) or shot before its font arrives would be wrong or blank.
+    await Promise.all(
+      [
+        '500 100px "Cormorant Garamond"', '600 100px "Cormorant Garamond"',
+        '700 100px "Cormorant Garamond"', 'italic 600 100px "Cormorant Garamond"',
+        '400 40px "Marcellus"', '400 40px "Jost"', '500 40px "Jost"', '600 40px "Jost"',
+      ].map((f) => document.fonts.load(f, "Aa0123456789")),
+    );
+    await document.fonts.ready;
+    await Promise.all(
+      [...document.images].map((img) => (img.complete ? null : new Promise((r) => (img.onload = img.onerror = r)))),
+    );
+  });
+  const timeline = (await page.evaluate("window.__init()")) as Timeline;
+  return { page, timeline };
+}
+
+async function shot(page: Page, t: number, quality = 92): Promise<Buffer> {
+  await page.evaluate((x) => (window as unknown as { __seek: (t: number) => void }).__seek(x), t);
+  return Buffer.from(await page.screenshot({ type: "jpeg", quality, optimizeForSpeed: true }));
+}
+
+async function renderReel(browser: Browser, specPath: string, opts: { stills: boolean; video: boolean }) {
+  const spec: ReelSpec = JSON.parse(readFileSync(specPath, "utf8"));
+  const outDir = path.join(OUT_DIR, spec.slug);
+  await mkdir(outDir, { recursive: true });
+  const { page, timeline } = await openReel(browser, spec, outDir);
+  const started = Date.now();
+
+  // Cover = the hook once its sub line has landed, for the profile grid.
+  const hook = timeline.scenes[0];
+  await writeFile(path.join(outDir, "cover.jpg"), await shot(page, hook.start + hook.dur - 0.25, 94));
+
+  if (opts.stills) {
+    const dir = path.join(outDir, "stills");
+    await mkdir(dir, { recursive: true });
+    for (const [i, sc] of timeline.scenes.entries()) {
+      const t = sc.start + Math.max(0.2, Math.min(sc.dur * 0.8, sc.dur - 0.22));
+      await writeFile(path.join(dir, `${String(i + 1).padStart(2, "0")}-${sc.type}.jpg`), await shot(page, t, 80));
+    }
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #000; }
-  .slide {
-    position: relative;
-    width: 1080px; height: 1920px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    padding: 140px 110px;
-    background:
-      radial-gradient(1200px 900px at 50% 12%, rgba(201,168,76,0.10), transparent 60%),
-      radial-gradient(2px 2px at 18% 22%, rgba(232,232,240,0.5), transparent 40%),
-      radial-gradient(2px 2px at 78% 15%, rgba(232,232,240,0.4), transparent 40%),
-      radial-gradient(1.5px 1.5px at 30% 78%, rgba(232,232,240,0.35), transparent 40%),
-      radial-gradient(2px 2px at 68% 85%, rgba(232,232,240,0.4), transparent 40%),
-      radial-gradient(1.5px 1.5px at 88% 55%, rgba(232,232,240,0.3), transparent 40%),
-      radial-gradient(1.5px 1.5px at 10% 55%, rgba(232,232,240,0.3), transparent 40%),
-      linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+
+  if (opts.video) {
+    const mp4 = path.join(outDir, `${spec.slug}.mp4`);
+    const ff = spawn(ffmpegPath(), [
+      "-y", "-loglevel", "error",
+      "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-",
+      "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
+      "-shortest",
+      "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
+      "-profile:v", "high", "-r", String(FPS), "-g", String(FPS * 2),
+      "-c:a", "aac", "-b:a", "128k",
+      "-movflags", "+faststart",
+      mp4,
+    ], { stdio: ["pipe", "inherit", "inherit"] });
+    const done = once(ff, "close");
+    const frames = Math.round(timeline.duration * FPS);
+    for (let i = 0; i < frames; i++) {
+      const buf = await shot(page, i / FPS);
+      if (!ff.stdin.write(buf)) await once(ff.stdin, "drain");
+    }
+    ff.stdin.end();
+    const [code] = await done;
+    if (code !== 0) throw new Error(`ffmpeg exited ${code} for ${spec.slug}`);
+    console.log(`MP4 -> ${path.relative(ROOT, mp4)}  (${timeline.duration.toFixed(1)}s, ${((Date.now() - started) / 1000).toFixed(0)}s to render)`);
+  } else {
+    console.log(`stills -> ${path.relative(ROOT, outDir)}  (${timeline.duration.toFixed(1)}s reel)`);
   }
-  .frame {
-    position: absolute; inset: 54px;
-    border: 1.5px solid var(--line);
-    border-radius: 14px;
-    pointer-events: none;
-  }
-  .eyebrow {
-    font-family: 'Marcellus', serif;
-    font-size: 34px; letter-spacing: 10px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 56px;
-  }
-  .title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
-    font-size: 108px; line-height: 1.12;
-    color: var(--white);
-    max-width: 860px;
-  }
-  .title em { color: var(--gold-bright); font-style: italic; }
-  .body {
-    font-family: 'Jost', sans-serif;
-    font-weight: 400;
-    font-size: 46px; line-height: 1.45;
-    color: var(--muted);
-    max-width: 780px;
-    margin-top: 64px;
-  }
-  .body.gold { color: var(--gold-bright); font-family: 'Marcellus', serif; letter-spacing: 2px; }
-  .list {
-    list-style: none;
-    margin-top: 70px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 58px; line-height: 1.72;
-    color: var(--white);
-  }
-  .list li strong, .list li { font-weight: 600; }
-  .logo { width: 300px; height: 300px; object-fit: contain; margin-bottom: 40px; }
-  .end .title { font-size: 88px; }
-</style></head>
-<body>${spec.slides.map((s) => slideHtml(s, logoUrl)).join("\n")}</body></html>`;
+  await page.close();
 }
 
 async function main() {
-  const specPath = process.argv[2];
-  if (!specPath) {
-    console.error("Usage: npx tsx scripts/render-reel.ts <spec.json>");
+  const args = process.argv.slice(2);
+  const flags = new Set(args.filter((a) => a.startsWith("--")));
+  const conc = Number(args.find((a) => a.startsWith("--concurrency="))?.split("=")[1] ?? 2);
+  let specs = args.filter((a) => !a.startsWith("--")).map((a) => path.resolve(ROOT, a));
+  if (flags.has("--all")) {
+    specs = readdirSync(SPECS_DIR).filter((f) => f.endsWith(".json")).sort().map((f) => path.join(SPECS_DIR, f));
+  }
+  if (!specs.length) {
+    console.error("Usage: npx tsx scripts/render-reel.ts <spec.json ...> | --all [--stills] [--stills-only] [--concurrency=N]");
     process.exit(1);
   }
-  const spec: ReelSpec = JSON.parse(readFileSync(path.resolve(ROOT, specPath), "utf8"));
-  const outDir = path.join(ROOT, "reels", "out", spec.slug);
-  await mkdir(outDir, { recursive: true });
+  const opts = { stills: flags.has("--stills") || flags.has("--stills-only"), video: !flags.has("--stills-only") };
 
-  const logoUrl = pathToFileURL(path.join(ROOT, "public", "logo.png")).href;
-  const htmlPath = path.join(outDir, "slides.html");
-  await writeFile(htmlPath, buildHtml(spec, logoUrl), "utf8");
-
-  const browser = await puppeteer.launch({
-    executablePath: browserPath(),
-    headless: true,
-    args: ["--no-sandbox", "--disable-dev-shm-usage", "--force-color-profile=srgb"],
-  });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
-  await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle0" });
-  await page.evaluateHandle("document.fonts.ready");
-
-  const slides = await page.$$(".slide");
-  const frames: { file: string; durationSec: number }[] = [];
-  for (let i = 0; i < slides.length; i++) {
-    const file = path.join(outDir, `slide-${String(i + 1).padStart(2, "0")}.png`);
-    await slides[i].screenshot({ path: file as `${string}.png` });
-    frames.push({ file, durationSec: spec.slides[i].durationSec });
-    console.log("PNG ->", file);
-  }
-  await browser.close();
-
-  const ffmpeg = ffmpegPath();
-  if (!ffmpeg) {
-    console.log("\nffmpeg not found — PNGs are ready to assemble in CapCut/Instagram.");
-    return;
-  }
-  // concat demuxer: each image shown for its duration (last image repeated per spec).
-  const listPath = path.join(outDir, "frames.txt");
-  const lines = frames
-    .map((f) => `file '${f.file.replace(/\\/g, "/")}'\nduration ${f.durationSec}`)
-    .join("\n");
-  await writeFile(listPath, `${lines}\nfile '${frames[frames.length - 1].file.replace(/\\/g, "/")}'\n`, "utf8");
-  const mp4Path = path.join(outDir, `${spec.slug}.mp4`);
-  execFileSync(ffmpeg, [
-    "-y", "-f", "concat", "-safe", "0", "-i", listPath,
-    "-vf", "format=yuv420p,fps=30",
-    "-c:v", "libx264", "-preset", "medium", "-crf", "19",
-    mp4Path,
-  ]);
-  console.log("MP4 ->", mp4Path);
+  const queue = [...specs];
+  let failed = 0;
+  // One browser per worker: a background tab in a shared browser never paints,
+  // so its screenshots hang until the protocol timeout.
+  await Promise.all(
+    Array.from({ length: Math.min(conc, queue.length) }, async () => {
+      const browser = await puppeteer.launch({
+        executablePath: chromePath(),
+        headless: true,
+        args: ["--no-sandbox", "--disable-dev-shm-usage", "--force-color-profile=srgb", "--hide-scrollbars"],
+      });
+      for (let s = queue.shift(); s; s = queue.shift()) {
+        try {
+          await renderReel(browser, s, opts);
+        } catch (e) {
+          failed++;
+          console.error(`FAILED ${path.basename(s)}:`, e);
+        }
+      }
+      await browser.close();
+    }),
+  );
+  if (failed) process.exit(1);
 }
 
 main().catch((e) => {

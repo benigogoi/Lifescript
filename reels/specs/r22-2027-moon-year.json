@@ -1,0 +1,43 @@
+{
+  "slug": "r22-2027-moon-year",
+  "accent": "#b9c6e0",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "2026 was a *1* year.\n2027 is a *2*.",
+      "sub": "Here's what changes.",
+      "kicker": "2027"
+    },
+    {
+      "type": "calc",
+      "label": "2 + 0 + 2 + 7",
+      "steps": [
+        "11",
+        "1 + 1",
+        "2"
+      ],
+      "caption": "Ruled by the *Moon*.",
+      "stepDur": 0.5
+    },
+    {
+      "type": "text",
+      "text": "2026 rewarded the *bold*.",
+      "sub": "New starts. Solo moves. Speed."
+    },
+    {
+      "type": "text",
+      "text": "2027 rewards *patience* and *partners*.",
+      "sub": "Who you team up with matters more than ever."
+    },
+    {
+      "type": "text",
+      "text": "Rushing in 2027\n*costs* you.",
+      "sub": "Slow, steady, together: that's what wins."
+    },
+    {
+      "type": "end",
+      "text": "Save this for\n*January*",
+      "sub": "Your own 2027 number is coming next."
+    }
+  ]
+}

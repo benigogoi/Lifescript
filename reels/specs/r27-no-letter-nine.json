@@ -1,0 +1,43 @@
+{
+  "slug": "r27-no-letter-nine",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "No letter is ever given the number *9*.",
+      "sub": "In Indian numerology. Here's why."
+    },
+    {
+      "type": "text",
+      "text": "Every letter carries a number.",
+      "sub": "A = 1. B = 2. C = 3."
+    },
+    {
+      "type": "text",
+      "text": "But *9* is left out.",
+      "sub": "It's considered sacred. Complete. Too big for one letter."
+    },
+    {
+      "type": "text",
+      "text": "It's called the *Chaldean* system.",
+      "sub": "The one Indian numerologists actually use."
+    },
+    {
+      "type": "calc",
+      "label": "*RAHUL*",
+      "steps": [
+        "2 + 1 + 5 + 6 + 3",
+        "17",
+        "1 + 7",
+        "8"
+      ],
+      "caption": "Rahul is an *8*: Saturn.",
+      "stepDur": 0.5
+    },
+    {
+      "type": "end",
+      "text": "Comment your\n*first name*",
+      "sub": "I'll tell you its number."
+    }
+  ]
+}

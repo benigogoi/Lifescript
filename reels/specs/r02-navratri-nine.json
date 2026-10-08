@@ -1,0 +1,46 @@
+{
+  "slug": "r02-navratri-nine",
+  "accent": "#d9483b",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Multiply *any* number by 9.",
+      "sub": "Then add the digits. Watch.",
+      "kicker": "Before Navratri"
+    },
+    {
+      "type": "calc",
+      "label": "9 × 123",
+      "steps": [
+        "1107",
+        "1 + 1 + 0 + 7",
+        "9"
+      ],
+      "caption": "*Every* single time.",
+      "stepDur": 0.5
+    },
+    {
+      "type": "text",
+      "text": "9 is the only number that always returns to *itself*."
+    },
+    {
+      "type": "text",
+      "text": "A mala has *108* beads.\n1 + 0 + 8 = *9*."
+    },
+    {
+      "type": "text",
+      "text": "No wonder Navratri\nhas *9* nights.",
+      "sub": "9 forms of Durga. 9 is completion."
+    },
+    {
+      "type": "big",
+      "value": "9",
+      "caption": "Ruled by *Mars*: courage, fire, victory."
+    },
+    {
+      "type": "end",
+      "text": "Born on the *9th*, *18th* or *27th*?",
+      "sub": "This festival is yours. Send it to a 9."
+    }
+  ]
+}

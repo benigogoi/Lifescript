@@ -1,0 +1,65 @@
+{
+  "slug": "r30-2027-one-word",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Your *2027*\nin one word.",
+      "sub": "Pause on your 2027 number.",
+      "kicker": "Part 2"
+    },
+    {
+      "type": "text",
+      "text": "Don't know it?",
+      "sub": "Birth day + birth month + *2*, down to one digit."
+    },
+    {
+      "type": "rapid",
+      "title": "Your 2027 word",
+      "items": [
+        {
+          "n": "1",
+          "text": "*Begin.* Launch the thing."
+        },
+        {
+          "n": "2",
+          "text": "*Connect.* Partners over solo."
+        },
+        {
+          "n": "3",
+          "text": "*Express.* Be seen. Speak up."
+        },
+        {
+          "n": "4",
+          "text": "*Build.* Lay the foundations."
+        },
+        {
+          "n": "5",
+          "text": "*Change.* Expect a big shift."
+        },
+        {
+          "n": "6",
+          "text": "*Care.* Home, family, love."
+        },
+        {
+          "n": "7",
+          "text": "*Reflect.* Slow down, go deep."
+        },
+        {
+          "n": "8",
+          "text": "*Achieve.* Money and results."
+        },
+        {
+          "n": "9",
+          "text": "*Complete.* Close old chapters."
+        }
+      ],
+      "per": 0.65
+    },
+    {
+      "type": "end",
+      "text": "Save this for\n*2027*",
+      "sub": "Your month-by-month plan is in the report."
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "slug": "r07-pause-your-number",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "*Pause* the video\non your birth day.",
+      "sub": "It's too fast to read. That's the point.",
+      "kicker": "Try this"
+    },
+    {
+      "type": "rapid",
+      "title": "Find the day you were born",
+      "items": [
+        {
+          "n": "1",
+          "text": "You'll *lead*. Even when you don't want to.",
+          "small": "Born 1 · 10 · 19 · 28"
+        },
+        {
+          "n": "2",
+          "text": "You *feel* what others hide.",
+          "small": "Born 2 · 11 · 20 · 29"
+        },
+        {
+          "n": "3",
+          "text": "People come to you for *answers*.",
+          "small": "Born 3 · 12 · 21 · 30"
+        },
+        {
+          "n": "4",
+          "text": "You build what others *quit*.",
+          "small": "Born 4 · 13 · 22 · 31"
+        },
+        {
+          "n": "5",
+          "text": "Boredom is your *only* enemy.",
+          "small": "Born 5 · 14 · 23"
+        },
+        {
+          "n": "6",
+          "text": "You love *harder* than you're loved back.",
+          "small": "Born 6 · 15 · 24"
+        },
+        {
+          "n": "7",
+          "text": "You see through *everyone*.",
+          "small": "Born 7 · 16 · 25"
+        },
+        {
+          "n": "8",
+          "text": "Life tests you. Then it *pays* you.",
+          "small": "Born 8 · 17 · 26"
+        },
+        {
+          "n": "9",
+          "text": "You fight for people who *can't*.",
+          "small": "Born 9 · 18 · 27"
+        }
+      ],
+      "per": 0.55
+    },
+    {
+      "type": "text",
+      "text": "Got yours?\nIt's called your *Mulank*.",
+      "sub": "Your birth number in Vedic numerology."
+    },
+    {
+      "type": "end",
+      "text": "Send this to someone\nborn on *your* day",
+      "sub": "Then watch it again and find theirs."
+    }
+  ]
+}

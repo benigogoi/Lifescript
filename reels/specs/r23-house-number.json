@@ -1,0 +1,74 @@
+{
+  "slug": "r23-house-number",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Is your *house number* lucky?",
+      "sub": "Add its digits. Then pause on it."
+    },
+    {
+      "type": "calc",
+      "label": "Flat *304*?",
+      "steps": [
+        "3 + 0 + 4",
+        "7"
+      ],
+      "caption": "A *7* home.",
+      "stepDur": 0.55
+    },
+    {
+      "type": "rapid",
+      "title": "What your home attracts",
+      "items": [
+        {
+          "n": "1",
+          "text": "*Independence*. Great for go-getters."
+        },
+        {
+          "n": "2",
+          "text": "*Peace* and romance."
+        },
+        {
+          "n": "3",
+          "text": "*Growth*. Learning, kids, laughter."
+        },
+        {
+          "n": "4",
+          "text": "*Hard work*. Stable, but heavy."
+        },
+        {
+          "n": "5",
+          "text": "*Visitors* and change. Never boring."
+        },
+        {
+          "n": "6",
+          "text": "*Family*. The happiest home number."
+        },
+        {
+          "n": "7",
+          "text": "*Quiet*. Perfect for thinkers."
+        },
+        {
+          "n": "8",
+          "text": "*Wealth*, with discipline."
+        },
+        {
+          "n": "9",
+          "text": "*Energy*, courage and passion."
+        }
+      ],
+      "per": 0.6
+    },
+    {
+      "type": "text",
+      "text": "Moving soon?",
+      "sub": "Check the number before you sign."
+    },
+    {
+      "type": "end",
+      "text": "Comment your\n*house number*",
+      "sub": "I'll tell you what it means."
+    }
+  ]
+}

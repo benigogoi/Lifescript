@@ -1,0 +1,48 @@
+{
+  "slug": "r15-lucky-number-wrong",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Your lucky number is probably *wrong*.",
+      "sub": "Most people only know one of theirs."
+    },
+    {
+      "type": "text",
+      "text": "Your birth date gives you *two* numbers."
+    },
+    {
+      "type": "calc",
+      "label": "The *day*: 14",
+      "steps": [
+        "14",
+        "1 + 4",
+        "5"
+      ],
+      "caption": "Your *Mulank*: who you are.",
+      "stepDur": 0.45
+    },
+    {
+      "type": "calc",
+      "label": "The *full date*:\n14 · 08 · 1995",
+      "steps": [
+        "5 + 8 + 6",
+        "19",
+        "1 + 9 = 10",
+        "1"
+      ],
+      "caption": "Your *Bhagyank*: your destiny.",
+      "stepDur": 0.5
+    },
+    {
+      "type": "text",
+      "text": "Same person.\n*Two* different numbers.",
+      "sub": "When they clash, life feels like a constant fight."
+    },
+    {
+      "type": "end",
+      "text": "Find both free",
+      "sub": "Link in bio. Takes 10 seconds."
+    }
+  ]
+}

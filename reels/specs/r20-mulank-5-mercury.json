@@ -1,0 +1,46 @@
+{
+  "slug": "r20-mulank-5-mercury",
+  "accent": "#4fbf87",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *5th*, *14th* or *23rd*?",
+      "sub": "You get bored faster than anyone you know."
+    },
+    {
+      "type": "text",
+      "text": "You're ruled by *Mercury*.",
+      "sub": "The fastest planet in the sky."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You can talk to *anyone*.\nAbout anything."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "Routine *suffocates* you.",
+      "sub": "Same job, same city, same food. You need change."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "You're *luckiest* when you move.",
+      "sub": "Travel, trade, new places. Mercury rewards motion."
+    },
+    {
+      "type": "big",
+      "value": "5",
+      "caption": "*Wednesday* is your day. *Green* is your colour."
+    },
+    {
+      "type": "end",
+      "text": "Comment *5* if you\nmade it this far",
+      "sub": "That's rare for a 5."
+    }
+  ]
+}

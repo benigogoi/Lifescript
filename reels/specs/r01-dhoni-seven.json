@@ -1,0 +1,44 @@
+{
+  "slug": "r01-dhoni-seven",
+  "accent": "#8f9bb8",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Wore *7* for India.\nBorn on the *7th*.\nOf the *7th* month.",
+      "kicker": "MS Dhoni"
+    },
+    {
+      "type": "text",
+      "text": "Coincidence?\nNumerology says *no.*"
+    },
+    {
+      "type": "big",
+      "value": "7",
+      "caption": "Ruled by *Ketu*, the planet of detachment."
+    },
+    {
+      "type": "text",
+      "text": "7s stay *calm* when everyone else panics.",
+      "sub": "Deep thinkers. Hard to read. Impossible to rattle."
+    },
+    {
+      "type": "text",
+      "text": "Sound like anyone?\n*Captain Cool.*"
+    },
+    {
+      "type": "calc",
+      "label": "Born on the *7th*, *16th* or *25th*?",
+      "steps": [
+        "25",
+        "2 + 5",
+        "7"
+      ],
+      "caption": "You're a *7* too."
+    },
+    {
+      "type": "end",
+      "text": "Comment your\n*birth date*",
+      "sub": "I'll reply with your number."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "slug": "r05-mulank-9-fire",
+  "accent": "#d9483b",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *9th*, *18th* or *27th*?",
+      "sub": "Your anger was never the problem."
+    },
+    {
+      "type": "text",
+      "text": "You don't get angry for *yourself*.",
+      "sub": "You get angry when someone is treated unfairly."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You'd fight the *world* for someone you love."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "You *start* fast, and you hate standing still.",
+      "sub": "Mars needs a mission, or it burns itself."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "Your fire is a *gift*, once you aim it.",
+      "sub": "Your remedy: move your body, pick a cause."
+    },
+    {
+      "type": "big",
+      "value": "9",
+      "caption": "Ruled by *Mars*. *Tuesday* is its day."
+    },
+    {
+      "type": "end",
+      "text": "Send this to a *9*",
+      "sub": "Before they lose their temper."
+    }
+  ]
+}

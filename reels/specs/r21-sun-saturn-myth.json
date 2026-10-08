@@ -1,0 +1,38 @@
+{
+  "slug": "r21-sun-saturn-myth",
+  "accent": "#f0a830",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Saturn is the\n*Sun's own son*.",
+      "sub": "And his greatest enemy."
+    },
+    {
+      "type": "text",
+      "text": "In Vedic myth, *Shani* was born to *Surya*.",
+      "sub": "Their fight never ended."
+    },
+    {
+      "type": "text",
+      "text": "In numerology, the Sun is *1*.\nSaturn is *8*."
+    },
+    {
+      "type": "text",
+      "text": "1 wants to *shine*.\n8 wants to *endure*."
+    },
+    {
+      "type": "text",
+      "text": "1 moves *fast*.\n8 moves *slow* and steady."
+    },
+    {
+      "type": "text",
+      "text": "Together?\n*Intense.*",
+      "sub": "Respect wins. Ego loses."
+    },
+    {
+      "type": "end",
+      "text": "Are you a *1*\nwith an *8*?",
+      "sub": "Tag them. See if they agree."
+    }
+  ]
+}

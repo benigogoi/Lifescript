@@ -1,0 +1,40 @@
+{
+  "slug": "r13-celebrity-spellings",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Why did Ajay Devgan drop the *'a'*?",
+      "sub": "He isn't the only one."
+    },
+    {
+      "type": "text",
+      "text": "*Devgan* became *Devgn*."
+    },
+    {
+      "type": "text",
+      "text": "*Rajkumar* became *Rajkummar*.",
+      "sub": "One extra 'm'."
+    },
+    {
+      "type": "text",
+      "text": "*Ayushman* became *Ayushmann*.",
+      "sub": "One extra 'n'."
+    },
+    {
+      "type": "text",
+      "text": "Ekta Kapoor gave almost\nevery show a *K*.",
+      "sub": "Kyunki. Kahaani. Kasautii."
+    },
+    {
+      "type": "text",
+      "text": "In Indian numerology, every *letter* carries a number.",
+      "sub": "Change the spelling, change the number."
+    },
+    {
+      "type": "end",
+      "text": "Your name has a\nnumber too",
+      "sub": "Comment your *first name*. I'll tell you yours."
+    }
+  ]
+}

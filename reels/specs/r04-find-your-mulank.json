@@ -1,0 +1,50 @@
+{
+  "slug": "r04-find-your-mulank",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Your birth date hides a *secret number*.",
+      "sub": "Find it in 3 seconds."
+    },
+    {
+      "type": "calc",
+      "label": "Born on the *28th*?",
+      "steps": [
+        "28",
+        "2 + 8",
+        "10",
+        "1 + 0",
+        "1"
+      ],
+      "caption": "Your Mulank is *1*.",
+      "stepDur": 0.45
+    },
+    {
+      "type": "calc",
+      "label": "Born on the *16th*?",
+      "steps": [
+        "16",
+        "1 + 6",
+        "7"
+      ],
+      "caption": "Your Mulank is *7*.",
+      "stepDur": 0.45
+    },
+    {
+      "type": "text",
+      "text": "Just the *day*.\nNot the month. Not the year.",
+      "sub": "Keep adding until one digit is left."
+    },
+    {
+      "type": "text",
+      "text": "It's the number you were *born into*.",
+      "sub": "It shapes how you think, love and work."
+    },
+    {
+      "type": "end",
+      "text": "Comment your\n*Mulank*",
+      "sub": "I'll tell you what it says about you."
+    }
+  ]
+}

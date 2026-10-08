@@ -1,0 +1,68 @@
+{
+  "slug": "r25-missing-numbers",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Write down your *full* birth date.",
+      "sub": "Which numbers from 1 to 9 are missing?"
+    },
+    {
+      "type": "text",
+      "text": "Born *14 · 08 · 1995*?",
+      "sub": "It has 1, 4, 5, 8, 9.\nMissing: *2, 3, 6, 7*."
+    },
+    {
+      "type": "text",
+      "text": "Every missing number is a *lesson* you're here to learn."
+    },
+    {
+      "type": "rapid",
+      "title": "Pause on a missing number",
+      "items": [
+        {
+          "n": "1",
+          "text": "Believe in *yourself*. Lead."
+        },
+        {
+          "n": "2",
+          "text": "Patience and *gentle* trust."
+        },
+        {
+          "n": "3",
+          "text": "Speak up. *Express* yourself."
+        },
+        {
+          "n": "4",
+          "text": "*Order* and steady discipline."
+        },
+        {
+          "n": "5",
+          "text": "*Focus*. Pick one direction."
+        },
+        {
+          "n": "6",
+          "text": "Nurture *home* and love."
+        },
+        {
+          "n": "7",
+          "text": "Make room for *faith*."
+        },
+        {
+          "n": "8",
+          "text": "*Money* discipline."
+        },
+        {
+          "n": "9",
+          "text": "Channel your *courage*."
+        }
+      ],
+      "per": 0.6
+    },
+    {
+      "type": "end",
+      "text": "Comment your\n*missing numbers*",
+      "sub": "Most people have 3 to 5."
+    }
+  ]
+}

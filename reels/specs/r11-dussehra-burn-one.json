@@ -1,0 +1,73 @@
+{
+  "slug": "r11-dussehra-burn-one",
+  "accent": "#e0702e",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Burn *one* habit this Dussehra.",
+      "sub": "Pause on your birth number to find yours.",
+      "kicker": "Dussehra · 20 October"
+    },
+    {
+      "type": "rapid",
+      "title": "The habit you burn",
+      "items": [
+        {
+          "n": "1",
+          "text": "Your *ego*. Let someone else lead once.",
+          "small": "Born 1 · 10 · 19 · 28"
+        },
+        {
+          "n": "2",
+          "text": "Your *worry*. Not every silence is rejection.",
+          "small": "Born 2 · 11 · 20 · 29"
+        },
+        {
+          "n": "3",
+          "text": "*Over-promising*. Say no to one thing.",
+          "small": "Born 3 · 12 · 21 · 30"
+        },
+        {
+          "n": "4",
+          "text": "Your *grudges*. Let one go.",
+          "small": "Born 4 · 13 · 22 · 31"
+        },
+        {
+          "n": "5",
+          "text": "*Quitting* when it gets boring.",
+          "small": "Born 5 · 14 · 23"
+        },
+        {
+          "n": "6",
+          "text": "*Peace at any price*. Say what hurts.",
+          "small": "Born 6 · 15 · 24"
+        },
+        {
+          "n": "7",
+          "text": "*Hiding*. Let one person in.",
+          "small": "Born 7 · 16 · 25"
+        },
+        {
+          "n": "8",
+          "text": "*Overwork*. Rest isn't weakness.",
+          "small": "Born 8 · 17 · 26"
+        },
+        {
+          "n": "9",
+          "text": "Your *temper*. Breathe before you fire.",
+          "small": "Born 9 · 18 · 27"
+        }
+      ],
+      "per": 0.65
+    },
+    {
+      "type": "text",
+      "text": "Ravan had ten heads.\nYou only need to burn *one*."
+    },
+    {
+      "type": "end",
+      "text": "Send this to someone\nwho *needs* it",
+      "sub": "Happy Dussehra."
+    }
+  ]
+}

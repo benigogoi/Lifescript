@@ -1,0 +1,46 @@
+{
+  "slug": "r18-mulank-2-moon",
+  "accent": "#b9c6e0",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *2nd*, *11th*, *20th* or *29th*?",
+      "sub": "You feel everything. Here's why."
+    },
+    {
+      "type": "text",
+      "text": "You're ruled by the *Moon*.",
+      "sub": "And like the Moon, your moods have phases."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You *know* something's wrong before anyone says it."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "One cold text can ruin your *whole* day.",
+      "sub": "Not every silence is rejection."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "You're the *glue* in every group.",
+      "sub": "Without you, it quietly falls apart."
+    },
+    {
+      "type": "big",
+      "value": "2",
+      "caption": "*Monday* is your day. *Silver* is your metal."
+    },
+    {
+      "type": "end",
+      "text": "Send this to a *2*",
+      "sub": "They'll feel it. Obviously."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "slug": "r24-2027-personal-year",
+  "accent": "#c9a84c",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Your *2027* is already decided.",
+      "sub": "Find your number in 5 seconds."
+    },
+    {
+      "type": "text",
+      "text": "Take your birth *day* and *month*.\nAdd *2*.",
+      "sub": "2 is 2027's number."
+    },
+    {
+      "type": "calc",
+      "label": "Born *14 August*?",
+      "steps": [
+        "5 + 8 + 2",
+        "15",
+        "1 + 5",
+        "6"
+      ],
+      "caption": "2027 is your *6* year.",
+      "stepDur": 0.5
+    },
+    {
+      "type": "calc",
+      "label": "Born *3 March*?",
+      "steps": [
+        "3 + 3 + 2",
+        "8"
+      ],
+      "caption": "2027 is your *8* year.",
+      "stepDur": 0.5
+    },
+    {
+      "type": "text",
+      "text": "*1* is a fresh start.\n*9* is an ending.",
+      "sub": "Every number in between has its own plan for you."
+    },
+    {
+      "type": "end",
+      "text": "Comment your\n*2027 number*",
+      "sub": "Part 2: what it means for you."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "slug": "r14-mulank-3-guru",
+  "accent": "#e8c547",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *3rd*, *12th*, *21st* or *30th*?",
+      "sub": "People come to you for answers. Here's why."
+    },
+    {
+      "type": "text",
+      "text": "You're ruled by *Jupiter*.",
+      "sub": "The guru planet. The teacher."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You explain things *better* than the people who invented them."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "You stay *hopeful* when it makes no sense to."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "Your danger: saying *yes* to everything.",
+      "sub": "Jupiter expands. Including your to-do list."
+    },
+    {
+      "type": "big",
+      "value": "3",
+      "caption": "*Thursday* is your day. *Yellow* is your colour."
+    },
+    {
+      "type": "end",
+      "text": "Send this to the *3* who\nalways has advice",
+      "sub": "Even when nobody asked."
+    }
+  ]
+}

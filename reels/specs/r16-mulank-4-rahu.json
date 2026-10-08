@@ -1,0 +1,47 @@
+{
+  "slug": "r16-mulank-4-rahu",
+  "accent": "#5f86c9",
+  "scenes": [
+    {
+      "type": "hook",
+      "text": "Born on the *4th*, *13th*, *22nd* or *31st*?",
+      "sub": "You've always felt misunderstood. Here's why."
+    },
+    {
+      "type": "text",
+      "text": "You're ruled by *Rahu*.",
+      "sub": "The rebel. The outsider. The rule-breaker."
+    },
+    {
+      "type": "point",
+      "n": 1,
+      "of": 3,
+      "text": "You see the problem *before* anyone else.",
+      "sub": "And nobody believes you until it happens."
+    },
+    {
+      "type": "point",
+      "n": 2,
+      "of": 3,
+      "text": "You finish what\nothers *quit*.",
+      "sub": "Reliable. Methodical. Underrated."
+    },
+    {
+      "type": "point",
+      "n": 3,
+      "of": 3,
+      "text": "You overthink\nat *2 a.m.*",
+      "sub": "Rahu never really sleeps."
+    },
+    {
+      "type": "big",
+      "value": "4",
+      "caption": "The *builder*. Slow, then sudden."
+    },
+    {
+      "type": "end",
+      "text": "Comment *4* if this hit",
+      "sub": "Then send it to a fellow 4."
+    }
+  ]
+}
