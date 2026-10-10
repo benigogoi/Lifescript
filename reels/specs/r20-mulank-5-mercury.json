@@ -1,41 +1,40 @@
 {
   "slug": "r20-mulank-5-mercury",
+  "style": "chat",
   "accent": "#4fbf87",
   "scenes": [
     {
-      "type": "hook",
-      "text": "Born on the *5th*, *14th* or *23rd*?",
-      "sub": "You get bored faster than anyone you know."
-    },
-    {
-      "type": "text",
-      "text": "You're ruled by *Mercury*.",
-      "sub": "The fastest planet in the sky."
-    },
-    {
-      "type": "point",
-      "n": 1,
-      "of": 3,
-      "text": "You can talk to *anyone*.\nAbout anything."
-    },
-    {
-      "type": "point",
-      "n": 2,
-      "of": 3,
-      "text": "Routine *suffocates* you.",
-      "sub": "Same job, same city, same food. You need change."
-    },
-    {
-      "type": "point",
-      "n": 3,
-      "of": 3,
-      "text": "You're *luckiest* when you move.",
-      "sub": "Travel, trade, new places. Mercury rewards motion."
-    },
-    {
-      "type": "big",
-      "value": "5",
-      "caption": "*Wednesday* is your day. *Green* is your colour."
+      "type": "chat",
+      "banner": "POV: you've quit\n*3 hobbies this month*",
+      "messages": [
+        {
+          "me": true,
+          "text": "Is it normal to get bored of everything in 2 weeks?"
+        },
+        {
+          "text": "Let me guess. Born on the *5th*, *14th* or *23rd*?"
+        },
+        {
+          "me": true,
+          "text": "14th 😳 how"
+        },
+        {
+          "text": "1 + 4 = *5*. Ruled by *Mercury*, the fastest planet."
+        },
+        {
+          "text": "Routine *suffocates* you. You need movement."
+        },
+        {
+          "text": "5s get *luckiest* when they move. New city, new deal, new trip."
+        },
+        {
+          "me": true,
+          "text": "so I should travel more 👀"
+        },
+        {
+          "text": "*Wednesday* is your day. *Green* is your colour. Go."
+        }
+      ]
     },
     {
       "type": "end",

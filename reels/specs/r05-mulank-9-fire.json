@@ -1,6 +1,8 @@
 {
   "slug": "r05-mulank-9-fire",
+  "style": "bold",
   "accent": "#d9483b",
+  "paletteStart": 5,
   "scenes": [
     {
       "type": "hook",

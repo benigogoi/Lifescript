@@ -6,7 +6,7 @@ link to send when someone comments the keyword.
 
 ## Day 1 · Fri 09 Oct — Dhoni and the number 7
 
-- **Video:** `reels/out/r01-dhoni-seven/r01-dhoni-seven.mp4` · **Format:** Celebrity proof · **CTA:** Comment birth date
+- **Video:** `reels/out/r01-dhoni-seven/r01-dhoni-seven.mp4` · **Look:** Night gold · **Format:** Celebrity proof · **CTA:** Comment birth date
 - **Hook:** Wore 7 for India. Born on the 7th. Of the 7th month.
 - **Pin this comment:** What's your birth date? I'm replying to everyone today 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r01
@@ -27,7 +27,7 @@ Comment your birth date and I'll reply with your number 👇
 
 ## Day 2 · Sat 10 Oct — Navratri and the magic of 9
 
-- **Video:** `reels/out/r02-navratri-nine/r02-navratri-nine.mp4` · **Format:** Festival · **CTA:** Send to a 9
+- **Video:** `reels/out/r02-navratri-nine/r02-navratri-nine.mp4` · **Look:** Panchang paper · **Format:** Festival · **CTA:** Send to a 9
 - **Hook:** Multiply any number by 9.
 - **Pin this comment:** Try it with your own number and tell me what you got 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r02
@@ -46,7 +46,7 @@ Born on the 9th, 18th or 27th? This festival belongs to you. Shubh Navratri 🙏
 
 ## Day 3 · Sun 11 Oct — Mulank 1: born to lead
 
-- **Video:** `reels/out/r03-mulank-1-leader/r03-mulank-1-leader.mp4` · **Format:** Mulank identity · **CTA:** Send to a 1
+- **Video:** `reels/out/r03-mulank-1-leader/r03-mulank-1-leader.mp4` · **Look:** Planet · **Format:** Mulank identity · **CTA:** Send to a 1
 - **Hook:** Born on the 1st, 10th, 19th or 28th?
 - **Pin this comment:** Which one hit hardest, 1, 2 or 3? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r03
@@ -67,7 +67,7 @@ Tag the Mulank 1 in your life 👇
 
 ## Day 4 · Mon 12 Oct — Find your Mulank in 3 seconds
 
-- **Video:** `reels/out/r04-find-your-mulank/r04-find-your-mulank.mp4` · **Format:** How-to · **CTA:** Comment Mulank
+- **Video:** `reels/out/r04-find-your-mulank/r04-find-your-mulank.mp4` · **Look:** Notebook · **Format:** How-to · **CTA:** Comment Mulank
 - **Hook:** Your birth date hides a secret number.
 - **Pin this comment:** Drop your Mulank 👇 I'll reply with your trait
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r04
@@ -88,7 +88,7 @@ Comment yours below and I'll tell you what it says about you 👇
 
 ## Day 5 · Tue 13 Oct — Mulank 9: the fighter
 
-- **Video:** `reels/out/r05-mulank-9-fire/r05-mulank-9-fire.mp4` · **Format:** Mulank identity · **CTA:** Send to a 9
+- **Video:** `reels/out/r05-mulank-9-fire/r05-mulank-9-fire.mp4` · **Look:** Bold colour · **Format:** Mulank identity · **CTA:** Send to a 9
 - **Hook:** Born on the 9th, 18th or 27th?
 - **Pin this comment:** 9s: what's the last thing that made you fight for someone? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r05
@@ -109,8 +109,8 @@ Send this to the 9 who'd fight the world for you ❤️
 
 ## Day 6 · Wed 14 Oct — Ratan Tata, Dhirubhai Ambani: one date
 
-- **Video:** `reels/out/r06-tata-ambani-28/r06-tata-ambani-28.mp4` · **Format:** Celebrity proof · **CTA:** Comment 1
-- **Hook:** Born on the same date.
+- **Video:** `reels/out/r06-tata-ambani-28/r06-tata-ambani-28.mp4` · **Look:** Chat · **Format:** Celebrity proof · **CTA:** Comment 1
+- **Hook:** Two business legends. One birthday.
 - **Pin this comment:** Comment 1 if you're a 1. Let's see how many founders are here 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r06
 
@@ -132,7 +132,7 @@ Born on the 1st, 10th, 19th or 28th? Comment 1 👇
 
 ## Day 7 · Thu 15 Oct — Pause on your birth day
 
-- **Video:** `reels/out/r07-pause-your-number/r07-pause-your-number.mp4` · **Format:** Pause game · **CTA:** Send + rewatch
+- **Video:** `reels/out/r07-pause-your-number/r07-pause-your-number.mp4` · **Look:** Night gold · **Format:** Pause game · **CTA:** Send + rewatch
 - **Hook:** Pause the video on your birth day.
 - **Pin this comment:** Did yours get you right? Yes or no 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r07
@@ -151,7 +151,7 @@ Now find the number of the person you're thinking about and send it to them 👀
 
 ## Day 8 · Fri 16 Oct — Mulank 6: the one who loves hardest
 
-- **Video:** `reels/out/r08-mulank-6-love/r08-mulank-6-love.mp4` · **Format:** Mulank identity · **CTA:** Send to a 6
+- **Video:** `reels/out/r08-mulank-6-love/r08-mulank-6-love.mp4` · **Look:** Panchang paper · **Format:** Mulank identity · **CTA:** Send to a 6
 - **Hook:** Born on the 6th, 15th or 24th?
 - **Pin this comment:** 6s, which one is most you? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r08
@@ -172,7 +172,7 @@ Send this to the 6 who looks after everyone except themselves.
 
 ## Day 9 · Sat 17 Oct — Mulank 8: why life tests you harder
 
-- **Video:** `reels/out/r09-mulank-8-saturn/r09-mulank-8-saturn.mp4` · **Format:** Mulank identity · **CTA:** Comment 8
+- **Video:** `reels/out/r09-mulank-8-saturn/r09-mulank-8-saturn.mp4` · **Look:** Planet · **Format:** Mulank identity · **CTA:** Comment 8
 - **Hook:** Born on the 8th, 17th or 26th?
 - **Pin this comment:** 8s, how old were you when things finally started working? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r09
@@ -193,7 +193,7 @@ Comment 8 if you're still waiting for your turn. It's coming.
 
 ## Day 10 · Sun 18 Oct — We wrote a 27-page book about you
 
-- **Video:** `reels/out/r10-27-page-book/r10-27-page-book.mp4` · **Format:** Product · **CTA:** Keyword REPORT
+- **Video:** `reels/out/r10-27-page-book/r10-27-page-book.mp4` · **Look:** Night gold · **Format:** Product · **CTA:** Keyword REPORT
 - **Hook:** We wrote a 27-page book about you.
 - **Pin this comment:** Comment REPORT for the link 👇
 - **DM link:** https://mysticdigits.in/order?utm_source=instagram&utm_medium=dm&utm_campaign=r10
@@ -214,7 +214,7 @@ Comment REPORT and I'll DM you the link ✨
 
 ## Day 11 · Mon 19 Oct — Dussehra: the one habit to burn
 
-- **Video:** `reels/out/r11-dussehra-burn-one/r11-dussehra-burn-one.mp4` · **Format:** Festival · **CTA:** Send
+- **Video:** `reels/out/r11-dussehra-burn-one/r11-dussehra-burn-one.mp4` · **Look:** Bold colour · **Format:** Festival · **CTA:** Send
 - **Hook:** Burn one habit this Dussehra.
 - **Pin this comment:** Which one are you burning this year? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r11
@@ -235,8 +235,8 @@ Happy Dussehra 🏹
 
 ## Day 12 · Tue 20 Oct — Mulank 7: not antisocial, selective
 
-- **Video:** `reels/out/r12-mulank-7-seeker/r12-mulank-7-seeker.mp4` · **Format:** Mulank identity · **CTA:** Comment 7
-- **Hook:** Born on the 7th, 16th or 25th?
+- **Video:** `reels/out/r12-mulank-7-seeker/r12-mulank-7-seeker.mp4` · **Look:** Chat · **Format:** Mulank identity · **CTA:** Comment 7
+- **Hook:** POV: you finally ask why you need so much alone time
 - **Pin this comment:** 7s, how fast can you tell someone's fake? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r12
 
@@ -256,7 +256,7 @@ Comment 7 if you felt seen.
 
 ## Day 13 · Wed 21 Oct — Why stars change their spelling
 
-- **Video:** `reels/out/r13-celebrity-spellings/r13-celebrity-spellings.mp4` · **Format:** Celebrity proof · **CTA:** Comment name
+- **Video:** `reels/out/r13-celebrity-spellings/r13-celebrity-spellings.mp4` · **Look:** Notebook · **Format:** Celebrity proof · **CTA:** Comment name
 - **Hook:** Why did Ajay Devgan drop the 'a'?
 - **Pin this comment:** First name below 👇 I'm replying with every number
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r13
@@ -275,7 +275,7 @@ Comment your first name and I'll tell you its number 👇
 
 ## Day 14 · Thu 22 Oct — Mulank 3: people come to you for answers
 
-- **Video:** `reels/out/r14-mulank-3-guru/r14-mulank-3-guru.mp4` · **Format:** Mulank identity · **CTA:** Send to a 3
+- **Video:** `reels/out/r14-mulank-3-guru/r14-mulank-3-guru.mp4` · **Look:** Planet · **Format:** Mulank identity · **CTA:** Send to a 3
 - **Hook:** Born on the 3rd, 12th, 21st or 30th?
 - **Pin this comment:** 3s, what's the last thing you said yes to that you regret? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r14
@@ -296,7 +296,7 @@ Send this to the 3 who always has advice, even when nobody asked 😄
 
 ## Day 15 · Fri 23 Oct — Your lucky number is probably wrong
 
-- **Video:** `reels/out/r15-lucky-number-wrong/r15-lucky-number-wrong.mp4` · **Format:** Myth-busting · **CTA:** Link in bio
+- **Video:** `reels/out/r15-lucky-number-wrong/r15-lucky-number-wrong.mp4` · **Look:** Notebook · **Format:** Myth-busting · **CTA:** Link in bio
 - **Hook:** Your lucky number is probably wrong.
 - **Pin this comment:** Are your two numbers the same or different? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r15
@@ -318,7 +318,7 @@ Find both free, link in bio 🔗
 
 ## Day 16 · Sat 24 Oct — Mulank 4: always misunderstood
 
-- **Video:** `reels/out/r16-mulank-4-rahu/r16-mulank-4-rahu.mp4` · **Format:** Mulank identity · **CTA:** Comment 4
+- **Video:** `reels/out/r16-mulank-4-rahu/r16-mulank-4-rahu.mp4` · **Look:** Bold colour · **Format:** Mulank identity · **CTA:** Comment 4
 - **Hook:** Born on the 4th, 13th, 22nd or 31st?
 - **Pin this comment:** 4s, what time did you fall asleep last night? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r16
@@ -339,8 +339,8 @@ Comment 4 if this hit.
 
 ## Day 17 · Sun 25 Oct — SRK and Amitabh share one number
 
-- **Video:** `reels/out/r17-srk-amitabh-two/r17-srk-amitabh-two.mp4` · **Format:** Celebrity proof · **CTA:** Comment 2
-- **Hook:** India's two biggest stars share one number.
+- **Video:** `reels/out/r17-srk-amitabh-two/r17-srk-amitabh-two.mp4` · **Look:** Chat · **Format:** Celebrity proof · **CTA:** Comment 2
+- **Hook:** India's two biggest stars share one number
 - **Pin this comment:** SRK or Big B? And comment your Mulank 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r17
 
@@ -359,7 +359,7 @@ Born on the 2nd, 11th, 20th or 29th? Comment 2 👇
 
 ## Day 18 · Mon 26 Oct — Mulank 2: you feel everything
 
-- **Video:** `reels/out/r18-mulank-2-moon/r18-mulank-2-moon.mp4` · **Format:** Mulank identity · **CTA:** Send to a 2
+- **Video:** `reels/out/r18-mulank-2-moon/r18-mulank-2-moon.mp4` · **Look:** Planet · **Format:** Mulank identity · **CTA:** Send to a 2
 - **Hook:** Born on the 2nd, 11th, 20th or 29th?
 - **Pin this comment:** 2s, be honest: how many times did you reread that text? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r18
@@ -380,7 +380,7 @@ Send this to a 2. They'll feel it. Obviously.
 
 ## Day 19 · Tue 27 Oct — Karwa Chauth: your best match
 
-- **Video:** `reels/out/r19-karwa-chauth-match/r19-karwa-chauth-match.mp4` · **Format:** Festival · **CTA:** Tag partner
+- **Video:** `reels/out/r19-karwa-chauth-match/r19-karwa-chauth-match.mp4` · **Look:** Panchang paper · **Format:** Festival · **CTA:** Tag partner
 - **Hook:** Check your partner's birth number.
 - **Pin this comment:** Comment both your numbers (e.g. 6 + 9) and I'll tell you how you match 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r19
@@ -401,8 +401,8 @@ Tag your partner and tell us your numbers 👇
 
 ## Day 20 · Wed 28 Oct — Mulank 5: bored faster than anyone
 
-- **Video:** `reels/out/r20-mulank-5-mercury/r20-mulank-5-mercury.mp4` · **Format:** Mulank identity · **CTA:** Comment 5
-- **Hook:** Born on the 5th, 14th or 23rd?
+- **Video:** `reels/out/r20-mulank-5-mercury/r20-mulank-5-mercury.mp4` · **Look:** Chat · **Format:** Mulank identity · **CTA:** Comment 5
+- **Hook:** POV: you've quit 3 hobbies this month
 - **Pin this comment:** 5s, how many tabs do you have open right now? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r20
 
@@ -422,7 +422,7 @@ Comment 5 if you made it to the end of this video. That's rare for a 5 😄
 
 ## Day 21 · Thu 29 Oct — Saturn is the Sun's own son
 
-- **Video:** `reels/out/r21-sun-saturn-myth/r21-sun-saturn-myth.mp4` · **Format:** Story · **CTA:** Tag partner
+- **Video:** `reels/out/r21-sun-saturn-myth/r21-sun-saturn-myth.mp4` · **Look:** Planet · **Format:** Story · **CTA:** Tag partner
 - **Hook:** Saturn is the Sun's own son.
 - **Pin this comment:** 1s and 8s, how's it going? Be honest 😄👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r21
@@ -443,7 +443,7 @@ Are you a 1 with an 8? Tag them 👇
 
 ## Day 22 · Fri 30 Oct — 2027 is a 2 year
 
-- **Video:** `reels/out/r22-2027-moon-year/r22-2027-moon-year.mp4` · **Format:** Year ahead · **CTA:** Save
+- **Video:** `reels/out/r22-2027-moon-year/r22-2027-moon-year.mp4` · **Look:** Bold colour · **Format:** Year ahead · **CTA:** Save
 - **Hook:** 2026 was a 1 year. 2027 is a 2.
 - **Pin this comment:** What's one thing you're starting slow in 2027? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r22
@@ -463,7 +463,7 @@ Save this for January. Your personal 2027 number is coming in a few days 👀
 
 ## Day 23 · Sat 31 Oct — Is your house number lucky?
 
-- **Video:** `reels/out/r23-house-number/r23-house-number.mp4` · **Format:** Pause game · **CTA:** Comment house number
+- **Video:** `reels/out/r23-house-number/r23-house-number.mp4` · **Look:** Chat · **Format:** Pause game · **CTA:** Comment house number
 - **Hook:** Is your house number lucky?
 - **Pin this comment:** House number below 👇 I'll reply with its meaning
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r23
@@ -482,7 +482,7 @@ Comment your house number and I'll tell you what it means 👇
 
 ## Day 24 · Sun 01 Nov — Your 2027 number in 5 seconds
 
-- **Video:** `reels/out/r24-2027-personal-year/r24-2027-personal-year.mp4` · **Format:** Year ahead · **CTA:** Comment number
+- **Video:** `reels/out/r24-2027-personal-year/r24-2027-personal-year.mp4` · **Look:** Notebook · **Format:** Year ahead · **CTA:** Comment number
 - **Hook:** Your 2027 is already decided.
 - **Pin this comment:** Drop your 2027 number 👇 Part 2 is coming
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r24
@@ -506,7 +506,7 @@ Comment your 2027 number. Part 2 drops this week 👇
 
 ## Day 25 · Mon 02 Nov — The numbers missing from your birth date
 
-- **Video:** `reels/out/r25-missing-numbers/r25-missing-numbers.mp4` · **Format:** Pause game · **CTA:** Comment missing
+- **Video:** `reels/out/r25-missing-numbers/r25-missing-numbers.mp4` · **Look:** Panchang paper · **Format:** Pause game · **CTA:** Comment missing
 - **Hook:** Write down your full birth date.
 - **Pin this comment:** How many are missing from yours? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r25
@@ -527,7 +527,7 @@ Comment your missing numbers 👇
 
 ## Day 26 · Tue 03 Nov — Your free number is 1 page. Your chart is 27.
 
-- **Video:** `reels/out/r26-free-vs-full/r26-free-vs-full.mp4` · **Format:** Product · **CTA:** Keyword REPORT
+- **Video:** `reels/out/r26-free-vs-full/r26-free-vs-full.mp4` · **Look:** Night gold · **Format:** Product · **CTA:** Keyword REPORT
 - **Hook:** Your free number is 1 page.
 - **Pin this comment:** Comment REPORT for the link 👇
 - **DM link:** https://mysticdigits.in/order?utm_source=instagram&utm_medium=dm&utm_campaign=r26
@@ -546,7 +546,7 @@ Comment REPORT and I'll DM you the link ✨
 
 ## Day 27 · Wed 04 Nov — No letter is ever given 9
 
-- **Video:** `reels/out/r27-no-letter-nine/r27-no-letter-nine.mp4` · **Format:** Myth-busting · **CTA:** Comment name
+- **Video:** `reels/out/r27-no-letter-nine/r27-no-letter-nine.mp4` · **Look:** Notebook · **Format:** Myth-busting · **CTA:** Comment name
 - **Hook:** No letter is ever given the number 9.
 - **Pin this comment:** First name below 👇 replying with every number
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r27
@@ -565,7 +565,7 @@ Comment your first name and I'll tell you its number 👇
 
 ## Day 28 · Thu 05 Nov — Your lucky Diwali colour
 
-- **Video:** `reels/out/r28-diwali-colour/r28-diwali-colour.mp4` · **Format:** Festival · **CTA:** Send to family
+- **Video:** `reels/out/r28-diwali-colour/r28-diwali-colour.mp4` · **Look:** Bold colour · **Format:** Festival · **CTA:** Send to family
 - **Hook:** Wear your lucky colour this Diwali.
 - **Pin this comment:** What colour are you wearing? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r28
@@ -584,7 +584,7 @@ Send this to your family group before everyone picks their outfits 😄
 
 ## Day 29 · Fri 06 Nov — Dhanteras: how money finds your number
 
-- **Video:** `reels/out/r29-dhanteras-money/r29-dhanteras-money.mp4` · **Format:** Festival · **CTA:** Keyword REPORT
+- **Video:** `reels/out/r29-dhanteras-money/r29-dhanteras-money.mp4` · **Look:** Night gold · **Format:** Festival · **CTA:** Keyword REPORT
 - **Hook:** Your birth number decides how money finds you.
 - **Pin this comment:** Which one is you? 👇 Comment REPORT for your full money chapter
 - **DM link:** https://mysticdigits.in/order?utm_source=instagram&utm_medium=dm&utm_campaign=r29
@@ -603,7 +603,7 @@ Your full money chapter (when it flows, when to hold back) is in your 27-page re
 
 ## Day 30 · Sat 07 Nov — Your 2027 in one word
 
-- **Video:** `reels/out/r30-2027-one-word/r30-2027-one-word.mp4` · **Format:** Year ahead · **CTA:** Save
+- **Video:** `reels/out/r30-2027-one-word/r30-2027-one-word.mp4` · **Look:** Panchang paper · **Format:** Year ahead · **CTA:** Save
 - **Hook:** Your 2027 in one word.
 - **Pin this comment:** What's your 2027 word? 👇
 - **DM link:** https://mysticdigits.in/calculator?utm_source=instagram&utm_medium=dm&utm_campaign=r30

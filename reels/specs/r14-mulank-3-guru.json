@@ -1,6 +1,8 @@
 {
   "slug": "r14-mulank-3-guru",
-  "accent": "#e8c547",
+  "style": "planet",
+  "accent": "#ffc27a",
+  "planet": "jupiter",
   "scenes": [
     {
       "type": "hook",

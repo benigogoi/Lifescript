@@ -1,43 +1,41 @@
 {
   "slug": "r06-tata-ambani-28",
+  "style": "chat",
   "accent": "#f0a830",
   "scenes": [
     {
-      "type": "hook",
-      "text": "Born on the\n*same date*.",
-      "sub": "Five years apart. Same number.",
-      "kicker": "Ratan Tata · Dhirubhai Ambani"
-    },
-    {
-      "type": "text",
-      "text": "*28 December.*\n1937 and 1932."
-    },
-    {
-      "type": "calc",
-      "label": "Add the day:",
-      "steps": [
-        "28",
-        "2 + 8",
-        "10",
-        "1 + 0",
-        "1"
-      ],
-      "caption": "Mulank *1*: the *Sun*.",
-      "stepDur": 0.45
-    },
-    {
-      "type": "text",
-      "text": "The number of *founders*.",
-      "sub": "People who build their own path instead of joining one."
-    },
-    {
-      "type": "text",
-      "text": "And Mukesh Ambani?\nBorn on the *19th*.",
-      "sub": "1 + 9 = 10 → 1."
-    },
-    {
-      "type": "text",
-      "text": "India's biggest business names share *one* number."
+      "type": "chat",
+      "banner": "Two business legends.\n*One birthday.*",
+      "messages": [
+        {
+          "me": true,
+          "text": "Do birth dates actually mean anything? 🤔"
+        },
+        {
+          "text": "Ratan Tata was born on *28 December*."
+        },
+        {
+          "text": "Dhirubhai Ambani? Also *28 December*."
+        },
+        {
+          "me": true,
+          "text": "WAIT. Same day?? 😳"
+        },
+        {
+          "text": "Five years apart. Same number:\n2 + 8 = 10 → *1*"
+        },
+        {
+          "num": "1",
+          "text": "Mulank 1 · the Sun · the founder's number"
+        },
+        {
+          "me": true,
+          "text": "And Mukesh Ambani?"
+        },
+        {
+          "text": "Born on the *19th*. 1 + 9 = 10 → *1* again."
+        }
+      ]
     },
     {
       "type": "end",

@@ -1,6 +1,8 @@
 {
   "slug": "r09-mulank-8-saturn",
-  "accent": "#3c5fb0",
+  "style": "planet",
+  "accent": "#f3d98f",
+  "planet": "saturn",
   "scenes": [
     {
       "type": "hook",

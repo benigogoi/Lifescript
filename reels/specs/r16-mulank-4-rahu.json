@@ -1,6 +1,8 @@
 {
   "slug": "r16-mulank-4-rahu",
+  "style": "bold",
   "accent": "#5f86c9",
+  "paletteStart": 0,
   "scenes": [
     {
       "type": "hook",

@@ -1,36 +1,41 @@
 {
   "slug": "r17-srk-amitabh-two",
+  "style": "chat",
   "accent": "#b9c6e0",
   "scenes": [
     {
-      "type": "hook",
-      "text": "India's two *biggest* stars share one number.",
-      "kicker": "SRK · Big B"
-    },
-    {
-      "type": "text",
-      "text": "SRK: born on the *2nd*.",
-      "sub": "2 November."
-    },
-    {
-      "type": "text",
-      "text": "Amitabh: born on the *11th*.",
-      "sub": "11 October. 1 + 1 = 2."
-    },
-    {
-      "type": "big",
-      "value": "2",
-      "caption": "Ruled by the *Moon*."
-    },
-    {
-      "type": "text",
-      "text": "The Moon rules *emotion*.",
-      "sub": "The number of people who make millions feel something."
-    },
-    {
-      "type": "text",
-      "text": "Charm. Intuition.\n*Connection.*",
-      "sub": "The exact skill of a superstar."
+      "type": "chat",
+      "banner": "India's two biggest stars\nshare *one number*",
+      "messages": [
+        {
+          "me": true,
+          "text": "Bigger star: SRK or Big B? 🍿"
+        },
+        {
+          "text": "Trick question. They share a *number*."
+        },
+        {
+          "text": "SRK: born on the *2nd* of November."
+        },
+        {
+          "text": "Amitabh: the *11th* of October.\n1 + 1 = *2*."
+        },
+        {
+          "num": "2",
+          "text": "Mulank 2 · ruled by the Moon"
+        },
+        {
+          "me": true,
+          "text": "What does 2 even mean?"
+        },
+        {
+          "text": "The Moon rules *emotion*. 2s make millions *feel* something."
+        },
+        {
+          "me": true,
+          "text": "I was born on the 20th… 2 + 0 = 2 🥹"
+        }
+      ]
     },
     {
       "type": "end",

@@ -1,6 +1,8 @@
 {
   "slug": "r03-mulank-1-leader",
-  "accent": "#f0a830",
+  "style": "planet",
+  "accent": "#ffb547",
+  "planet": "sun",
   "scenes": [
     {
       "type": "hook",

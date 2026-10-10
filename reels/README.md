@@ -25,7 +25,9 @@ pure function of time, so the same spec always gives the same video.
 ```jsonc
 {
   "slug": "r09-mulank-8-saturn",
-  "accent": "#3c5fb0",            // glow colour; each Mulank reel uses its planet's
+  "style": "planet",              // the look: see "Looks" below (default "night")
+  "planet": "saturn",             // planet look only: sun | moon | jupiter | saturn | mars
+  "accent": "#f3d98f",            // highlight / glow colour
   "scenes": [
     { "type": "hook", "text": "Born on the *8th*, *17th* or *26th*?", "sub": "Here's why life tests you harder." },
     { "type": "point", "n": 1, "of": 3, "text": "Nothing comes *easy*\nto you. Nothing." },
@@ -35,7 +37,8 @@ pure function of time, so the same spec always gives the same video.
 }
 ```
 
-`*word*` turns gold, `\n` breaks the line, and a non-breaking space (` `) keeps
+`*word*` highlights, `~word~` strikes through (drawn in red pen in the notebook look),
+`\n` breaks the line, and a non-breaking space (` `) keeps
 two words together. Durations are computed from word count; set `"dur"` to override.
 
 | Type    | What it does                                                                      |
@@ -47,7 +50,27 @@ two words together. Durations are computed from word count; set `"dur"` to overr
 | `calc`  | Digits adding up on screen: `"steps": ["28", "2 + 8", "10", "1"]`                 |
 | `rapid` | `items` flash too fast to read, so viewers pause and replay (optional `color`)    |
 | `image` | A report page from `public/samples/` with a slow push-in (`focus` sets the point) |
+| `chat`  | A whole conversation: `"banner"` hook, then `"messages"` (`{"me": true, "text"}` for the asker, `{"text"}` for replies, `{"num", "text"}` for a number card). Replies show typing dots first |
 | `end`   | Logo, call to action, `mysticdigits.in` pill (`"url": false` hides it)            |
+
+## Looks
+
+Six looks, so the profile grid never turns into one repeated template. Each look
+gets at most 5 reels in a 30-day set, and never two days running (the generator
+checks both). Pick the look that fits the content:
+
+| `style`    | Feels like                                                        | Best for                         |
+|------------|-------------------------------------------------------------------|----------------------------------|
+| `night`    | Black, gold serif, starfield, mandala (the brand's own look)       | Product reels, pause games       |
+| `paper`    | Panchang almanac page: ivory, vermilion border, marigold petals   | Festivals, traditions, the year  |
+| `notebook` | Ruled school notebook: blue-ink handwriting, red-pen circles      | Anything you calculate or spell  |
+| `bold`     | Full-screen colour blocks wiping over each other, huge capitals   | Punchy call-outs, colour reels   |
+| `planet`   | Deep space above the ruling planet's glowing horizon              | Mulank reels (one per planet)    |
+| `chat`     | A messaging thread with typing dots                               | Q&A stories, "POV" hooks         |
+
+`bold` takes `"paletteStart"` (0–5) to choose its first colour block; a `rapid`
+item's `color` floods the whole screen in that look. `planet` takes `"sky": "sun"`
+to put a sun above the horizon.
 
 ## What makes these hold attention
 

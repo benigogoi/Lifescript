@@ -22,7 +22,7 @@
 import puppeteer, { type Browser, type Page } from "puppeteer";
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { once } from "node:events";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -39,11 +39,15 @@ interface Scene {
 }
 interface ReelSpec {
   slug: string;
+  /** night (default) | paper | notebook | bold | planet | chat — see scripts/reel/engine.js */
+  style?: string;
   accent?: string;
   scenes: Scene[];
 }
 interface Timeline {
   duration: number;
+  /** The moment that makes the best cover frame (the hook, fully landed). */
+  coverAt: number;
   scenes: { type: string; start: number; dur: number }[];
 }
 
@@ -118,18 +122,21 @@ function buildHtml(spec: ReelSpec): string {
   return `<!doctype html>
 <html><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Marcellus&family=Jost:wght@400;500;600&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Marcellus&family=Jost:wght@400;500;600&family=Playfair+Display:wght@700;800&family=Lora:ital,wght@1,500&family=Kalam:wght@400;700&family=Anton&family=Archivo:wght@600;800&family=Outfit:wght@400;500;600;700&display=block" rel="stylesheet">
 <style>${css}${spec.accent ? `:root{--accent:${spec.accent}}` : ""}</style>
 </head><body>
-<div id="stage">
+<div id="stage" class="theme-${spec.style ?? "night"}">
   <canvas id="stars" width="1080" height="1920"></canvas>
+  <div id="decor"></div>
   <div id="glow"></div>
   <div id="mandala">${mandalaSvg()}</div>
   <div id="vignette"></div>
   <div id="scenes"></div>
+  <div id="frame"></div>
   <div id="flash"></div>
   <div id="brand"><i></i>MYSTIC DIGITS<i></i></div>
 </div>
+<img id="logo-src" src="${logo}" alt="" style="display:none">
 <script>window.__SPEC = ${json}; window.__LOGO = ${JSON.stringify(logo)};</script>
 <script>${engine}</script>
 </body></html>`;
@@ -150,6 +157,9 @@ async function openReel(browser: Browser, spec: ReelSpec, outDir: string): Promi
         '500 100px "Cormorant Garamond"', '600 100px "Cormorant Garamond"',
         '700 100px "Cormorant Garamond"', 'italic 600 100px "Cormorant Garamond"',
         '400 40px "Marcellus"', '400 40px "Jost"', '500 40px "Jost"', '600 40px "Jost"',
+        '700 100px "Playfair Display"', '800 100px "Playfair Display"', 'italic 500 40px "Lora"',
+        '400 40px "Kalam"', '700 100px "Kalam"', '400 100px "Anton"', '600 40px "Archivo"', '800 40px "Archivo"',
+        '400 40px "Outfit"', '500 40px "Outfit"', '600 100px "Outfit"', '700 100px "Outfit"',
       ].map((f) => document.fonts.load(f, "Aa0123456789")),
     );
     await document.fonts.ready;
@@ -173,12 +183,12 @@ async function renderReel(browser: Browser, specPath: string, opts: { stills: bo
   const { page, timeline } = await openReel(browser, spec, outDir);
   const started = Date.now();
 
-  // Cover = the hook once its sub line has landed, for the profile grid.
-  const hook = timeline.scenes[0];
-  await writeFile(path.join(outDir, "cover.jpg"), await shot(page, hook.start + hook.dur - 0.25, 94));
+  // Cover = the hook once it has fully landed, for the profile grid.
+  await writeFile(path.join(outDir, "cover.jpg"), await shot(page, timeline.coverAt, 94));
 
   if (opts.stills) {
     const dir = path.join(outDir, "stills");
+    await rm(dir, { recursive: true, force: true }); // no stale stills from a longer earlier cut
     await mkdir(dir, { recursive: true });
     for (const [i, sc] of timeline.scenes.entries()) {
       const t = sc.start + Math.max(0.2, Math.min(sc.dur * 0.8, sc.dur - 0.22));

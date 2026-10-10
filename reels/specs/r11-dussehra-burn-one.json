@@ -1,6 +1,8 @@
 {
   "slug": "r11-dussehra-burn-one",
+  "style": "bold",
   "accent": "#e0702e",
+  "paletteStart": 1,
   "scenes": [
     {
       "type": "hook",

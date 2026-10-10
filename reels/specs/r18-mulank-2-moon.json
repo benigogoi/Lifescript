@@ -1,6 +1,8 @@
 {
   "slug": "r18-mulank-2-moon",
-  "accent": "#b9c6e0",
+  "style": "planet",
+  "accent": "#c9d6ff",
+  "planet": "moon",
   "scenes": [
     {
       "type": "hook",

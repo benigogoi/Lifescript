@@ -1,5 +1,6 @@
 {
   "slug": "r13-celebrity-spellings",
+  "style": "notebook",
   "accent": "#c9a84c",
   "scenes": [
     {
@@ -9,16 +10,16 @@
     },
     {
       "type": "text",
-      "text": "*Devgan* became *Devgn*."
+      "text": "Devg~a~n\n*Devgn*"
     },
     {
       "type": "text",
-      "text": "*Rajkumar* became *Rajkummar*.",
+      "text": "Rajkumar\nRajkum*m*ar",
       "sub": "One extra 'm'."
     },
     {
       "type": "text",
-      "text": "*Ayushman* became *Ayushmann*.",
+      "text": "Ayushman\nAyushman*n*",
       "sub": "One extra 'n'."
     },
     {

@@ -1,6 +1,8 @@
 {
   "slug": "r28-diwali-colour",
+  "style": "bold",
   "accent": "#f0a830",
+  "paletteStart": 4,
   "scenes": [
     {
       "type": "hook",

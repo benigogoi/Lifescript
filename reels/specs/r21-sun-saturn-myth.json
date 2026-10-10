@@ -1,6 +1,9 @@
 {
   "slug": "r21-sun-saturn-myth",
-  "accent": "#f0a830",
+  "style": "planet",
+  "accent": "#ffb547",
+  "planet": "saturn",
+  "sky": "sun",
   "scenes": [
     {
       "type": "hook",

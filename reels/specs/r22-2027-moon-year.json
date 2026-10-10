@@ -1,6 +1,8 @@
 {
   "slug": "r22-2027-moon-year",
+  "style": "bold",
   "accent": "#b9c6e0",
+  "paletteStart": 2,
   "scenes": [
     {
       "type": "hook",
